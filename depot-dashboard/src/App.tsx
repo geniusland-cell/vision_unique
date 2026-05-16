@@ -55,6 +55,7 @@ function App(): ReactNode {
   const [depots, setDepots] = useState<Depot[]>([]);
   const [selectedDepot, setSelectedDepot] = useState<Depot | null>(null);
   const [depotProducts, setDepotProducts] = useState<any[]>([]);
+  const [showStats, setShowStats] = useState<boolean>(false);
 
   // ← NOUVEAU: States pour la gestion d'expiration d'abonnement
   const [daysRemaining, setDaysRemaining] = useState<number | null>(null);
@@ -540,7 +541,16 @@ function App(): ReactNode {
       />
 
       <div className="main-container">
-        <StatsGrid products={depotProducts} />
+        {/* Bouton de statistiques */}
+        <button
+          className="stats-toggle-btn"
+          onClick={() => setShowStats(!showStats)}
+        >
+          📊 Statistiques
+        </button>
+
+        {/* Afficher les stats seulement si showStats est true */}
+        {showStats && <StatsGrid products={depotProducts} />}
 
         {/* Depot Selector */}
         {depots.length > 0 && (
