@@ -314,59 +314,6 @@ input:focus-visible {
   line-height: 1.5;
 }
 
-/* Stats Toggle Button */
-.stats-toggle-container {
-  display: flex;
-  justify-content: flex-start;
-  margin-bottom: 15px;
-}
-
-.stats-toggle-btn {
-  background: rgba(255, 255, 255, 0.95);
-  border: 2px solid #009739;
-  border-radius: 8px;
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #009739;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.stats-toggle-btn:hover {
-  background: #009739;
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 151, 57, 0.2);
-}
-
-.stats-toggle-btn:active {
-  transform: translateY(0);
-}
-
-/* Dark Mode - Stats Toggle */
-.dark-mode .stats-toggle-container {
-  display: flex;
-  justify-content: flex-start;
-  margin-bottom: 15px;
-}
-
-.dark-mode .stats-toggle-btn {
-  background: rgba(42, 42, 42, 0.95);
-  border-color: #66bb6a;
-  color: #66bb6a;
-}
-
-.dark-mode .stats-toggle-btn:hover {
-  background: #66bb6a;
-  color: #1e1e1e;
-  box-shadow: 0 4px 12px rgba(102, 187, 106, 0.2);
-}
-
 .subscription-alert .status-warning {
   color: #f57c00;
   font-weight: bold;

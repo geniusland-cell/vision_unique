@@ -29,15 +29,7 @@ export const useAuth = (): {
   logout: () => Promise<{ success: boolean; error?: string }>;
   isManager: () => boolean;
 } => {
-  const [user, setUser] = useState<User | null>(() => {
-    // OPTIMIZATION: Charger depuis localStorage sans attendre le server (pas d'attente!)
-    try {
-      const savedUser = localStorage.getItem("managerUser");
-      return savedUser ? JSON.parse(savedUser) : null;
-    } catch {
-      return null;
-    }
-  });
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -51,23 +43,18 @@ export const useAuth = (): {
           // Accepter managers ET admins
           if (result.data.role === "manager" || result.data.role === "admin") {
             setUser(result.data);
-            // SAUVEGARDER dans localStorage pour prochain chargement instantané
-            localStorage.setItem("managerUser", JSON.stringify(result.data));
             console.log(
               ` Session ${result.data.role.toUpperCase()} restaurée pour:`,
               result.data.name,
             );
           } else {
             setUser(null);
-            localStorage.removeItem("managerUser");
           }
         } else {
           setUser(null);
-          localStorage.removeItem("managerUser");
         }
       } else {
         setUser(null);
-        localStorage.removeItem("managerUser");
       }
       setLoading(false);
     });
@@ -101,8 +88,6 @@ export const useAuth = (): {
           };
         }
         setUser(result.data);
-        // SAUVEGARDER dans localStorage
-        localStorage.setItem("managerUser", JSON.stringify(result.data));
         console.log(
           ` Connexion ${result.data.role.toUpperCase()} réussie:`,
           result.data.name,
@@ -193,7 +178,6 @@ export const useAuth = (): {
     try {
       await logoutUser();
       setUser(null);
-      localStorage.removeItem("managerUser");
       console.log(" Déconnexion réussie");
       return { success: true };
     } catch (err: unknown) {

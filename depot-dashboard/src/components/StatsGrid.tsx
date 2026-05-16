@@ -16,14 +16,14 @@ const StatsGrid = ({ products }: StatsGridProps): ReactNode => {
   const getTotalStockValue = () => {
     if (!products) return 0;
     return products.reduce((sum, product) => {
-      return sum + (product.stock_quantity ?? 0) * (product.price || 0);
+      return sum + (product.stock ?? 0) * (product.price || 0);
     }, 0);
   };
 
   const getTotalStock = () => {
     if (!products) return 0;
     return products.reduce((sum, product) => {
-      return sum + (product.stock_quantity ?? 0);
+      return sum + (product.stock ?? 0);
     }, 0);
   };
 
@@ -36,7 +36,13 @@ const StatsGrid = ({ products }: StatsGridProps): ReactNode => {
   };
 
   const formatCurrency = (value: number) => {
-    return value.toLocaleString("fr-FR") + " FCFA";
+    if (value >= 1000000) {
+      return (value / 1000000).toFixed(1) + "M";
+    }
+    if (value >= 1000) {
+      return (value / 1000).toFixed(0) + "K";
+    }
+    return value.toLocaleString("fr-FR");
   };
 
   const stats = [

@@ -55,16 +55,6 @@ function App(): ReactNode {
   const [depots, setDepots] = useState<Depot[]>([]);
   const [selectedDepot, setSelectedDepot] = useState<Depot | null>(null);
   const [depotProducts, setDepotProducts] = useState<any[]>([]);
-  const [showStats, setShowStats] = useState<boolean>(false);
-  const [isCached, setIsCached] = useState<boolean>(() => {
-    // Vérifier si on a un user en cache
-    try {
-      const savedUser = localStorage.getItem("managerUser");
-      return savedUser ? true : false;
-    } catch {
-      return false;
-    }
-  });
 
   // ← NOUVEAU: States pour la gestion d'expiration d'abonnement
   const [daysRemaining, setDaysRemaining] = useState<number | null>(null);
@@ -293,47 +283,6 @@ function App(): ReactNode {
       setIsRenewingSubscription(false);
     }
   };
-
-  // SPINNER pour les managers qui reviennent (cache plein + Firebase en cours de validation)
-  if (isCached && loading && !user) {
-    return (
-      <div className="app">
-        <div className="login-container">
-          <div className="login-card">
-            <div className="login-header">
-              <div className="logo">
-                <div className="logo-icon">D</div>
-                <span>DÉPÔT DASHBOARD</span>
-              </div>
-            </div>
-            <div style={{ textAlign: "center", padding: "40px 20px" }}>
-              <div
-                style={{
-                  fontSize: "48px",
-                  marginBottom: "20px",
-                  animation: "spin 1s linear infinite",
-                }}
-              >
-                ⏳
-              </div>
-              <h2 style={{ marginBottom: "10px", color: "#009739" }}>
-                Restauration de votre session...
-              </h2>
-              <p style={{ fontSize: "14px", color: "#666" }}>
-                Merci de patienter quelques secondes
-              </p>
-            </div>
-          </div>
-        </div>
-        <style>{`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}</style>
-      </div>
-    );
-  }
 
   // Afficher l'interface de connexion si pas de manager connecté
   if (!user) {
@@ -591,16 +540,7 @@ function App(): ReactNode {
       />
 
       <div className="main-container">
-        <div className="stats-toggle-container">
-          <button
-            className="stats-toggle-btn"
-            onClick={() => setShowStats(!showStats)}
-            title={showStats ? "Masquer les stats" : "Afficher les stats"}
-          >
-            📊 {showStats ? "▼ Statistiques" : "▶ Statistiques"}
-          </button>
-        </div>
-        {showStats && <StatsGrid products={depotProducts} />}
+        <StatsGrid products={depotProducts} />
 
         {/* Depot Selector */}
         {depots.length > 0 && (

@@ -1,7 +1,7 @@
 /**
  * VISION UNIQUE - TypeScript Type Definitions
  * Globol interface for User, Depot, Product, Category, etc.
- * for both application shared 
+ * (Shared between maman-power-app and depot-dashboard)
  */
 
 // ==================== USER TYPES ====================
@@ -62,7 +62,6 @@ export interface Product {
   base_price?: number;
   unit: string; // "kg", "L", "unité", etc.
   stock?: number;
-  stock_quantity?: number;
   image_url?: string;
   is_available: boolean;
   created_at: string; // ISO date

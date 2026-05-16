@@ -86,7 +86,7 @@ export const registerUser = async (
 
     // Generate email from phone
     const userEmail = generateEmailFromPhone(phone);
-    console.log(" Inscription Manager pour", phone, "→", userEmail);
+    console.log("📝 Inscription Manager pour", phone, "→", userEmail);
 
     // 1. Create Firebase Auth user
     const { user: authUser } = await createUserWithEmailAndPassword(
@@ -95,7 +95,7 @@ export const registerUser = async (
       password,
     );
 
-    console.log(" Compte Manager créé. UID:", authUser.uid);
+    console.log("✅ Compte Manager créé. UID:", authUser.uid);
 
     // 2. Create user profile in Realtime Database
     const userRef = ref(db, `users/${authUser.uid}`);
@@ -112,7 +112,7 @@ export const registerUser = async (
       updated_at: new Date().toISOString(),
     });
 
-    console.log(" Profil Manager créé dans Realtime DB");
+    console.log("✅ Profil Manager créé dans Realtime DB");
 
     // 3. Auto-create unique depot for this manager
     const newDepotRef = push(ref(db, "depots"));
@@ -139,7 +139,7 @@ export const registerUser = async (
       updated_at: new Date().toISOString(),
     });
 
-    console.log(" Dépôt auto-créé:", depotName);
+    console.log("✅ Dépôt auto-créé:", depotName);
 
     // 4. Initialize depot with default products
     await initializeDepotProducts(newDepotRef.key);
@@ -160,7 +160,7 @@ export const registerUser = async (
     };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur d'inscription Manager:", errorMsg);
+    console.error("❌ Erreur d'inscription Manager:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -173,7 +173,7 @@ export const loginByEmail = async (
   password: string,
 ): Promise<FirebaseResponse<User>> => {
   try {
-    console.log(" Tentative connexion ADMIN pour:", email);
+    console.log("📧 Tentative connexion ADMIN pour:", email);
 
     // 1. Authenticate with Firebase
     const { user: authUser } = await signInWithEmailAndPassword(
@@ -182,14 +182,14 @@ export const loginByEmail = async (
       password,
     );
 
-    console.log(" Authentification ADMIN réussie pour:", email);
+    console.log("✅ Authentification ADMIN réussie pour:", email);
 
     // 2. Get user profile from Realtime Database
     const userRef = ref(db, `users/${authUser.uid}`);
     const userSnap = await get(userRef);
 
     if (!userSnap.exists()) {
-      console.error(" Profil ADMIN non trouvé:", authUser.uid);
+      console.error("❌ Profil ADMIN non trouvé:", authUser.uid);
       return { success: false, error: "Profil utilisateur non trouvé" };
     }
 
@@ -197,11 +197,11 @@ export const loginByEmail = async (
 
     // Verify admin role
     if (userData.role !== "admin") {
-      console.error(" L'utilisateur n'est pas un administrateur");
+      console.error("❌ L'utilisateur n'est pas un administrateur");
       return { success: false, error: "Accès réservé aux administrateurs" };
     }
 
-    console.log(" Profil ADMIN chargé:", userData.name);
+    console.log("✅ Profil ADMIN chargé:", userData.name);
 
     return {
       success: true,
@@ -209,7 +209,7 @@ export const loginByEmail = async (
     };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur connexion ADMIN:", errorMsg);
+    console.error("❌ Erreur connexion ADMIN:", errorMsg);
     return { success: false, error: "Email ou mot de passe incorrect" };
   }
 };
@@ -223,10 +223,10 @@ export const detectAndLogin = async (
 ): Promise<FirebaseResponse<User>> => {
   // Check if it's an email (contains @)
   if (identifier.includes("@")) {
-    console.log(" Détecté: EMAIL → Tentative connexion ADMIN");
+    console.log("📧 Détecté: EMAIL → Tentative connexion ADMIN");
     return loginByEmail(identifier, password);
   } else {
-    console.log(" Détecté: TÉLÉPHONE → Tentative connexion MANAGER");
+    console.log("📱 Détecté: TÉLÉPHONE → Tentative connexion MANAGER");
     return loginByPhone(identifier, password);
   }
 };
@@ -239,7 +239,7 @@ export const loginByPhone = async (
   password: string,
 ): Promise<FirebaseResponse<User>> => {
   try {
-    console.log(" Tentative connexion Manager pour:", phone);
+    console.log("📱 Tentative connexion Manager pour:", phone);
 
     // 1. Generate email from phone
     const userEmail = generateEmailFromPhone(phone);
@@ -251,19 +251,19 @@ export const loginByPhone = async (
       password,
     );
 
-    console.log(" Authentification Manager réussie pour:", phone);
+    console.log("✅ Authentification Manager réussie pour:", phone);
 
     // 3. Get user profile from Realtime Database
     const userRef = ref(db, `users/${authUser.uid}`);
     const userSnap = await get(userRef);
 
     if (!userSnap.exists()) {
-      console.error(" Profil Manager non trouvé:", authUser.uid);
+      console.error("❌ Profil Manager non trouvé:", authUser.uid);
       return { success: false, error: "Profil utilisateur non trouvé" };
     }
 
     const userData = userSnap.val();
-    console.log(" Profil Manager chargé:", userData.name);
+    console.log("✅ Profil Manager chargé:", userData.name);
 
     return {
       success: true,
@@ -271,7 +271,7 @@ export const loginByPhone = async (
     };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur connexion Manager:", errorMsg);
+    console.error("❌ Erreur connexion Manager:", errorMsg);
     return { success: false, error: "Numéro ou mot de passe incorrect" };
   }
 };
@@ -282,11 +282,11 @@ export const loginByPhone = async (
 export const logoutUser = async (): Promise<FirebaseResponse<null>> => {
   try {
     await signOut(auth);
-    console.log(" Déconnexion Manager réussie");
+    console.log("✅ Déconnexion Manager réussie");
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur déconnexion:", errorMsg);
+    console.error("❌ Erreur déconnexion:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -307,7 +307,7 @@ export const getCurrentUser = async (
     return { success: false, error: "Utilisateur non trouvé" };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur récupération Manager:", errorMsg);
+    console.error("❌ Erreur récupération Manager:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -338,7 +338,7 @@ export const getManagerDepots = async (
     return { success: true, data: depots };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur récupération dépôts:", errorMsg);
+    console.error("❌ Erreur récupération dépôts:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -365,7 +365,7 @@ export const getCategories = async (): Promise<
     return { success: true, data: categories };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur récupération catégories:", errorMsg);
+    console.error("❌ Erreur récupération catégories:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -375,7 +375,7 @@ export const getCategories = async (): Promise<
 // =====================================
 export const initializeTestData = async (): Promise<FirebaseResponse<null>> => {
   try {
-    console.log(" Initialisation des données de test...");
+    console.log("📝 Initialisation des données de test...");
 
     // 1. Create categories
     const categories = [
@@ -944,36 +944,6 @@ export const updateDepotProduct = async (
 // =====================================
 // ADD PRODUCT TO DEPOT
 // =====================================
-// =====================================
-// ENSURE CATEGORY EXISTS (CREATE IF NOT EXISTS)
-// =====================================
-const ensureCategoryExists = async (categoryName: string): Promise<void> => {
-  try {
-    const categories = await getCategories();
-    if (!categories.success || !categories.data) return;
-
-    const categoryExists = categories.data.some((cat) => cat.name === categoryName);
-
-    if (!categoryExists) {
-      const emojiMap: Record<string, string> = {
-        Viande: "🥩",
-        Légumes: "🥬",
-        Riz: "🌾",
-        Autre: "📦",
-      };
-      const emoji = emojiMap[categoryName] || "📦";
-
-      await createCategory({
-        name: categoryName,
-        emoji,
-        description: `Produits ${categoryName}`,
-      });
-    }
-  } catch (err: unknown) {
-    console.error(" Erreur vérification catégorie:", err);
-  }
-};
-
 export const addDepotProduct = async (
   depotId: string,
   productName: string,
@@ -984,9 +954,6 @@ export const addDepotProduct = async (
   image: string = "",
 ): Promise<FirebaseResponse<{ productId: string | null }>> => {
   try {
-    // Ensure category exists (create if not)
-    await ensureCategoryExists(categoryName);
-
     const productsRef = ref(db, `depots/${depotId}/products`);
     const newProductRef = push(productsRef);
 
