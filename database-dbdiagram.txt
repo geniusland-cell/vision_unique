@@ -1,0 +1,135 @@
+// =====================================
+// BASE DE DONNÉES MAMAN POWER APP - VERSION FINALE
+// Pour dbdiagram.io
+// Inspiré du design utilisateur + système PREMIUM simplifié
+// =====================================
+
+Table users {
+  id uuid [primary key]
+  name varchar(255) [not null]
+  phone varchar(20) [unique]
+  role varchar(50) [default: 'vendeur', note: 'vendeur, admin, manager']
+  subscription_status varchar(20) [default: 'free', note: 'free, premium']
+  priority_level integer [default: 1, note: '1=free, 2=premium']
+  avatar_url text
+  is_active boolean [default: true]
+  created_at timestamp [default: 'now()']
+  updated_at timestamp [default: 'now()']
+  Note: 'Utilisateurs de l application avec système PREMIUM'
+}
+
+Table depots {
+  id uuid [primary key, default: 'gen_random_uuid()']
+  name varchar(255) [not null]
+  location varchar(255) [not null]
+  address text
+  whatsapp_number varchar(20) [note: 'WhatsApp Business pour tous']
+  phone_direct varchar(20) [note: 'Ligne directe pour PREMIUM']
+  managed_by uuid [ref: > users.id, note: 'Manager qui gère ce dépôt']
+  is_active boolean [default: true]
+  created_at timestamp [default: 'now()']
+  updated_at timestamp [default: 'now()']
+  Note: 'Points de vente/stockage avec gestion PREMIUM'
+}
+
+Table categories {
+  id uuid [primary key, default: 'gen_random_uuid()']
+  name varchar(100) [not null]
+  emoji varchar(10)
+  description text
+  is_active boolean [default: true]
+  created_at timestamp [default: 'now()']
+  Note: 'Catégories de produits avec emojis'
+}
+
+Table products {
+  id uuid [primary key, default: 'gen_random_uuid()']
+  name varchar(255) [not null]
+  category_id uuid [ref: > categories.id]
+  base_price decimal(10,2) [not null]
+  unit varchar(50) [not null, note: 'kg, sacs, bouteilles, etc.']
+  image_url text
+  description text
+  is_active boolean [default: true]
+  created_at timestamp [default: 'now()']
+  updated_at timestamp [default: 'now()']
+  Note: 'Catalogue général des produits'
+}
+
+Table depot_products {
+  id uuid [primary key, default: 'gen_random_uuid()']
+  depot_id uuid [ref: > depots.id]
+  product_id uuid [ref: > products.id]
+  stock_quantity integer [default: 0]
+  price decimal(10,2) [note: 'Prix spécifique par dépôt']
+  last_updated timestamp [default: 'now()']
+  updated_by uuid [ref: > users.id]
+  Note: 'Table pivot pour le stock par dépôt'
+}
+
+Table audio_messages {
+  id uuid [primary key, default: 'gen_random_uuid()']
+  depot_id uuid [ref: > depots.id]
+  title varchar(255) [not null]
+  message_url text [not null]
+  transcription text
+  duration_seconds integer
+  language varchar(10) [default: 'fr']
+  created_by uuid [ref: > users.id]
+  is_active boolean [default: true]
+  created_at timestamp [default: 'now()']
+  Note: 'Messages audio pour les vendeuses'
+}
+
+Table stock_history {
+  id uuid [primary key, default: 'gen_random_uuid()']
+  depot_product_id uuid [ref: > depot_products.id]
+  previous_quantity integer
+  new_quantity integer
+  change_type varchar(20) [not null, note: 'addition, subtraction, adjustment']
+  reason text
+  created_by uuid [ref: > users.id]
+  created_at timestamp [default: 'now()']
+  Note: 'Historique des changements de stock'
+}
+
+Table user_favorites {
+  id uuid [primary key, default: 'gen_random_uuid()']
+  user_id uuid [ref: > users.id]
+  depot_id uuid [ref: > depots.id]
+  created_at timestamp [default: 'now()']
+  Note: 'Dépôts favoris des vendeuses maman-power-app'
+}
+
+// =====================================
+// SYSTÈME PREMIUM SIMPLIFIÉ
+// =====================================
+
+Table depot_premium_vendors {
+  id uuid [primary key, default: 'gen_random_uuid()']
+  depot_id uuid [ref: > depots.id]
+  user_id uuid [ref: > users.id]
+  phone_number varchar(20) [note: 'Numéro pour contacter le manager']
+  is_active boolean [default: true]
+  added_at timestamp [default: 'now()']
+  Note: 'Liste des vendeuses PREMIUM par dépôt. Le manager crée des groupes WhatsApp avec cette liste pour envoyer des alertes stock.'
+}
+
+// =====================================
+// RELATIONS PRINCIPALES
+// =====================================
+
+Ref: users.id < depots.managed_by
+Ref: users.id < depot_products.updated_by
+Ref: users.id < audio_messages.created_by
+Ref: users.id < stock_history.created_by
+Ref: users.id < user_favorites.user_id
+Ref: users.id < depot_premium_vendors.user_id
+
+Ref: categories.id < products.category_id
+Ref: depots.id < depot_products.depot_id
+Ref: products.id < depot_products.product_id
+Ref: depots.id < audio_messages.depot_id
+Ref: depot_products.id < stock_history.depot_product_id
+Ref: depots.id < user_favorites.depot_id
+Ref: depots.id < depot_premium_vendors.depot_id

@@ -1,0 +1,810 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vision Unique - Plateforme de Mise en Relation B2B</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: white;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 40px 20px;
+      }
+
+      /* Header */
+      header {
+        text-align: center;
+        margin-bottom: 50px;
+        border-bottom: 3px solid #0066cc;
+        padding-bottom: 30px;
+      }
+
+      .logo {
+        font-size: 36px;
+        font-weight: bold;
+        color: #0066cc;
+        margin-bottom: 10px;
+      }
+
+      .tagline {
+        font-size: 18px;
+        color: #666;
+        font-style: italic;
+      }
+
+      /* Sections */
+      section {
+        margin-bottom: 50px;
+        page-break-inside: avoid;
+      }
+
+      h1 {
+        color: #0066cc;
+        font-size: 28px;
+        margin-bottom: 15px;
+      }
+
+      h2 {
+        color: #0066cc;
+        font-size: 22px;
+        margin-bottom: 15px;
+        border-left: 4px solid #0066cc;
+        padding-left: 15px;
+      }
+
+      h3 {
+        color: #333;
+        font-size: 18px;
+        margin-top: 20px;
+        margin-bottom: 10px;
+      }
+
+      p {
+        margin-bottom: 12px;
+        text-align: justify;
+      }
+
+      .highlight {
+        background: #e6f2ff;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 15px 0;
+      }
+
+      /* Grid Layout */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin: 20px 0;
+      }
+
+      .card {
+        border: 2px solid #0066cc;
+        padding: 20px;
+        border-radius: 8px;
+        background: #f9f9f9;
+      }
+
+      .card h3 {
+        color: #0066cc;
+        margin-top: 0;
+      }
+
+      .card ul {
+        margin-left: 20px;
+        margin-top: 10px;
+      }
+
+      .card li {
+        margin-bottom: 8px;
+      }
+
+      /* How it Works */
+      .flow {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 30px 0;
+        flex-wrap: wrap;
+      }
+
+      .flow-item {
+        text-align: center;
+        flex: 1;
+        min-width: 150px;
+        margin: 10px;
+      }
+
+      .flow-box {
+        background: #0066cc;
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        font-weight: bold;
+      }
+
+      .arrow {
+        font-size: 24px;
+        color: #0066cc;
+        margin: 0 15px;
+      }
+
+      /* Table */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+      }
+
+      th {
+        background: #0066cc;
+        color: white;
+        padding: 12px;
+        text-align: left;
+        font-weight: bold;
+      }
+
+      td {
+        padding: 12px;
+        border-bottom: 1px solid #ddd;
+      }
+
+      tr:nth-child(even) {
+        background: #f9f9f9;
+      }
+
+      /* Features */
+      .features {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+
+      .feature {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 15px;
+      }
+
+      .feature-icon {
+        font-size: 24px;
+        min-width: 30px;
+      }
+
+      .feature-text h4 {
+        color: #0066cc;
+        margin-bottom: 5px;
+      }
+
+      /* Timeline */
+      .timeline {
+        margin: 20px 0;
+      }
+
+      .timeline-item {
+        margin-bottom: 20px;
+        padding-left: 40px;
+        position: relative;
+      }
+
+      .timeline-item:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 5px;
+        width: 20px;
+        height: 20px;
+        background: #0066cc;
+        border-radius: 50%;
+        border: 3px solid white;
+      }
+
+      .timeline-item:after {
+        content: "";
+        position: absolute;
+        left: 8px;
+        top: 25px;
+        width: 2px;
+        height: 20px;
+        background: #ddd;
+      }
+
+      .timeline-item:last-child:after {
+        display: none;
+      }
+
+      .timeline-date {
+        font-weight: bold;
+        color: #0066cc;
+        margin-bottom: 5px;
+      }
+
+      /* Pricing */
+      .pricing-box {
+        border: 2px solid #0066cc;
+        padding: 25px;
+        border-radius: 8px;
+        text-align: center;
+        background: #f9f9f9;
+        margin: 20px 0;
+      }
+
+      .pricing-box .price {
+        font-size: 28px;
+        color: #0066cc;
+        font-weight: bold;
+        margin: 15px 0;
+      }
+
+      /* CTA */
+      .cta {
+        background: #0066cc;
+        color: white;
+        padding: 30px;
+        border-radius: 8px;
+        text-align: center;
+        margin: 40px 0;
+      }
+
+      .cta h2 {
+        color: white;
+        border-left: 0;
+        padding-left: 0;
+      }
+
+      .btn {
+        display: inline-block;
+        background: white;
+        color: #0066cc;
+        padding: 12px 30px;
+        border-radius: 5px;
+        font-weight: bold;
+        text-decoration: none;
+        margin-top: 15px;
+      }
+
+      /* Footer */
+      footer {
+        text-align: center;
+        border-top: 1px solid #ddd;
+        padding-top: 20px;
+        margin-top: 40px;
+        color: #999;
+        font-size: 12px;
+      }
+
+      /* Print Styles */
+      @media print {
+        body {
+          margin: 0;
+          padding: 0;
+        }
+        section {
+          page-break-inside: avoid;
+        }
+        .btn {
+          border: 1px solid #0066cc;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <header>
+        <div class="logo">🌍 VISION UNIQUE</div>
+        <p class="tagline">Plateforme Transparente de Mise en Relation B2B</p>
+        <p style="font-size: 14px; color: #999; margin-top: 10px">
+          Connecter les Grossistes et les Revendeuses - Transformer le Commerce
+          Local
+        </p>
+      </header>
+
+      <!-- 1. Vision & Mission -->
+      <section>
+        <h1>1. Vision & Mission</h1>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3>🎯 Notre Vision</h3>
+            <p>
+              Démocratiser l'accès aux produits de qualité en Afrique en créant
+              une plateforme transparente qui connecte directement les
+              producteurs et grossistes avec les micro-entrepreneurs (les
+              "Maman").
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>💼 Notre Mission</h3>
+            <p>
+              Éliminer les intermédiaires inutiles, réduire les coûts de
+              recherche de fournisseurs, et créer une économie locale plus
+              efficace où chaque partie gagne plus.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. Le Problème -->
+      <section>
+        <h2>2. Le Problème Actuel</h2>
+
+        <div class="highlight">
+          <h3>Défis du Commerce Local à Brazzaville:</h3>
+          <ul style="margin-left: 20px; margin-top: 10px">
+            <li>
+              <strong>Pour les Managers/Grossistes:</strong> Peu de visibilité
+              auprès des potentiels clients (maman). Dépendance aux relations
+              personnelles et carnets d'adresses.
+            </li>
+            <li>
+              <strong>Pour les Maman:</strong> Difficultés à trouver des
+              fournisseurs fiables et à prix compétitifs. Perte de temps à
+              chercher. Risque de mauvaise qualité.
+            </li>
+            <li>
+              <strong>Général:</strong> Manque de transparence. Inefficacité.
+              Marges de profit réduites pour tous.
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 3. La Solution -->
+      <section>
+        <h2>3. Vision Unique: La Solution</h2>
+
+        <p
+          style="
+            font-size: 16px;
+            font-weight: bold;
+            color: #0066cc;
+            margin-bottom: 20px;
+          "
+        >
+          Une plateforme digitale simple et accessible qui met en relation
+          directe les Managers et les Maman.
+        </p>
+
+        <h3>Comment ça marche?</h3>
+        <div class="flow">
+          <div class="flow-item">
+            <div class="flow-box">📦 Manager<br />Crée son Dépôt</div>
+            <p style="font-size: 12px; margin-top: 10px">
+              Ajoute ses produits, quartier, contact
+            </p>
+          </div>
+
+          <div class="arrow">→</div>
+
+          <div class="flow-item">
+            <div class="flow-box">🔍 Mama<br />Cherche Fournisseur</div>
+            <p style="font-size: 12px; margin-top: 10px">
+              Par localisation, catégorie, prix
+            </p>
+          </div>
+
+          <div class="arrow">→</div>
+
+          <div class="flow-item">
+            <div class="flow-box">📞 Contact Direct<br />WhatsApp/Appel</div>
+            <p style="font-size: 12px; margin-top: 10px">
+              Négociation en cash local
+            </p>
+          </div>
+
+          <div class="arrow">→</div>
+
+          <div class="flow-item">
+            <div class="flow-box">✅ Partenariat<br />Gagnant-Gagnant</div>
+            <p style="font-size: 12px; margin-top: 10px">
+              Relation commerciale durable
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. Avantages pour chaque partie -->
+      <section>
+        <h2>4. Bénéfices & Avantages</h2>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3>👔 Pour les Managers/Grossistes</h3>
+            <ul>
+              <li>
+                ✅ <strong>Augmentation du portefeuille clients</strong> - Accès
+                à des centaines de maman
+              </li>
+              <li>
+                ✅ <strong>Zéro coût marketing</strong> - Pas besoin de
+                campagnes publicitaires coûteuses
+              </li>
+              <li>
+                ✅ <strong>Réduction des stocks</strong> - Vendre plus
+                rapidement = meilleures marges
+              </li>
+              <li>
+                ✅ <strong>Gestion digitale simple</strong> - Dashboard intuitif
+                pour gérer produits et clients
+              </li>
+              <li>
+                ✅ <strong>Système d'abonnement prévisible</strong> - Coûts
+                fixes et maîtrisés
+              </li>
+              <li>
+                ✅ <strong>Données clients</strong> - Comprendre ses meilleures
+                maman
+              </li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>👩 Pour les Maman/Revendeuses</h3>
+            <ul>
+              <li>
+                ✅ <strong>Accès GRATUIT</strong> - Zéro coût pour utiliser la
+                plateforme
+              </li>
+              <li>
+                ✅ <strong>Transparence totale</strong> - Voir les prix, stocks,
+                contacts des fournisseurs
+              </li>
+              <li>
+                ✅ <strong>Localisation intelligente</strong> - Trouver les
+                dépôts les plus proches
+              </li>
+              <li>
+                ✅ <strong>Comparaison facile</strong> - Comparer plusieurs
+                fournisseurs rapidement
+              </li>
+              <li>
+                ✅ <strong>Meilleur prix</strong> - Concurrence saine = prix
+                plus bas
+              </li>
+              <li>
+                ✅ <strong>Gain de temps</strong> - Plus besoin de parcourir la
+                ville
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. Modèle Économique -->
+      <section>
+        <h2>5. Modèle Économique & Monétisation</h2>
+
+        <p>
+          <strong>Fonctionnement:</strong> Vision Unique est une plateforme
+          transparente. Les transactions restent hors-plateforme (paiements en
+          cash traditionnel).
+        </p>
+
+        <div style="margin: 30px 0">
+          <h3>💰 Revenus: Abonnement des Managers</h3>
+
+          <div class="pricing-box">
+            <h4>Plan Standard</h4>
+            <p style="font-size: 14px">Durée: 30 jours</p>
+            <div class="price">5,000 FCFA / mois</div>
+            <p style="font-size: 14px">
+              Inclus: Gestion dépôt, jusqu'à 100 produits, contact direct,
+              analytics basiques
+            </p>
+          </div>
+
+          <p style="text-align: center; color: #666; font-style: italic">
+            💡 <strong>Note:</strong> Les Maman accèdent gratuitement. Aucun
+            frais de transaction. Aucun prélèvement sur les ventes.
+          </p>
+        </div>
+
+        <h3>📊 Projection de Revenus (Année 1)</h3>
+        <table>
+          <tr>
+            <th>Mois</th>
+            <th>Managers Actifs</th>
+            <th>Revenus Mensuels</th>
+          </tr>
+          <tr>
+            <td>Mois 1-2</td>
+            <td>10</td>
+            <td>50,000 FCFA</td>
+          </tr>
+          <tr>
+            <td>Mois 3-4</td>
+            <td>30</td>
+            <td>150,000 FCFA</td>
+          </tr>
+          <tr>
+            <td>Mois 5-6</td>
+            <td>75</td>
+            <td>375,000 FCFA</td>
+          </tr>
+          <tr>
+            <td>Mois 7-12</td>
+            <td>150+</td>
+            <td>750,000+ FCFA</td>
+          </tr>
+        </table>
+      </section>
+
+      <!-- 6. Features Principales -->
+      <section>
+        <h2>6. Features & Fonctionnalités</h2>
+
+        <div class="features">
+          <div class="feature">
+            <div class="feature-icon">📍</div>
+            <div class="feature-text">
+              <h4>Localisation Intelligente</h4>
+              <p>Trouver les dépôts les plus proches par quartier</p>
+            </div>
+          </div>
+
+          <div class="feature">
+            <div class="feature-icon">📦</div>
+            <div class="feature-text">
+              <h4>Gestion des Produits</h4>
+              <p>Ajouter, modifier, supprimer avec prix et stocks</p>
+            </div>
+          </div>
+
+          <div class="feature">
+            <div class="feature-icon">🔍</div>
+            <div class="feature-text">
+              <h4>Recherche & Filtrage</h4>
+              <p>Par catégorie, prix, dépôt, localisation</p>
+            </div>
+          </div>
+
+          <div class="feature">
+            <div class="feature-icon">💬</div>
+            <div class="feature-text">
+              <h4>Contact Direct</h4>
+              <p>WhatsApp et appel téléphonique intégrés</p>
+            </div>
+          </div>
+
+          <div class="feature">
+            <div class="feature-icon">📊</div>
+            <div class="feature-text">
+              <h4>Dashboard Analytics</h4>
+              <p>Voir ses meilleures clients et tendances</p>
+            </div>
+          </div>
+
+          <div class="feature">
+            <div class="feature-icon">🔐</div>
+            <div class="feature-text">
+              <h4>Sécurité & Fiabilité</h4>
+              <p>Données chiffrées, PWA offline-ready</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7. Plan d'Implémentation -->
+      <section>
+        <h2>7. Plan d'Implémentation</h2>
+
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-date">
+              📅 Phase 1: Lancement Bêta (Mois 1-2)
+            </div>
+            <p>
+              <strong>Objectif:</strong> Recruter 20-30 managers pionniers +
+              200-300 maman de test<br />
+              <strong>Actions:</strong> Tests intensifs, feedback loops,
+              ajustements UX
+            </p>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-date">
+              📅 Phase 2: Lancement Public (Mois 3-4)
+            </div>
+            <p>
+              <strong>Objectif:</strong> 75+ managers, 1000+ utilisateurs
+              maman<br />
+              <strong>Actions:</strong> Marketing local, partenariats quartiers,
+              formations gratuites
+            </p>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-date">📅 Phase 3: Expansion (Mois 5-12)</div>
+            <p>
+              <strong>Objectif:</strong> 150+ managers, maman dans tous les
+              quartiers de Brazzaville<br />
+              <strong>Actions:</strong> Expansion à d'autres quartiers, features
+              premium, intégrations (SMS, paiement)
+            </p>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-date">
+              📅 Phase 4: Régionalisation (Année 2)
+            </div>
+            <p>
+              <strong>Objectif:</strong> Déploiement dans autres villes du
+              Congo<br />
+              <strong>Actions:</strong> Adaptation locale, partenariats
+              régionaux
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 8. Utilisation Pratique -->
+      <section>
+        <h2>8. Scénario d'Utilisation Pratique</h2>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3>👔 Jour 1 - Manager</h3>
+            <ol style="margin-left: 20px">
+              <li>S'inscrit sur Vision Unique (email + téléphone)</li>
+              <li>Crée son profil de dépôt (localisation, quartier)</li>
+              <li>Ajoute ses 50 premiers produits</li>
+              <li>Active son dépôt et devient visible</li>
+              <li>Commence à recevoir des appels/messages des maman</li>
+            </ol>
+          </div>
+
+          <div class="card">
+            <h3>👩 Jour 1 - Mama</h3>
+            <ol style="margin-left: 20px">
+              <li>Ouvre Vision Unique (pas besoin de compte)</li>
+              <li>Voit les 5 dépôts les plus proches</li>
+              <li>Compare prix et produits disponibles</li>
+              <li>Clique sur WhatsApp pour contacter un manager</li>
+              <li>Négocie et commande en cash traditionnel</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="highlight" style="margin-top: 30px">
+          <h3>Résultat après 1 mois:</h3>
+          <ul style="margin-left: 20px">
+            <li>
+              Le manager a identifié ses 5-10 meilleures maman et peut leur
+              faire des offres spéciales
+            </li>
+            <li>
+              Les maman ont trouvé 2-3 fournisseurs de confiance et réduisent
+              leur coût d'approvisionnement de 10-15%
+            </li>
+            <li>Relation commerciale stable et durable établie</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 9. Compétitivité -->
+      <section>
+        <h2>9. Pourquoi Vision Unique?</h2>
+
+        <div class="highlight">
+          <h3>Avantages Concurrentiels:</h3>
+          <ul style="margin-left: 20px">
+            <li>
+              ✅ <strong>Modèle simple</strong> - Pas d'e-commerce complexe.
+              Juste de la mise en relation.
+            </li>
+            <li>
+              ✅ <strong>Zéro barrière pour les maman</strong> - Gratuit, pas de
+              compte bancaire, pas de paiement digital
+            </li>
+            <li>
+              ✅ <strong>Adapté au contexte local</strong> - Paiement en cash,
+              WhatsApp integré, localisation par quartier
+            </li>
+            <li>
+              ✅ <strong>Revenue claire</strong> - Abonnement managers (pas de
+              commission sur ventes)
+            </li>
+            <li>
+              ✅ <strong>Technologie éprouvée</strong> - PWA, Firebase,
+              accessible via navigateur web
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 10. Appel à l'Action -->
+      <section class="cta">
+        <h2>10. Prêts à Révolutionner le Commerce Local?</h2>
+        <p style="font-size: 16px; margin: 20px 0">
+          Vision Unique est en phase de lancement. Nous recherchons des:
+        </p>
+        <ul style="margin: 20px 0; text-align: left; display: inline-block">
+          <li>
+            ✅ <strong>Investisseurs & Fonds</strong> - Pour accélérer la
+            croissance
+          </li>
+          <li>✅ <strong>Managers Pionniers</strong> - Pour la phase bêta</li>
+          <li>
+            ✅ <strong>Partenaires Stratégiques</strong> - Quartiers,
+            associations, municipalités
+          </li>
+        </ul>
+        <p style="font-size: 16px; margin-top: 20px">
+          <strong
+            >Contactez-nous pour découvrir comment vous pouvez
+            participer!</strong
+          >
+        </p>
+        <a href="mailto:mampouyaraphael04@gmail.com" class="btn">📧 Nous Écrire</a>
+      </section>
+
+      <!-- Key Metrics -->
+      <section>
+        <h2>11. Métriques de Succès (Année 1)</h2>
+
+        <table>
+          <tr>
+            <th>KPI</th>
+            <th>Cible Année 1</th>
+            <th>Impact</th>
+          </tr>
+          <tr>
+            <td>Managers Inscrits</td>
+            <td>150+</td>
+            <td>150 x 5,000 FCFA = 750,000 FCFA/mois</td>
+          </tr>
+          <tr>
+            <td>Utilisateurs Maman</td>
+            <td>2,000+</td>
+            <td>Traction de la plateforme</td>
+          </tr>
+          <tr>
+            <td>Quartiers Couverts</td>
+            <td>6-8</td>
+            <td>Expansion géographique</td>
+          </tr>
+          <tr>
+            <td>Transactions Mensuelles</td>
+            <td>1,000+</td>
+            <td>Volume commercial généré</td>
+          </tr>
+          <tr>
+            <td>Taux Rétention Managers</td>
+            <td>80%+</td>
+            <td>Satisfaction et viabilité</td>
+          </tr>
+        </table>
+      </section>
+
+      <!-- Footer -->
+      <footer>
+        <p>
+          Vision Unique © 2026 | Plateforme de Mise en Relation B2B |
+          Brazzaville, Congo
+        </p>
+        <p>📧 mampouyaraphael04@gmail.com | 📱 +242 06-767-81-28</p>
+        <p style="margin-top: 10px">
+          Document confidentiel - À usage interne ou présentation à
+          investisseurs
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>

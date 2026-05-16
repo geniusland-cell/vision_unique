@@ -1,0 +1,380 @@
+/* AdminPanel Styles */
+.admin-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f5f5f5;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.admin-header {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  color: white;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.admin-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.admin-logo-icon {
+  font-size: 28px;
+}
+
+.admin-user-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logout-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background-color: #c0392b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.admin-content {
+  display: flex;
+  flex: 1;
+  gap: 20px;
+  padding: 20px;
+  overflow: hidden;
+}
+
+.admin-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+}
+
+.admin-right {
+  flex: 1;
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+}
+
+.admin-section {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.admin-section h2 {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 12px;
+}
+
+.managers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.manager-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid #ecf0f1;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #fafafa;
+}
+
+.manager-item:hover {
+  background: #f0f0f0;
+  border-color: #3498db;
+  transform: translateX(4px);
+}
+
+.manager-item.active {
+  background: #e8f4f8;
+  border-color: #3498db;
+  border-width: 2px;
+}
+
+.manager-item.banned {
+  background: #ffe8e8;
+  border-color: #e74c3c;
+}
+
+.manager-info {
+  flex: 1;
+}
+
+.manager-name {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.manager-email {
+  font-size: 13px;
+  color: #7f8c8d;
+  margin-bottom: 2px;
+}
+
+.manager-phone {
+  font-size: 13px;
+  color: #95a5a6;
+}
+
+.manager-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.btn-ban {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.btn-ban:hover {
+  background-color: #c0392b;
+}
+
+.btn-unban {
+  background-color: #27ae60;
+  color: white;
+}
+
+.btn-unban:hover {
+  background-color: #229954;
+}
+
+.btn-details {
+  background-color: #3498db;
+  color: white;
+}
+
+.btn-details:hover {
+  background-color: #2980b9;
+}
+
+.no-data {
+  text-align: center;
+  color: #7f8c8d;
+  padding: 20px;
+  font-size: 14px;
+}
+
+.loading {
+  text-align: center;
+  color: #3498db;
+  padding: 20px;
+  font-size: 14px;
+}
+
+.no-selection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #95a5a6;
+  font-size: 16px;
+  text-align: center;
+}
+
+.manager-details h2 {
+  margin: 0 0 20px 0;
+  font-size: 20px;
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 12px;
+}
+
+.details-section {
+  margin-bottom: 24px;
+}
+
+.details-section h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #ecf0f1;
+  font-size: 13px;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.label {
+  color: #7f8c8d;
+  font-weight: 500;
+}
+
+.value {
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.status {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.status.active {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status.banned {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.depots-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.depot-item {
+  border: 1px solid #ecf0f1;
+  border-radius: 6px;
+  padding: 12px;
+  background: #fafafa;
+}
+
+.depot-item h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: #2c3e50;
+}
+
+.depot-info {
+  font-size: 12px;
+  color: #7f8c8d;
+  margin-bottom: 8px;
+}
+
+.depot-info p {
+  margin: 4px 0;
+}
+
+.products-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid #ecf0f1;
+  padding-top: 8px;
+}
+
+.product-item {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1.5fr 1fr;
+  gap: 8px;
+  font-size: 12px;
+  padding: 6px;
+  background: white;
+  border-radius: 4px;
+  align-items: center;
+}
+
+.product-name {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.product-category {
+  color: #95a5a6;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.product-price {
+  color: #27ae60;
+  font-weight: 600;
+}
+
+.product-stock {
+  color: #7f8c8d;
+}
+
+.admin-left::-webkit-scrollbar,
+.admin-right::-webkit-scrollbar {
+  width: 8px;
+}
+
+.admin-left::-webkit-scrollbar-track,
+.admin-right::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.admin-left::-webkit-scrollbar-thumb,
+.admin-right::-webkit-scrollbar-thumb {
+  background: #bdc3c7;
+  border-radius: 4px;
+}
+
+.admin-left::-webkit-scrollbar-thumb:hover,
+.admin-right::-webkit-scrollbar-thumb:hover {
+  background: #95a5a6;
+}
+
+@media (max-width: 1024px) {
+  .admin-content {
+    flex-direction: column;
+  }
+  .admin-left,
+  .admin-right {
+    min-height: 300px;
+  }
+  .product-item {
+    grid-template-columns: 1fr;
+  }
+}

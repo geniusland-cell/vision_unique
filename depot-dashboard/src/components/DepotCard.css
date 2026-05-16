@@ -1,0 +1,374 @@
+/* DepotCard Component Styles */
+
+.depot-card {
+  background: white;
+  border: 2px solid #e1e5e9;
+  border-radius: 15px;
+  padding: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.depot-card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+  border-color: #667eea;
+}
+
+/* Header Compact */
+.depot-header-compact {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.depot-name-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-grow: 1;
+}
+
+.depot-name-section h3 {
+  margin: 0;
+  color: #333;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.quartier-badge {
+  display: inline-block;
+  background: #f0f0f0;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  color: #666;
+  white-space: nowrap;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.details-toggle-btn {
+  padding: 6px 12px;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #666;
+}
+
+.details-toggle-btn:hover {
+  background: #efefef;
+  border-color: #999;
+}
+
+/* Détails Collapsible */
+.depot-details-collapse {
+  background: #f9f9f9;
+  border: 1px solid #f0f0f0;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 15px;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 500px;
+  }
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.detail-row:last-child {
+  margin-bottom: 0;
+}
+
+.detail-row label {
+  font-weight: 600;
+  color: #555;
+  min-width: 100px;
+}
+
+.detail-row a,
+.detail-row span {
+  color: #0066cc;
+  text-decoration: none;
+}
+
+.detail-row a:hover {
+  text-decoration: underline;
+}
+
+.detail-row input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.detail-row input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+}
+
+.status {
+  font-weight: 600;
+}
+
+.status.active {
+  color: #4caf50;
+}
+
+.status.inactive {
+  color: #f44336;
+}
+
+/* Edit Button */
+.edit-btn {
+  padding: 6px 12px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.edit-btn:hover {
+  background: #764ba2;
+  transform: translateY(-1px);
+}
+
+/* Edit Actions */
+.edit-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.save-btn {
+  flex: 1;
+  padding: 8px 12px;
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.save-btn:hover {
+  background: #45a049;
+}
+
+.cancel-btn {
+  flex: 1;
+  padding: 8px 12px;
+  background: #f44336;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-btn:hover {
+  background: #da190b;
+}
+
+.depot-details {
+  display: none;
+}
+
+.phone-link {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.phone-link:hover {
+  color: #764ba2;
+  text-decoration: underline;
+}
+
+.phone-link.whatsapp-link {
+  color: #25d366;
+}
+
+.phone-link.whatsapp-link:hover {
+  color: #20ba5a;
+}
+
+/* Dark mode support */
+.dark-mode .depot-card {
+  background: #2d3748;
+  border-color: #4b5563;
+  color: #e2e8f0;
+}
+
+.dark-mode .depot-card:hover {
+  border-color: #667eea;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+.dark-mode .depot-header-compact {
+  border-bottom-color: #4b5563;
+}
+
+.dark-mode .depot-name-section h3 {
+  color: #e2e8f0;
+}
+
+.dark-mode .quartier-badge {
+  background: #374151;
+  color: #cbd5e0;
+}
+
+.dark-mode .details-toggle-btn {
+  background: #374151;
+  border-color: #4b5563;
+  color: #cbd5e0;
+}
+
+.dark-mode .details-toggle-btn:hover {
+  background: #4b5563;
+}
+
+.dark-mode .depot-details-collapse {
+  background: #374151;
+  border-color: #4b5563;
+}
+
+.dark-mode .detail-row label {
+  color: #cbd5e0;
+}
+
+.dark-mode .detail-row span,
+.dark-mode .detail-row a {
+  color: #a0aec0;
+}
+
+.dark-mode .detail-row input {
+  background: #2d3748;
+  border-color: #4b5563;
+  color: #e2e8f0;
+}
+
+.dark-mode .detail-row input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+
+.edit-mode-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #f0f4ff;
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  border-left: 4px solid #667eea;
+}
+
+.edit-mode-header h4 {
+  margin: 0;
+  color: #667eea;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.close-edit-btn {
+  padding: 6px 12px;
+  background: #f44336;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.close-edit-btn:hover {
+  background: #da190b;
+  transform: translateY(-1px);
+}
+
+/* Dark mode for edit header */
+.dark-mode .edit-mode-header {
+  background: #374151;
+  border-left-color: #667eea;
+}
+
+.dark-mode .edit-mode-header h4 {
+  color: #93c5fd;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .depot-card {
+    padding: 12px;
+  }
+
+  .depot-header-compact {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .detail-row label {
+    min-width: auto;
+  }
+
+  .detail-row span,
+  .detail-row a,
+  .detail-row input {
+    width: 100%;
+  }
+
+  .edit-buttons {
+    flex-wrap: wrap;
+  }
+}
