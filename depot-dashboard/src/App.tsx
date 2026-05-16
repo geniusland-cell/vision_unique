@@ -56,6 +56,7 @@ function App(): ReactNode {
   const [selectedDepot, setSelectedDepot] = useState<Depot | null>(null);
   const [depotProducts, setDepotProducts] = useState<any[]>([]);
   const [showStats, setShowStats] = useState<boolean>(false);
+  const [isLoadingDepots, setIsLoadingDepots] = useState<boolean>(false);
 
   // ← NOUVEAU: States pour la gestion d'expiration d'abonnement
   const [daysRemaining, setDaysRemaining] = useState<number | null>(null);
@@ -113,6 +114,7 @@ function App(): ReactNode {
     if (user) {
       const loadManagerData = async () => {
         try {
+          setIsLoadingDepots(true);
           console.log(" Chargement des dépôts du manager:", user.id);
 
           // Charger les dépôts du manager
@@ -129,8 +131,10 @@ function App(): ReactNode {
           }
 
           console.log(" Données du manager chargées");
+          setIsLoadingDepots(false);
         } catch (error) {
           console.error(" Erreur chargement données manager:", error);
+          setIsLoadingDepots(false);
         }
       };
 
@@ -541,19 +545,31 @@ function App(): ReactNode {
       />
 
       <div className="main-container">
+        {/* Spinner de chargement */}
+        {isLoadingDepots && (
+          <div className="loading-container">
+            <div className="spinner"></div>
+            <p>Chargement des dépôts...</p>
+          </div>
+        )}
+
         {/* Bouton de statistiques */}
-        <button
-          className="stats-toggle-btn"
-          onClick={() => setShowStats(!showStats)}
-        >
-          📊 Statistiques
-        </button>
+        {!isLoadingDepots && (
+          <button
+            className="stats-toggle-btn"
+            onClick={() => setShowStats(!showStats)}
+          >
+            📊 Statistiques
+          </button>
+        )}
 
         {/* Afficher les stats seulement si showStats est true */}
-        {showStats && <StatsGrid products={depotProducts} />}
+        {showStats && !isLoadingDepots && (
+          <StatsGrid products={depotProducts} />
+        )}
 
         {/* Depot Selector */}
-        {depots.length > 0 && (
+        {!isLoadingDepots && depots.length > 0 && (
           <div className="depot-selector">
             <label> Sélectionner un dépôt:</label>
             <select
@@ -570,7 +586,7 @@ function App(): ReactNode {
         )}
 
         {/* ← NOUVEAU: Alerte et bouton Payer pour l'expiration de l'abonnement */}
-        {subscriptionAlert && selectedDepot && (
+        {!isLoadingDepots && subscriptionAlert && selectedDepot && (
           <div className="subscription-alert">
             {daysRemaining !== null && daysRemaining < 0 ? (
               <>
