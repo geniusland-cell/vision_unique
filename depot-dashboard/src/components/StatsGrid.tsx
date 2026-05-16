@@ -45,6 +45,10 @@ const StatsGrid = ({ products }: StatsGridProps): ReactNode => {
     return value.toLocaleString("fr-FR");
   };
 
+  const formatValueWithFCFA = (value: number) => {
+    return value.toLocaleString("fr-FR") + " FCFA";
+  };
+
   const stats = [
     {
       id: "categories",
@@ -61,13 +65,13 @@ const StatsGrid = ({ products }: StatsGridProps): ReactNode => {
     {
       id: "stock",
       icon: "",
-      number: getTotalStock().toLocaleString("fr-FR"),
+      number: formatCurrency(getTotalStock()),
       label: "Stock total",
     },
     {
       id: "revenue",
       icon: "💰",
-      number: formatCurrency(getTotalStockValue()),
+      number: formatValueWithFCFA(getTotalStockValue()),
       label: "Valeur totale",
     },
   ];
