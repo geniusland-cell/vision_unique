@@ -16,14 +16,14 @@ const StatsGrid = ({ products }: StatsGridProps): ReactNode => {
   const getTotalStockValue = () => {
     if (!products) return 0;
     return products.reduce((sum, product) => {
-      return sum + (product.stock ?? 0) * (product.price || 0);
+      return sum + (product.stock_quantity ?? 0) * (product.price || 0);
     }, 0);
   };
 
   const getTotalStock = () => {
     if (!products) return 0;
     return products.reduce((sum, product) => {
-      return sum + (product.stock ?? 0);
+      return sum + (product.stock_quantity ?? 0);
     }, 0);
   };
 
