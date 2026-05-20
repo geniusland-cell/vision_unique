@@ -24,30 +24,46 @@ export default function ImageUpload({
       return;
     }
 
-    const script = document.createElement("script");
-    script.src =
-      "https://upload-widget.cloudinary.com/latest/CloudinaryUploadWidget.js";
-    script.async = true;
+    let retries = 0;
+    const maxRetries = 3;
 
-    // Marquer le widget comme prêt quand le script charge
-    script.onload = () => {
-      // Attendre que cloudinary soit disponible
-      const checkCloudinary = setInterval(() => {
-        if (window.cloudinary) {
-          setIsWidgetReady(true);
-          clearInterval(checkCloudinary);
+    const loadWidget = () => {
+      const script = document.createElement("script");
+      // URL correcte du widget Cloudinary
+      script.src = "https://upload-widget.cloudinary.com/global/all.js";
+      script.async = true;
+
+      // Marquer le widget comme prêt quand le script charge
+      script.onload = () => {
+        // Attendre que cloudinary soit disponible
+        const checkCloudinary = setInterval(() => {
+          if (window.cloudinary) {
+            setIsWidgetReady(true);
+            setError(null);
+            clearInterval(checkCloudinary);
+          }
+        }, 100);
+
+        // Timeout après 5 secondes
+        setTimeout(() => clearInterval(checkCloudinary), 5000);
+      };
+
+      script.onerror = () => {
+        retries++;
+        if (retries < maxRetries) {
+          // Retry après 2 secondes
+          setTimeout(() => loadWidget(), 2000);
+        } else {
+          setError(
+            "❌ Erreur: Impossible de charger le widget. Vérifiez votre connexion réseau.",
+          );
         }
-      }, 100);
+      };
 
-      // Timeout après 5 secondes
-      setTimeout(() => clearInterval(checkCloudinary), 5000);
+      document.body.appendChild(script);
     };
 
-    script.onerror = () => {
-      setError("❌ Erreur: Impossible de charger le widget Cloudinary");
-    };
-
-    document.body.appendChild(script);
+    loadWidget();
   }, []);
 
   // Vérifier que les variables d'environnement sont configurées
