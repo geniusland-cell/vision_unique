@@ -20,7 +20,8 @@ export default function ImageUpload({
   useEffect(() => {
     if (!window.cloudinary) {
       const script = document.createElement("script");
-      script.src = "https://upload-widget.cloudinary.com/latest/CloudinaryUploadWidget.js";
+      script.src =
+        "https://upload-widget.cloudinary.com/latest/CloudinaryUploadWidget.js";
       script.async = true;
       document.body.appendChild(script);
     }
@@ -75,7 +76,7 @@ export default function ImageUpload({
         if (result && result.event === "close") {
           setIsUploading(false);
         }
-      }
+      },
     );
 
     // Ouvrir le widget
@@ -96,11 +97,7 @@ export default function ImageUpload({
 
         {uploadedImageUrl && (
           <div className="image-preview">
-            <img
-              src={uploadedImageUrl}
-              alt="Preview"
-              className="preview-img"
-            />
+            <img src={uploadedImageUrl} alt="Preview" className="preview-img" />
             <p className="image-url-text">{uploadedImageUrl}</p>
           </div>
         )}

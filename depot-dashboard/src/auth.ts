@@ -29,7 +29,15 @@ export const useAuth = (): {
   logout: () => Promise<{ success: boolean; error?: string }>;
   isManager: () => boolean;
 } => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(() => {
+    // OPTIMIZATION: Charger depuis localStorage sans attendre le server
+    try {
+      const savedUser = localStorage.getItem("user");
+      return savedUser ? JSON.parse(savedUser) : null;
+    } catch {
+      return null;
+    }
+  });
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,18 +51,23 @@ export const useAuth = (): {
           // Accepter managers ET admins
           if (result.data.role === "manager" || result.data.role === "admin") {
             setUser(result.data);
+            // SAUVEGARDER dans localStorage pour prochain chargement instantané
+            localStorage.setItem("user", JSON.stringify(result.data));
             console.log(
               ` Session ${result.data.role.toUpperCase()} restaurée pour:`,
               result.data.name,
             );
           } else {
             setUser(null);
+            localStorage.removeItem("user");
           }
         } else {
           setUser(null);
+          localStorage.removeItem("user");
         }
       } else {
         setUser(null);
+        localStorage.removeItem("user");
       }
       setLoading(false);
     });
@@ -88,6 +101,8 @@ export const useAuth = (): {
           };
         }
         setUser(result.data);
+        // SAUVEGARDER dans localStorage
+        localStorage.setItem("user", JSON.stringify(result.data));
         console.log(
           ` Connexion ${result.data.role.toUpperCase()} réussie:`,
           result.data.name,
@@ -149,6 +164,8 @@ export const useAuth = (): {
 
       if (result.success && result.data) {
         setUser(result.data);
+        // SAUVEGARDER dans localStorage
+        localStorage.setItem("user", JSON.stringify(result.data));
         console.log(" Inscription Manager réussie:", result.data.name);
         return { success: true, user: result.data };
       } else {
@@ -178,6 +195,7 @@ export const useAuth = (): {
     try {
       await logoutUser();
       setUser(null);
+      localStorage.removeItem("user");
       console.log(" Déconnexion réussie");
       return { success: true };
     } catch (err: unknown) {
