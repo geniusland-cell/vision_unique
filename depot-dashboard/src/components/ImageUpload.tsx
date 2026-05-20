@@ -12,19 +12,42 @@ export default function ImageUpload({
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isWidgetReady, setIsWidgetReady] = useState<boolean>(false);
 
   const cloudinaryCloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
   const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
   // Charger le widget Cloudinary au montage
   useEffect(() => {
-    if (!window.cloudinary) {
-      const script = document.createElement("script");
-      script.src =
-        "https://upload-widget.cloudinary.com/latest/CloudinaryUploadWidget.js";
-      script.async = true;
-      document.body.appendChild(script);
+    if (window.cloudinary) {
+      setIsWidgetReady(true);
+      return;
     }
+
+    const script = document.createElement("script");
+    script.src =
+      "https://upload-widget.cloudinary.com/latest/CloudinaryUploadWidget.js";
+    script.async = true;
+    
+    // Marquer le widget comme prêt quand le script charge
+    script.onload = () => {
+      // Attendre que cloudinary soit disponible
+      const checkCloudinary = setInterval(() => {
+        if (window.cloudinary) {
+          setIsWidgetReady(true);
+          clearInterval(checkCloudinary);
+        }
+      }, 100);
+      
+      // Timeout après 5 secondes
+      setTimeout(() => clearInterval(checkCloudinary), 5000);
+    };
+    
+    script.onerror = () => {
+      setError("❌ Erreur: Impossible de charger le widget Cloudinary");
+    };
+    
+    document.body.appendChild(script);
   }, []);
 
   // Vérifier que les variables d'environnement sont configurées
@@ -37,8 +60,8 @@ export default function ImageUpload({
   }
 
   const handleOpenWidget = () => {
-    if (!window.cloudinary) {
-      alert("❌ Widget Cloudinary not loaded. Please refresh the page.");
+    if (!isWidgetReady || !window.cloudinary) {
+      setError("⏳ Widget en cours de chargement... Veuillez patienter");
       return;
     }
 
@@ -89,10 +112,11 @@ export default function ImageUpload({
         <button
           type="button"
           onClick={handleOpenWidget}
-          disabled={isUploading}
+          disabled={isUploading || !isWidgetReady}
           className="image-upload-btn"
+          title={!isWidgetReady ? "Widget en cours de chargement..." : ""}
         >
-          {isUploading ? "⏳ Upload en cours..." : buttonText}
+          {isUploading ? "⏳ Upload en cours..." : !isWidgetReady ? "⏳ Chargement..." : buttonText}
         </button>
 
         {uploadedImageUrl && (

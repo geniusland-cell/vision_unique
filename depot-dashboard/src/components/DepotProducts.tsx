@@ -90,7 +90,9 @@ export default function DepotProducts({
   // Handle image upload for new products - DEPRECATED (now using ImageUpload component)
   // Keep for backward compatibility but not used anymore
   const handleImageUpload = async (file: File): Promise<void> => {
-    console.warn("handleImageUpload is deprecated, use ImageUpload component instead");
+    console.warn(
+      "handleImageUpload is deprecated, use ImageUpload component instead",
+    );
   };
 
   // Modal lightbox functions
@@ -101,7 +103,6 @@ export default function DepotProducts({
   const closeImageModal = (): void => {
     setSelectedImage(null);
   };
-
 
   const handleEditChange = (
     productId: string,
