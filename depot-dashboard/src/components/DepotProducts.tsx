@@ -6,8 +6,10 @@ import {
   removeDepotProduct,
   uploadProductImage,
 } from "../firebase";
+import ImageUpload from "./ImageUpload";
 import type { Depot } from "../types";
 import "./DepotProducts.css";
+import "./ImageUpload.css";
 
 interface DepotProductsProps {
   depot: Depot;
@@ -492,70 +494,14 @@ export default function DepotProducts({
                 <option value="régime">régime</option>
               </select>
 
-              {/* Image Upload Section */}
-              <div className="image-upload-section">
-                <label>Photo du produit (optionnel):</label>
-                {imagePreview && (
-                  <div className="image-preview-container">
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      className="image-preview"
-                    />
-                  </div>
-                )}
-                <div className="upload-buttons">
-                  <button
-                    type="button"
-                    className="btn-camera"
-                    onClick={triggerCamera}
-                    disabled={isUploading}
-                  >
-                    📸 Prendre une photo
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-gallery"
-                    onClick={triggerGallery}
-                    disabled={isUploading}
-                  >
-                    🖼️ Choisir galerie
-                  </button>
-                </div>
-                {isUploading && (
-                  <div className="upload-loading">
-                    ⏳ Téléchargement en cours...
-                  </div>
-                )}
-                {uploadError && (
-                  <div className="upload-error">❌ {uploadError}</div>
-                )}
-                <input
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  style={{ display: "none" }}
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      handleImageUpload(file);
-                    }
-                  }}
-                  id="cameraInput"
-                />
-                <input
-                  type="file"
-                  accept="image/*"
-                  style={{ display: "none" }}
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      handleImageUpload(file);
-                    }
-                  }}
-                  id="galleryInput"
-                />
-              </div>
+              {/* Image Upload Section - Cloudinary */}
+              <ImageUpload
+                onImageUpload={(imageUrl: string) => {
+                  setNewProduct({ ...newProduct, image: imageUrl });
+                  setImagePreview(imageUrl);
+                }}
+                buttonText="📸 Importer image produit"
+              />
 
               <button className="btn-add" onClick={handleAddProduct}>
                 Ajouter
