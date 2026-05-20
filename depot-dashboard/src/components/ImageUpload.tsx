@@ -1,4 +1,4 @@
-import { useEffect, useState, ReactNode } from "react";
+import { useState, ReactNode } from "react";
 
 interface ImageUploadProps {
   onImageUpload: (imageUrl: string) => void;
@@ -12,59 +12,9 @@ export default function ImageUpload({
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [isWidgetReady, setIsWidgetReady] = useState<boolean>(false);
 
   const cloudinaryCloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
   const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
-
-  // Charger le widget Cloudinary au montage
-  useEffect(() => {
-    if (window.cloudinary) {
-      setIsWidgetReady(true);
-      return;
-    }
-
-    let retries = 0;
-    const maxRetries = 3;
-
-    const loadWidget = () => {
-      const script = document.createElement("script");
-      // URL correcte du widget Cloudinary
-      script.src = "https://upload-widget.cloudinary.com/global/all.js";
-      script.async = true;
-
-      // Marquer le widget comme prêt quand le script charge
-      script.onload = () => {
-        // Attendre que cloudinary soit disponible
-        const checkCloudinary = setInterval(() => {
-          if (window.cloudinary) {
-            setIsWidgetReady(true);
-            setError(null);
-            clearInterval(checkCloudinary);
-          }
-        }, 100);
-
-        // Timeout après 5 secondes
-        setTimeout(() => clearInterval(checkCloudinary), 5000);
-      };
-
-      script.onerror = () => {
-        retries++;
-        if (retries < maxRetries) {
-          // Retry après 2 secondes
-          setTimeout(() => loadWidget(), 2000);
-        } else {
-          setError(
-            "❌ Erreur: Impossible de charger le widget. Vérifiez votre connexion réseau.",
-          );
-        }
-      };
-
-      document.body.appendChild(script);
-    };
-
-    loadWidget();
-  }, []);
 
   // Vérifier que les variables d'environnement sont configurées
   if (!cloudinaryCloudName || !uploadPreset) {
@@ -75,69 +25,99 @@ export default function ImageUpload({
     );
   }
 
-  const handleOpenWidget = () => {
-    if (!isWidgetReady || !window.cloudinary) {
-      setError("⏳ Widget en cours de chargement... Veuillez patienter");
+  const handleFileSelect = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ): Promise<void> => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Vérifier la taille (max 5MB)
+    if (file.size > 5000000) {
+      setError("❌ Fichier trop volumineux (max 5MB)");
+      return;
+    }
+
+    // Vérifier que c'est une image
+    if (!file.type.startsWith("image/")) {
+      setError("❌ Veuillez sélectionner une image");
       return;
     }
 
     setIsUploading(true);
     setError(null);
 
-    // Créer une instance du widget
-    const widget = window.cloudinary.createUploadWidget(
-      {
-        cloudName: cloudinaryCloudName,
-        uploadPreset: uploadPreset,
-        sources: ["local", "url", "camera"], // Allow camera, URL, and local file
-        multiple: false, // Only one image
-        maxFileSize: 5000000, // 5MB max
-        clientAllowedFormats: ["image"], // Only image formats
-        autoMinimize: true,
-        showAdvancedOptions: false,
-        showPoweredBy: false,
-        theme: "light",
-      },
-      (error: any, result: any) => {
-        if (error) {
-          console.error("Upload error:", error);
-          setError("❌ Erreur lors de l'upload");
-          setIsUploading(false);
-        }
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", uploadPreset);
+      formData.append("cloud_name", cloudinaryCloudName);
 
-        if (result && result.event === "success") {
-          const imageUrl = result.info.secure_url;
-          setUploadedImageUrl(imageUrl);
-          onImageUpload(imageUrl);
-          setIsUploading(false);
-        }
+      // Uploader directement vers l'API Cloudinary
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/image/upload`,
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
 
-        if (result && result.event === "close") {
-          setIsUploading(false);
-        }
-      },
-    );
+      if (!response.ok) {
+        throw new Error(`Upload failed with status ${response.status}`);
+      }
 
-    // Ouvrir le widget
-    widget.open();
+      const data = await response.json();
+
+      if (data.secure_url) {
+        setUploadedImageUrl(data.secure_url);
+        onImageUpload(data.secure_url);
+        setIsUploading(false);
+      } else {
+        throw new Error("Pas d'URL reçue de Cloudinary");
+      }
+    } catch (err) {
+      console.error("Upload error:", err);
+      setError("❌ Erreur lors du téléchargement. Vérifiez votre connexion.");
+      setIsUploading(false);
+    }
+  };
+
+  const triggerFileInput = (useCamera: boolean = false) => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+
+    if (useCamera) {
+      input.capture = "environment"; // Utilise la caméra arrière sur mobile
+    }
+
+    input.onchange = (e) =>
+      handleFileSelect(e as React.ChangeEvent<HTMLInputElement>);
+    input.click();
   };
 
   return (
     <div className="image-upload-container">
       <div className="image-upload-content">
-        <button
-          type="button"
-          onClick={handleOpenWidget}
-          disabled={isUploading || !isWidgetReady}
-          className="image-upload-btn"
-          title={!isWidgetReady ? "Widget en cours de chargement..." : ""}
-        >
-          {isUploading
-            ? "⏳ Upload en cours..."
-            : !isWidgetReady
-              ? "⏳ Chargement..."
-              : buttonText}
-        </button>
+        <div className="image-upload-buttons">
+          <button
+            type="button"
+            onClick={() => triggerFileInput(true)}
+            disabled={isUploading}
+            className="image-upload-btn"
+            title="Prendre une photo directe"
+          >
+            {isUploading ? "⏳" : "📸"}
+          </button>
+          <button
+            type="button"
+            onClick={() => triggerFileInput(false)}
+            disabled={isUploading}
+            className="image-upload-btn"
+            title="Choisir une image de la galerie"
+          >
+            {isUploading ? "⏳" : "🖼️"}
+          </button>
+        </div>
 
         {uploadedImageUrl && (
           <div className="image-preview">
@@ -150,11 +130,4 @@ export default function ImageUpload({
       </div>
     </div>
   );
-}
-
-// Extend window type to include Cloudinary
-declare global {
-  interface Window {
-    cloudinary: any;
-  }
 }
