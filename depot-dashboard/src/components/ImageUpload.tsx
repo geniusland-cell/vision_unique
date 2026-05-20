@@ -28,7 +28,7 @@ export default function ImageUpload({
     script.src =
       "https://upload-widget.cloudinary.com/latest/CloudinaryUploadWidget.js";
     script.async = true;
-    
+
     // Marquer le widget comme prêt quand le script charge
     script.onload = () => {
       // Attendre que cloudinary soit disponible
@@ -38,15 +38,15 @@ export default function ImageUpload({
           clearInterval(checkCloudinary);
         }
       }, 100);
-      
+
       // Timeout après 5 secondes
       setTimeout(() => clearInterval(checkCloudinary), 5000);
     };
-    
+
     script.onerror = () => {
       setError("❌ Erreur: Impossible de charger le widget Cloudinary");
     };
-    
+
     document.body.appendChild(script);
   }, []);
 
@@ -116,7 +116,11 @@ export default function ImageUpload({
           className="image-upload-btn"
           title={!isWidgetReady ? "Widget en cours de chargement..." : ""}
         >
-          {isUploading ? "⏳ Upload en cours..." : !isWidgetReady ? "⏳ Chargement..." : buttonText}
+          {isUploading
+            ? "⏳ Upload en cours..."
+            : !isWidgetReady
+              ? "⏳ Chargement..."
+              : buttonText}
         </button>
 
         {uploadedImageUrl && (

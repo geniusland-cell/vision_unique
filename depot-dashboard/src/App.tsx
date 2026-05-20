@@ -3,6 +3,7 @@ import Header from "./components/Header";
 import AdminPanel from "./components/AdminPanel";
 import StatsGrid from "./components/StatsGrid";
 import DepotCard from "./components/DepotCard";
+import UpdateNotification from "./components/UpdateNotification";
 import "./App.css";
 import "./auth.css";
 import { useAuth } from "./auth";
@@ -535,6 +536,7 @@ function App(): ReactNode {
 
   return (
     <div className={isDarkMode ? "dark-mode" : ""}>
+      <UpdateNotification />
       <Header
         user={user}
         onLogout={async () => {
