@@ -4,9 +4,13 @@ import {
   updateDepotProduct,
   addDepotProduct,
   removeDepotProduct,
-  uploadProductImage,
 } from "../firebase";
 import ImageUpload from "./ImageUpload";
+import {
+  optimizeProductCard,
+  optimizeThumbnail,
+  optimizeModalImage,
+} from "../utils/cloudinary";
 import type { Depot } from "../types";
 import "./DepotProducts.css";
 import "./ImageUpload.css";
@@ -35,12 +39,7 @@ export default function DepotProducts({
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [editData, setEditData] = useState<Record<string, any>>({});
-  const [isUploading, setIsUploading] = useState<boolean>(false);
-  const [uploadError, setUploadError] = useState<string>("");
   const [imagePreview, setImagePreview] = useState<string>("");
-  const [editingImageProductId, setEditingImageProductId] = useState<
-    string | null
-  >(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null); // Modal lightbox
   const [newProduct, setNewProduct] = useState<{
     name: string;
@@ -88,22 +87,10 @@ export default function DepotProducts({
     };
   }, [loadProducts]);
 
-  // Handle image file upload to Firebase Storage
+  // Handle image upload for new products - DEPRECATED (now using ImageUpload component)
+  // Keep for backward compatibility but not used anymore
   const handleImageUpload = async (file: File): Promise<void> => {
-    if (!file) return;
-
-    setIsUploading(true);
-    setUploadError("");
-
-    const result = await uploadProductImage(file);
-    setIsUploading(false);
-
-    if (result.success && result.data?.imageUrl) {
-      setImagePreview(result.data.imageUrl);
-      setNewProduct({ ...newProduct, image: result.data.imageUrl });
-    } else {
-      setUploadError(result.error || "Erreur lors du téléchargement");
-    }
+    console.warn("handleImageUpload is deprecated, use ImageUpload component instead");
   };
 
   // Modal lightbox functions
@@ -115,78 +102,6 @@ export default function DepotProducts({
     setSelectedImage(null);
   };
 
-  // Trigger camera
-  const triggerCamera = (): void => {
-    const input = document.getElementById(
-      "cameraInput",
-    ) as HTMLInputElement | null;
-    if (input) {
-      input.capture = "environment";
-      input.click();
-    }
-  };
-
-  // Trigger gallery
-  const triggerGallery = (): void => {
-    const input = document.getElementById(
-      "galleryInput",
-    ) as HTMLInputElement | null;
-    if (input) {
-      input.click();
-    }
-  };
-
-  // Handle image upload for existing products (in edit mode)
-  const handleProductImageUpload = async (
-    file: File,
-    productId: string,
-  ): Promise<void> => {
-    if (!file) return;
-
-    setIsUploading(true);
-    setUploadError("");
-
-    const result = await uploadProductImage(file);
-    setIsUploading(false);
-
-    if (result.success && result.data?.imageUrl) {
-      // Update editData with new image URL
-      setEditData((prev) => ({
-        ...prev,
-        [productId]: {
-          ...prev[productId],
-          image: result.data.imageUrl,
-        },
-      }));
-      setEditingImageProductId(null);
-      alert("Image mise à jour");
-    } else {
-      setUploadError(result.error || "Erreur lors du téléchargement");
-    }
-  };
-
-  // Trigger camera for product image
-  const triggerProductCamera = (productId: string): void => {
-    setEditingImageProductId(productId);
-    const input = document.getElementById(
-      "cameraInputProduct",
-    ) as HTMLInputElement | null;
-    if (input) {
-      input.capture = "environment";
-      input.click();
-    }
-  };
-
-  // Trigger gallery for product image
-  const triggerProductGallery = (productId: string): void => {
-    setEditingImageProductId(productId);
-    const input = document.getElementById(
-      "galleryInputProduct",
-    ) as HTMLInputElement | null;
-    if (input) {
-      input.click();
-    }
-  };
 
   const handleEditChange = (
     productId: string,
@@ -266,7 +181,6 @@ export default function DepotProducts({
         image: "",
       });
       setImagePreview("");
-      setUploadError("");
       loadProducts();
       alert("Produit ajouté");
     } else {
@@ -289,7 +203,7 @@ export default function DepotProducts({
                 <div key={product.id} className="product-line">
                   {product.image ? (
                     <img
-                      src={product.image}
+                      src={optimizeThumbnail(product.image)}
                       alt={product.name}
                       className="product-thumb-small"
                       title={product.name}
@@ -390,7 +304,7 @@ export default function DepotProducts({
                     <div className="image-edit-container">
                       {editData[product.id]?.image ? (
                         <img
-                          src={editData[product.id].image}
+                          src={optimizeProductCard(editData[product.id].image)}
                           alt={product.name}
                           className="product-image-thumb"
                         />
@@ -398,24 +312,12 @@ export default function DepotProducts({
                         <div className="product-image-placeholder-edit">📦</div>
                       )}
                       <div className="image-edit-buttons">
-                        <button
-                          type="button"
-                          className="btn-edit-camera"
-                          onClick={() => triggerProductCamera(product.id)}
-                          disabled={isUploading}
-                          title="Prendre une photo"
-                        >
-                          📸
-                        </button>
-                        <button
-                          type="button"
-                          className="btn-edit-gallery"
-                          onClick={() => triggerProductGallery(product.id)}
-                          disabled={isUploading}
-                          title="Choisir galerie"
-                        >
-                          🖼️
-                        </button>
+                        <ImageUpload
+                          onImageUpload={(imageUrl: string) => {
+                            handleEditChange(product.id, "image", imageUrl);
+                          }}
+                          buttonText="📸 Upload"
+                        />
                       </div>
                     </div>
                   </td>
@@ -509,32 +411,7 @@ export default function DepotProducts({
             </div>
           </div>
 
-          {/* Input files for editing existing product images */}
-          <div style={{ display: "none" }}>
-            <input
-              type="file"
-              accept="image/*"
-              capture="environment"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (editingImageProductId && file) {
-                  handleProductImageUpload(file, editingImageProductId);
-                }
-              }}
-              id="cameraInputProduct"
-            />
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (editingImageProductId && file) {
-                  handleProductImageUpload(file, editingImageProductId);
-                }
-              }}
-              id="galleryInputProduct"
-            />
-          </div>
+          {/* Firebase Storage inputs removed - using Cloudinary ImageUpload component instead */}
         </div>
       )}
 
@@ -542,7 +419,7 @@ export default function DepotProducts({
       {selectedImage && (
         <div className="image-modal-overlay" onClick={closeImageModal}>
           <img
-            src={selectedImage}
+            src={optimizeModalImage(selectedImage)}
             alt="Enlarged"
             className="image-modal-image"
             onClick={(e) => e.stopPropagation()}
