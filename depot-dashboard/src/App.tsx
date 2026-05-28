@@ -418,7 +418,7 @@ function App(): ReactNode {
                     <label>🏪 Nom du Dépôt/Boutique (Optionnel)</label>
                     <input
                       type="text"
-                      placeholder="Ex: Frigo Bacongo, Dépôt Charbon Jean, Magasin Vivriers"
+                      placeholder="Ex: Frigo Bacongo, Dépôt Charbon Jean, Magasin Epiceries/Vivre secs"
                       value={signUpData.depot_name}
                       onChange={(e) =>
                         setSignUpData({
@@ -626,6 +626,11 @@ function App(): ReactNode {
           />
         )}
       </div>
+
+      {/* Footer */}
+      <footer className="app-footer">
+        <p>© 2026 | Depot Dashboard Genesis v1.0 | Powered by Vision Unique</p>
+      </footer>
     </div>
   );
 }

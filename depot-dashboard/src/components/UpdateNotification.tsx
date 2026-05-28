@@ -22,9 +22,7 @@ export default function UpdateNotification(): ReactNode {
 
         // Faire une requête au manifest pour détecter les changements
         try {
-          const response = await fetch("/manifest.webmanifest", {
-            cache: "no-store",
-          });
+          const response = await fetch("/manifest.webmanifest");
           const manifest = await response.json();
 
           // Si on arrive ici, il y a peut-être une mise à jour
@@ -45,8 +43,8 @@ export default function UpdateNotification(): ReactNode {
     // Vérifier à l'ouverture
     checkForUpdates();
 
-    // Vérifier toutes les 5 minutes
-    const interval = setInterval(checkForUpdates, 5 * 60 * 1000);
+    // Vérifier toutes les heures (au lieu de 5 minutes)
+    const interval = setInterval(checkForUpdates, 60 * 60 * 1000);
 
     return () => clearInterval(interval);
   }, []);

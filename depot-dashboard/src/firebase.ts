@@ -380,26 +380,15 @@ export const initializeTestData = async (): Promise<FirebaseResponse<null>> => {
     // 1. Create categories
     const categories = [
       {
-        name: "Poisson",
-        emoji: "🐟",
-        description: "Produits de la mer et poissons frais",
+        name: "Poisson & Viande",
+        emoji: "🧊",
+        description: "Poissons et viande frais",
       },
       {
-        name: "Charbon",
-        emoji: "⚫",
-        description: "Différents types de charbon pour cuisine",
+        name: "Fruit et Legume",
+        emoji: "🍅",
+        description: "Fruits, légumes et produits frais",
       },
-      {
-        name: "Boissons",
-        emoji: "🍺",
-        description: "Boissons et liquides divers",
-      },
-      {
-        name: "Vivriers",
-        emoji: "🌾",
-        description: "Produits agricoles et céréales",
-      },
-      { name: "Fruits", emoji: "🍌", description: "Fruits frais et tropicaux" },
     ];
 
     const categoryRefs: Record<string, string | null> = {};
@@ -418,28 +407,18 @@ export const initializeTestData = async (): Promise<FirebaseResponse<null>> => {
 
     // 2. Create products
     const products = [
-      { name: "Carpe", category: "Poisson", base_price: 2500, unit: "kg" },
-      { name: "Capitaine", category: "Poisson", base_price: 3500, unit: "kg" },
       {
-        name: "Charbon Bois",
-        category: "Charbon",
-        base_price: 1500,
-        unit: "sac",
+        name: "Carpe",
+        category: "Poisson & Viande",
+        base_price: 2500,
+        unit: "kg",
       },
       {
-        name: "Charbon Coco",
-        category: "Charbon",
-        base_price: 2000,
-        unit: "sac",
+        name: "Bananes",
+        category: "Fruit et Legume",
+        base_price: 200,
+        unit: "régime",
       },
-      {
-        name: "Primus",
-        category: "Boissons",
-        base_price: 800,
-        unit: "bouteille",
-      },
-      { name: "Riz", category: "Vivriers", base_price: 2500, unit: "sac" },
-      { name: "Bananes", category: "Fruits", base_price: 200, unit: "régime" },
     ];
 
     for (const prod of products) {
@@ -787,7 +766,7 @@ export const initializeDepotProducts = async (
     const products = [
       {
         name: "Carpe",
-        category: "Poisson",
+        category: "Poisson & Viande",
         price: 2500,
         stock_quantity: 10,
         unit: "kg",
@@ -822,14 +801,14 @@ export const initializeDepotProducts = async (
       },
       {
         name: "Riz",
-        category: "Vivriers",
+        category: "Epiceries/Vivre secs",
         price: 2500,
         stock_quantity: 20,
         unit: "sac",
       },
       {
         name: "Bananes",
-        category: "Fruits",
+        category: "Fruit et Legume",
         price: 200,
         stock_quantity: 15,
         unit: "régime",

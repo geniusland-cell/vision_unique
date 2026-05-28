@@ -1,0 +1,70 @@
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": "auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'admin'",
+        ".write": "auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'admin'",
+
+        "role": {
+          ".write": "root.child('users').child(auth.uid).child('role').val() === 'admin'"
+        },
+        "banned": {
+          ".write": "root.child('users').child(auth.uid).child('role').val() === 'admin'"
+        }
+      }
+    },
+
+    "managers": {
+      ".read": "root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      ".write": "root.child('users').child(auth.uid).child('role').val() === 'admin'",
+
+      "$managerId": {
+        ".read": "auth.uid === $managerId || root.child('users').child(auth.uid).child('role').val() === 'admin'",
+        ".write": "auth.uid === $managerId || root.child('users').child(auth.uid).child('role').val() === 'admin'"
+      }
+    },
+
+    "depots": {
+      ".read": "auth != null",
+
+      "$depotId": {
+        ".read": "auth != null",
+        ".write": "root.child('depots').child($depotId).child('managerId').val() === auth.uid || root.child('users').child(auth.uid).child('role').val() === 'admin'",
+
+        "products": {
+          ".read": "auth != null",
+          ".write": "root.child('depots').child($depotId).child('managerId').val() === auth.uid || root.child('users').child(auth.uid).child('role').val() === 'admin'",
+
+          "$productId": {
+            ".read": "auth != null",
+            ".write": "root.child('depots').child($depotId).child('managerId').val() === auth.uid || root.child('users').child(auth.uid).child('role').val() === 'admin'"
+          }
+        },
+
+        "categories": {
+          ".read": "auth != null",
+          ".write": "root.child('depots').child($depotId).child('managerId').val() === auth.uid || root.child('users').child(auth.uid).child('role').val() === 'admin'"
+        }
+      }
+    },
+
+    "vendors": {
+      "$vendorId": {
+        ".read": "auth.uid === $vendorId || root.child('users').child(auth.uid).child('role').val() === 'admin'",
+        ".write": "auth.uid === $vendorId || root.child('users').child(auth.uid).child('role').val() === 'admin'"
+      }
+    },
+
+    "_system": {
+      "stats": {
+        ".read": "root.child('users').child(auth.uid).child('role').val() === 'admin'",
+        ".write": false
+      }
+    },
+
+    "audit": {
+      ".read": "root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      ".write": false
+    }
+  }
+}

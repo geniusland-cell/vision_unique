@@ -27,14 +27,20 @@ export default function DepotProducts({
   onClose,
 }: DepotProductsProps) {
   const depotId = depot.id;
-  const CATEGORIES = [
-    "Poisson",
-    "Charbon",
-    "Boissons",
-    "Vivriers",
-    "Fruits",
-    "Viande",
-  ];
+  const CATEGORIES = ["Poisson & Viande", "Fruit et Legume"];
+
+  const normalizeCategoryName = (categoryName: string): string => {
+    if (categoryName === "Poisson" || categoryName === "Viande") {
+      return "Poisson & Viande";
+    }
+    if (categoryName === "Fruits") {
+      return "Fruit et Legume";
+    }
+    if (categoryName === "Vivriers") {
+      return "Epiceries/Vivre secs";
+    }
+    return categoryName;
+  };
 
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -215,7 +221,9 @@ export default function DepotProducts({
                     <div className="product-thumb-placeholder-small">📦</div>
                   )}
                   <span className="product-name">{product.name}</span>
-                  <span className="product-category">{product.category}</span>
+                  <span className="product-category">
+                    {normalizeCategoryName(product.category)}
+                  </span>
                   <span className="product-price">
                     {product.price} FCFA/{product.unit}
                   </span>
@@ -253,7 +261,9 @@ export default function DepotProducts({
                   <td>{product.name}</td>
                   <td>
                     <select
-                      value={editData[product.id]?.category || ""}
+                      value={normalizeCategoryName(
+                        editData[product.id]?.category || "",
+                      )}
                       onChange={(e) =>
                         handleEditChange(product.id, "category", e.target.value)
                       }
