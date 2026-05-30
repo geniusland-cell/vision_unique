@@ -14,6 +14,8 @@ import {
   detectAndLogin,
   calculateDaysRemaining,
   updateSubscription,
+  markPaymentPending,
+  checkAndDeactivateExpiredDepots,
 } from "./firebase";
 import { getManagerDepots, getDepotProducts } from "./firebase";
 import type { Depot, Quartier } from "./types";
@@ -259,28 +261,15 @@ function App(): ReactNode {
 
     setIsRenewingSubscription(true);
     try {
-      const result = await updateSubscription(selectedDepot.id);
-      if (result.success) {
-        alert(" Abonnement renouvelé pour 30 jours!");
-
-        // Recharger le dépôt pour voir la nouvelle date d'expiration
-        const updatedDepot = {
-          ...selectedDepot,
-          subscription_expiry: new Date(
-            Date.now() + 30 * 24 * 60 * 60 * 1000,
-          ).toISOString(),
-          subscription_status: "active",
-        };
-        setSelectedDepot(updatedDepot as Depot);
-
-        // Recalculer les jours restants
-        const remaining = calculateDaysRemaining(
-          updatedDepot.subscription_expiry,
+      // Manager cannot directly renew via admin function.
+      // Mark payment pending so admin can confirm and renew after MOMO reception.
+      const res = await markPaymentPending(selectedDepot.id);
+      if (res.success) {
+        alert(
+          "Notification envoyée à l'admin. Veuillez effectuer le paiement MOMO au +242 067 67 81 28 et l'admin renouvellera le dépôt.",
         );
-        setDaysRemaining(remaining);
-        setSubscriptionAlert(false);
       } else {
-        alert(" Erreur renouvellement: " + result.error);
+        alert("Erreur notification: " + (res.error || "unknown"));
       }
     } catch (error) {
       console.error("Erreur renouvellement abonnement:", error);

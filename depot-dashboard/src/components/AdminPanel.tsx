@@ -4,6 +4,9 @@ import {
   getManagerDetailsForAdmin,
   banManager,
   unbanManager,
+  calculateDaysRemaining,
+  getSubscriptionStatus,
+  updateSubscription,
 } from "../firebase";
 import FirebaseStats from "./FirebaseStats";
 import type { User } from "../types";
@@ -22,6 +25,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
   const [loadingDetails, setLoadingDetails] = useState<boolean>(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [activeTab, setActiveTab] = useState<"managers" | "stats">("managers");
+  const [paymentLoading, setPaymentLoading] = useState<string | null>(null);
 
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
@@ -87,6 +91,32 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
         }
       } catch (error) {
         console.error("Erreur lors du débannissement du manager:", error);
+      }
+    }
+  };
+
+  const handlePaymentDepot = async (depotId: string) => {
+    if (
+      window.confirm(
+        "Confirmer le paiement pour renouveler ce dépôt (+30 jours)?",
+      )
+    ) {
+      try {
+        setPaymentLoading(depotId);
+        const result = await updateSubscription(depotId);
+        if (result.success) {
+          alert(
+            "✅ Paiement traité avec succès! Dépôt renouvelé pour 30 jours.",
+          );
+          loadManagerDetails(selectedManager || "");
+        } else {
+          alert("❌ Erreur: " + result.error);
+        }
+      } catch (error) {
+        console.error("Erreur lors du traitement du paiement:", error);
+        alert("Erreur lors du traitement du paiement");
+      } finally {
+        setPaymentLoading(null);
       }
     }
   };
@@ -271,50 +301,115 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                       <div className="details-section">
                         <h3>Dépôts ({managerDetails.depots.length})</h3>
                         <div className="depots-list">
-                          {managerDetails.depots.map((depot: any) => (
-                            <div key={depot.id} className="depot-item">
-                              <h4>{depot.name}</h4>
-                              <div className="depot-info">
-                                <p>
-                                  <strong>Quartier:</strong> {depot.quartier}
-                                </p>
-                                <p>
-                                  <strong>Latitude:</strong> {depot.latitude}
-                                </p>
-                                <p>
-                                  <strong>Longitude:</strong> {depot.longitude}
-                                </p>
-                              </div>
+                          {managerDetails.depots.map((depot: any) => {
+                            const daysRemaining = calculateDaysRemaining(
+                              depot.subscription_expiry,
+                            );
+                            const subStatus =
+                              getSubscriptionStatus(daysRemaining);
+                            const isExpired = daysRemaining < 0;
+                            const isWarning =
+                              daysRemaining >= 0 && daysRemaining < 7;
 
-                              {/* Products in this depot */}
-                              {depot.products && depot.products.length > 0 && (
-                                <div className="products-list">
-                                  <strong>
-                                    Produits ({depot.products.length})
-                                  </strong>
-                                  {depot.products.map(
-                                    (product: any, idx: number) => (
-                                      <div key={idx} className="product-item">
-                                        <span className="product-name">
-                                          {product.name}
-                                        </span>
-                                        <span className="product-category">
-                                          {product.category}
-                                        </span>
-                                        <span className="product-price">
-                                          {product.price} FCFA/{product.unit}
-                                        </span>
-                                        <span className="product-stock">
-                                          Stock: {product.stock_quantity}{" "}
-                                          {product.unit}
-                                        </span>
-                                      </div>
-                                    ),
+                            return (
+                              <div
+                                key={depot.id}
+                                className={`depot-item ${isExpired ? "expired" : isWarning ? "warning" : "active"}`}
+                              >
+                                <div className="depot-header">
+                                  <h4>{depot.name}</h4>
+                                  <span
+                                    className={`subscription-badge ${subStatus}`}
+                                  >
+                                    {isExpired
+                                      ? "⚠️ EXPIRÉ"
+                                      : isWarning
+                                        ? `⏰ ${daysRemaining}j restants`
+                                        : `✓ ${daysRemaining}j`}
+                                  </span>
+                                  {depot.payment_pending && (
+                                    <span className="payment-pending">
+                                      📩 Paiement signalé
+                                    </span>
                                   )}
                                 </div>
-                              )}
-                            </div>
-                          ))}
+
+                                <div className="depot-info">
+                                  <p>
+                                    <strong>Quartier:</strong> {depot.quartier}
+                                  </p>
+                                  <p>
+                                    <strong>Latitude:</strong> {depot.latitude}
+                                  </p>
+                                  <p>
+                                    <strong>Longitude:</strong>{" "}
+                                    {depot.longitude}
+                                  </p>
+                                  {depot.subscription_expiry && (
+                                    <p>
+                                      <strong>Expiration:</strong>{" "}
+                                      {new Date(
+                                        depot.subscription_expiry,
+                                      ).toLocaleDateString("fr-FR")}
+                                    </p>
+                                  )}
+                                </div>
+
+                                {/* Payment Button for Expired/Warning */}
+                                {(isExpired || isWarning) && (
+                                  <div className="payment-action">
+                                    <button
+                                      className="btn btn-payment"
+                                      onClick={() =>
+                                        handlePaymentDepot(depot.id)
+                                      }
+                                      disabled={paymentLoading === depot.id}
+                                    >
+                                      {paymentLoading === depot.id
+                                        ? "⏳ Traitement..."
+                                        : `💳 Payer 5000 FCFA (+30j)`}
+                                    </button>
+                                    <small className="payment-info">
+                                      Numéro: +242 067 67 81 28 (Maman Power)
+                                    </small>
+                                  </div>
+                                )}
+
+                                {/* Products in this depot */}
+                                {depot.products &&
+                                  depot.products.length > 0 && (
+                                    <div className="products-list">
+                                      <strong>
+                                        Produits ({depot.products.length})
+                                      </strong>
+                                      {depot.products.map(
+                                        (product: any, idx: number) => (
+                                          <div
+                                            key={idx}
+                                            className="product-item"
+                                          >
+                                            <span className="product-name">
+                                              {product.name}
+                                            </span>
+                                            <span className="product-category">
+                                              {product.category}
+                                            </span>
+                                            <span className="product-price">
+                                              {product.price} FCFA/
+                                              {product.unit}
+                                            </span>
+                                            <span className="product-stock">
+                                              Stock: {product.stock_quantity}{" "}
+                                              {product.unit}
+                                            </span>
+                                          </div>
+                                        ),
+                                      )}
+                                    </div>
+                                  )}
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     )}

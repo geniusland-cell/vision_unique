@@ -762,7 +762,7 @@ export const initializeDepotProducts = async (
   depotId: string,
 ): Promise<FirebaseResponse<null>> => {
   try {
-    // Produits par catégorie
+    // Produits par défaut : 2 seulement (1 par catégorie pour économiser)
     const products = [
       {
         name: "Carpe",
@@ -772,46 +772,11 @@ export const initializeDepotProducts = async (
         unit: "kg",
       },
       {
-        name: "Capitaine",
-        category: "Poisson",
-        price: 3500,
-        stock_quantity: 8,
-        unit: "kg",
-      },
-      {
-        name: "Charbon Bois",
-        category: "Charbon",
-        price: 1500,
-        stock_quantity: 50,
-        unit: "sac",
-      },
-      {
-        name: "Charbon Coco",
-        category: "Charbon",
-        price: 2000,
-        stock_quantity: 30,
-        unit: "sac",
-      },
-      {
-        name: "Primus",
-        category: "Boissons",
-        price: 800,
-        stock_quantity: 100,
-        unit: "bouteille",
-      },
-      {
         name: "Riz",
         category: "Epiceries/Vivre secs",
         price: 2500,
         stock_quantity: 20,
         unit: "sac",
-      },
-      {
-        name: "Bananes",
-        category: "Fruit et Legume",
-        price: 200,
-        stock_quantity: 15,
-        unit: "régime",
       },
     ];
 
@@ -1348,6 +1313,8 @@ export const updateSubscription = async (
     await update(depotRef, {
       subscription_expiry: newExpiryDate,
       subscription_status: "active",
+      payment_pending: false,
+      payment_notified_at: null,
       updated_at: new Date().toISOString(),
     });
 
@@ -1356,6 +1323,29 @@ export const updateSubscription = async (
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
     console.error(" Erreur renouvellement abonnement:", errorMsg);
+    return { success: false, error: errorMsg };
+  }
+};
+
+/**
+ * Marquer qu'un dépôt a effectué un paiement (le manager notifie l'admin)
+ * @param depotId
+ */
+export const markPaymentPending = async (
+  depotId: string,
+): Promise<FirebaseResponse<null>> => {
+  try {
+    const depotRef = ref(db, `depots/${depotId}`);
+    await update(depotRef, {
+      payment_pending: true,
+      payment_notified_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+
+    return { success: true };
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
+    console.error(" Erreur markPaymentPending:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -1407,6 +1397,63 @@ export const migrateExistingDepots = async (): Promise<any> => {
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
     console.error(" Erreur migration dépôts:", errorMsg);
+    return { success: false, error: errorMsg };
+  }
+};
+
+/**
+ * Vérifier et désactiver les dépôts expirés (subscription > 30 jours sans renouvellement)
+ * À appeler :
+ * - Au démarrage de l'app admin
+ * - Ou chaque jour via un service worker/cron
+ * @returns {Promise<{success: boolean, deactivatedCount: number, error?: string}>}
+ */
+export const checkAndDeactivateExpiredDepots = async (): Promise<any> => {
+  try {
+    const depotsRef = ref(db, "depots");
+    const snapshot = await get(depotsRef);
+
+    if (!snapshot.exists()) {
+      return { success: true, deactivatedCount: 0 };
+    }
+
+    const allDepots = snapshot.val();
+    let deactivatedCount = 0;
+    const updates: Record<string, any> = {};
+    const now = new Date();
+
+    for (const depotId in allDepots) {
+      const depot = allDepots[depotId];
+
+      // Vérifier si le dépôt a une date d'expiration
+      if (depot.subscription_expiry) {
+        const expiryDate = new Date(depot.subscription_expiry);
+
+        // Si la date d'expiration est passée ET le dépôt est actif
+        if (expiryDate < now && depot.is_active !== false) {
+          console.log(
+            ` ⚠️ Dépôt ${depot.name} expiré depuis ${Math.floor(
+              (now.getTime() - expiryDate.getTime()) / (1000 * 60 * 60 * 24),
+            )} jours - Désactivation...`,
+          );
+
+          updates[`depots/${depotId}/is_active`] = false;
+          updates[`depots/${depotId}/subscription_status`] = "inactive";
+          deactivatedCount++;
+        }
+      }
+    }
+
+    // Appliquer les mises à jour
+    if (deactivatedCount > 0) {
+      await update(ref(db), updates);
+      console.log(` ✅ ${deactivatedCount} dépôt(s) désactivé(s)`);
+    }
+
+    return { success: true, deactivatedCount };
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
+    console.error(" Erreur vérification dépôts expirés:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
