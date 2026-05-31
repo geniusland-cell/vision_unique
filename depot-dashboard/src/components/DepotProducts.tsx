@@ -4,6 +4,7 @@ import {
   updateDepotProduct,
   addDepotProduct,
   removeDepotProduct,
+  getCategories,
 } from "../firebase";
 import ImageUpload from "./ImageUpload";
 import {
@@ -11,7 +12,7 @@ import {
   optimizeThumbnail,
   optimizeModalImage,
 } from "../utils/cloudinary";
-import type { Depot } from "../types";
+import type { Depot, Category } from "../types";
 import "./DepotProducts.css";
 import "./ImageUpload.css";
 
@@ -27,7 +28,7 @@ export default function DepotProducts({
   onClose,
 }: DepotProductsProps) {
   const depotId = depot.id;
-  const CATEGORIES = ["Poisson & Viande", "Fruit et Legume"];
+  const [categories, setCategories] = useState<Category[]>([]);
 
   const normalizeCategoryName = (categoryName: string): string => {
     if (categoryName === "Poisson" || categoryName === "Viande") {
@@ -77,6 +78,17 @@ export default function DepotProducts({
     }
     setLoading(false);
   }, [depotId]);
+
+  // Charger les catégories depuis Firebase au démarrage
+  useEffect(() => {
+    const loadCategories = async () => {
+      const result = await getCategories();
+      if (result.success) {
+        setCategories(result.data || []);
+      }
+    };
+    loadCategories();
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -269,9 +281,9 @@ export default function DepotProducts({
                       }
                     >
                       <option value="">-- Sélectionner --</option>
-                      {CATEGORIES.map((cat) => (
-                        <option key={cat} value={cat}>
-                          {cat}
+                      {categories.map((cat) => (
+                        <option key={cat.id} value={cat.name}>
+                          {cat.emoji} {cat.name}
                         </option>
                       ))}
                     </select>
@@ -370,9 +382,9 @@ export default function DepotProducts({
                 }
               >
                 <option value="">-- Sélectionner une catégorie --</option>
-                {CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.name}>
+                    {cat.emoji} {cat.name}
                   </option>
                 ))}
               </select>

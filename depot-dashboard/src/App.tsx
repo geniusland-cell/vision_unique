@@ -93,23 +93,8 @@ function App(): ReactNode {
 
     setQuartiers(defaultQuartiers as Quartier[]);
 
-    // En parallele, essayer de charger et creer les quartiers en Firebase
-    const loadQuartiers = async () => {
-      try {
-        const result = await getQuartiers();
-
-        if (!result.success || !result.data || result.data.length === 0) {
-          // Si pas de quartiers en Firebase, les créer
-          console.log("📍 Création des quartiers en Firebase...");
-          await initializeQuartiers();
-        }
-      } catch (error) {
-        console.error(" Erreur création quartiers Firebase:", error);
-        // Continue sans erreur - les quartiers locaux sont suffisants pour la dropdown
-      }
-    };
-
-    loadQuartiers();
+    // Les quartiers sont gérés manuellement via un script de seed,
+    // pas besoin de les créer automatiquement lors du démarrage
   }, []);
 
   // Charger les données du manager une fois connecté

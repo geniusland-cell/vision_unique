@@ -84,10 +84,14 @@ export default function ImageUpload({
   const triggerFileInput = (useCamera: boolean = false) => {
     const input = document.createElement("input");
     input.type = "file";
-    input.accept = "image/*";
-
+    
+    // Important: Fixer capture AVANT accept pour éviter les conflits
     if (useCamera) {
-      input.capture = "environment"; // Utilise la caméra arrière sur mobile
+      input.capture = "environment"; // Caméra arrière (dos du téléphone)
+      input.accept = "image/*";
+    } else {
+      input.accept = "image/*";
+      // PAS de capture pour la galerie
     }
 
     input.onchange = (e) =>
