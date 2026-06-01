@@ -39,33 +39,22 @@ const FirebaseStats = (): ReactNode => {
   const loadFirebaseStats = async () => {
     try {
       setLoading(true);
-      // Lire depuis un nœud de stats si disponible
-      const statsRef = ref(db, "_system/stats");
-      const snapshot = await get(statsRef);
-
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        setStats({
-          totalReads: data.reads || 0,
-          totalWrites: data.writes || 0,
-          storageMB: data.storage_mb || 0,
-          networkRequests: data.network_requests || 0,
-          lastUpdated: new Date(),
-        });
-      } else {
-        // Pas de données stats - initialiser à 0
-        setStats({
-          totalReads: 0,
-          totalWrites: 0,
-          storageMB: 0,
-          networkRequests: 0,
-          lastUpdated: new Date(),
-        });
-      }
-      setError(null);
+      // Note: Les stats d'utilisation Firebase ne sont disponibles que via la console Firebase
+      // et l'API Cloud Monitoring. RTD n'expose pas les stats directement.
+      // On affiche les limites et un message informatif pour que l'admin consulte la console
+      setStats({
+        totalReads: 0,
+        totalWrites: 0,
+        storageMB: 0,
+        networkRequests: 0,
+        lastUpdated: new Date(),
+      });
+      setError(
+        "📍 Les statistiques détaillées sont disponibles dans la Console Firebase → Realtime Database → Usage",
+      );
     } catch (err) {
       console.error("Erreur chargement stats Firebase:", err);
-      setError("Impossible de charger les statistiques");
+      setError("Impossible de charger les statistiques détaillées");
     } finally {
       setLoading(false);
     }

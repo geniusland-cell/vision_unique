@@ -7,6 +7,7 @@ import {
   calculateDaysRemaining,
   getSubscriptionStatus,
   updateSubscription,
+  upgradeToPremium,
 } from "../firebase";
 import FirebaseStats from "./FirebaseStats";
 import type { User } from "../types";
@@ -26,6 +27,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [activeTab, setActiveTab] = useState<"managers" | "stats">("managers");
   const [paymentLoading, setPaymentLoading] = useState<string | null>(null);
+  const [premiumLoading, setPremiumLoading] = useState<string | null>(null);
 
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
@@ -117,6 +119,36 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
         alert("Erreur lors du traitement du paiement");
       } finally {
         setPaymentLoading(null);
+      }
+    }
+  };
+
+  const handleUpgradePremium = async (
+    depotId: string,
+    tier: "basic" | "advanced" | "elite",
+    price: number,
+  ) => {
+    if (
+      window.confirm(
+        `Confirmer l'upgrade vers ${tier.toUpperCase()} pour ${price} FCFA (30 jours)?`,
+      )
+    ) {
+      try {
+        setPremiumLoading(depotId);
+        const result = await upgradeToPremium(depotId, tier, 30);
+        if (result.success) {
+          alert(
+            `✅ Dépôt mis à niveau en ${tier.toUpperCase()} pour 30 jours!`,
+          );
+          loadManagerDetails(selectedManager || "");
+        } else {
+          alert("❌ Erreur: " + result.error);
+        }
+      } catch (error) {
+        console.error("Erreur lors de l'upgrade premium:", error);
+        alert("Erreur lors de l'upgrade premium");
+      } finally {
+        setPremiumLoading(null);
       }
     }
   };
@@ -374,6 +406,67 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                                     </small>
                                   </div>
                                 )}
+
+                                {/* Premium Tier Buttons */}
+                                <div className="premium-upgrade-section">
+                                  <div className="premium-title">
+                                    💎 Système Premium (Classement Spécial)
+                                  </div>
+                                  <div className="premium-buttons">
+                                    <button
+                                      className="btn btn-premium btn-basic"
+                                      onClick={() =>
+                                        handleUpgradePremium(
+                                          depot.id,
+                                          "basic",
+                                          10000,
+                                        )
+                                      }
+                                      disabled={premiumLoading === depot.id}
+                                      title="Top 3 par distance"
+                                    >
+                                      {premiumLoading === depot.id
+                                        ? "⏳..."
+                                        : "💎 10k (Top 3)"}
+                                    </button>
+                                    <button
+                                      className="btn btn-premium btn-advanced"
+                                      onClick={() =>
+                                        handleUpgradePremium(
+                                          depot.id,
+                                          "advanced",
+                                          15000,
+                                        )
+                                      }
+                                      disabled={premiumLoading === depot.id}
+                                      title="Top 10 du trimestre"
+                                    >
+                                      {premiumLoading === depot.id
+                                        ? "⏳..."
+                                        : "💎💎 15k (Top 10)"}
+                                    </button>
+                                    <button
+                                      className="btn btn-premium btn-elite"
+                                      onClick={() =>
+                                        handleUpgradePremium(
+                                          depot.id,
+                                          "elite",
+                                          20000,
+                                        )
+                                      }
+                                      disabled={premiumLoading === depot.id}
+                                      title="Top 3 Elite (Prioritaire)"
+                                    >
+                                      {premiumLoading === depot.id
+                                        ? "⏳..."
+                                        : "💎💎💎 20k (Elite)"}
+                                    </button>
+                                  </div>
+                                  <small className="premium-info">
+                                    Les tiers premium garantissent une meilleure
+                                    visibilité pour 30 jours
+                                  </small>
+                                </div>
 
                                 {/* Products in this depot */}
                                 {depot.products &&

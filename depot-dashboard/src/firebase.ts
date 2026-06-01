@@ -359,7 +359,11 @@ export const getCategories = async (): Promise<
 
     const categoriesData = snapshot.val();
     const categories = Object.keys(categoriesData)
-      .filter((key) => categoriesData[key].is_active === true)
+      .filter(
+        (key) =>
+          categoriesData[key].is_active === undefined ||
+          categoriesData[key].is_active === true,
+      )
       .map((key) => ({ id: key, ...categoriesData[key] }));
 
     return { success: true, data: categories };
@@ -1454,6 +1458,40 @@ export const checkAndDeactivateExpiredDepots = async (): Promise<any> => {
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
     console.error(" Erreur vérification dépôts expirés:", errorMsg);
+    return { success: false, error: errorMsg };
+  }
+};
+
+/**
+ * Mettre à niveau un dépôt en premium (pour les admins)
+ * @param depotId - ID du dépôt
+ * @param tier - Type de tier ('basic', 'advanced', 'elite')
+ * @param durationDays - Durée en jours (défaut: 30)
+ */
+export const upgradeToPremium = async (
+  depotId: string,
+  tier: "basic" | "advanced" | "elite",
+  durationDays: number = 30,
+): Promise<FirebaseResponse<null>> => {
+  try {
+    const premiumUntil = new Date();
+    premiumUntil.setDate(premiumUntil.getDate() + durationDays);
+
+    const depotRef = ref(db, `depots/${depotId}`);
+    await update(depotRef, {
+      premium_tier: tier,
+      premium_expiry: premiumUntil.toISOString(),
+      payment_pending: true,
+      updated_at: new Date().toISOString(),
+    });
+
+    console.log(
+      ` Dépôt ${depotId} mis à niveau en ${tier} jusqu'au ${premiumUntil.toISOString()}`,
+    );
+    return { success: true };
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
+    console.error(" Erreur upgrade premium:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
