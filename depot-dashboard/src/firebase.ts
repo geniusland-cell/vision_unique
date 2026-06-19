@@ -123,7 +123,7 @@ export const registerUser = async (
 
     await set(newDepotRef, {
       name: depotName,
-      location: quartier,
+      location: address || quartier,
       quartier: quartier,
       address: address, // Adresse du dépôt
       phone_direct: phone_direct,
@@ -370,149 +370,6 @@ export const getCategories = async (): Promise<
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
     console.error("❌ Erreur récupération catégories:", errorMsg);
-    return { success: false, error: errorMsg };
-  }
-};
-
-// =====================================
-// INITIALIZE TEST DATA (CATEGORIES, QUARTIERS, PRODUCTS)
-// =====================================
-export const initializeTestData = async (): Promise<FirebaseResponse<null>> => {
-  try {
-    console.log("📝 Initialisation des données de test...");
-
-    // 1. Create categories
-    const categories = [
-      {
-        name: "Poisson & Viande",
-        emoji: "🧊",
-        description: "Poissons et viande frais",
-      },
-      {
-        name: "Fruit et Legume",
-        emoji: "🍅",
-        description: "Fruits, légumes et produits frais",
-      },
-    ];
-
-    const categoryRefs: Record<string, string | null> = {};
-    for (const cat of categories) {
-      const newCatRef = push(ref(db, "categories"));
-      await set(newCatRef, {
-        name: cat.name,
-        emoji: cat.emoji,
-        description: cat.description,
-        is_active: true,
-        created_at: new Date().toISOString(),
-      });
-      categoryRefs[cat.name] = newCatRef.key;
-    }
-    console.log(" Catégories créées");
-
-    // 2. Create products
-    const products = [
-      {
-        name: "Carpe",
-        category: "Poisson & Viande",
-        base_price: 2500,
-        unit: "kg",
-      },
-      {
-        name: "Bananes",
-        category: "Fruit et Legume",
-        base_price: 200,
-        unit: "régime",
-      },
-    ];
-
-    for (const prod of products) {
-      const newProdRef = push(ref(db, "products"));
-      await set(newProdRef, {
-        name: prod.name,
-        category_id: categoryRefs[prod.category],
-        base_price: prod.base_price,
-        unit: prod.unit,
-        is_active: true,
-        created_at: new Date().toISOString(),
-      });
-    }
-    console.log(" Produits créés");
-
-    // 3. Create quartiers (9 quartiers de Brazzaville)
-    const quartiers = [
-      {
-        name: "Bakongo",
-        latitude: -4.2636,
-        longitude: 15.2429,
-        description: "1er arrondissement - Quartier historique au sud",
-      },
-      {
-        name: "Poto-Poto",
-        latitude: -4.2726,
-        longitude: 15.2663,
-        description: "2ème arrondissement - Centre ville",
-      },
-      {
-        name: "Moungali",
-        latitude: -4.2514,
-        longitude: 15.2721,
-        description: "3ème arrondissement - Quartier résidentiel nord",
-      },
-      {
-        name: "Ouenzé",
-        latitude: -4.2857,
-        longitude: 15.2514,
-        description: "4ème arrondissement - Quartier populaire",
-      },
-      {
-        name: "Talangaï",
-        latitude: -4.2429,
-        longitude: 15.2857,
-        description: "5ème arrondissement - Grand quartier nord",
-      },
-      {
-        name: "Mfilou",
-        latitude: -4.26,
-        longitude: 15.3,
-        description: "6ème arrondissement - Zone périphérique nord-est",
-      },
-      {
-        name: "Makélékélé",
-        latitude: -4.29,
-        longitude: 15.24,
-        description: "7ème arrondissement - Quartier sud-ouest",
-      },
-      {
-        name: "Djiri",
-        latitude: -4.3,
-        longitude: 15.2,
-        description: "8ème arrondissement - Zone administrative",
-      },
-      {
-        name: "Madibou",
-        latitude: -4.32,
-        longitude: 15.18,
-        description: "9ème arrondissement - Zone rurale sud",
-      },
-    ];
-
-    for (const q of quartiers) {
-      const newQRef = push(ref(db, "quartiers"));
-      await set(newQRef, {
-        name: q.name,
-        latitude: q.latitude,
-        longitude: q.longitude,
-        description: q.description,
-        is_active: true,
-        created_at: new Date().toISOString(),
-      });
-    }
-    console.log(" Quartiers créés");
-
-    return { success: true };
-  } catch (err: unknown) {
-    const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur initialisation données:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -1346,11 +1203,237 @@ export const markPaymentPending = async (
       updated_at: new Date().toISOString(),
     });
 
+    console.log(" Paiement en attente marqué pour dépôt:", depotId);
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur markPaymentPending:", errorMsg);
+    console.error(" Erreur marquage paiement:", errorMsg);
     return { success: false, error: errorMsg };
+  }
+};
+
+// ==================== SYSTÈME DE TIERS PREMIUM ====================
+
+/**
+ * Upgrade tier d'un dépôt
+ * @param depotId
+ * @param newTier - "basic" (10k), "advanced" (15k), "elite" (25k)
+ * @param durationDays - Défault 30 jours
+ */
+export const upgradeTier = async (
+  depotId: string,
+  newTier: "basic" | "advanced" | "elite",
+  durationDays: number = 30,
+): Promise<FirebaseResponse<null>> => {
+  try {
+    const depotRef = ref(db, `depots/${depotId}`);
+    const tierExpiryDate = new Date(
+      Date.now() + durationDays * 24 * 60 * 60 * 1000,
+    ).toISOString();
+
+    await update(depotRef, {
+      tier: newTier,
+      tier_expiry: tierExpiryDate,
+      updated_at: new Date().toISOString(),
+    });
+
+    console.log(
+      `✅ Tier ${newTier} appliqué au dépôt ${depotId} jusqu'au ${tierExpiryDate}`,
+    );
+    return { success: true };
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
+    console.error(" Erreur upgrade tier:", errorMsg);
+    return { success: false, error: errorMsg };
+  }
+};
+
+/**
+ * Downgrade ou annuler le tier
+ */
+export const removeTier = async (
+  depotId: string,
+): Promise<FirebaseResponse<null>> => {
+  try {
+    const depotRef = ref(db, `depots/${depotId}`);
+    await update(depotRef, {
+      tier: "none",
+      tier_expiry: null,
+      updated_at: new Date().toISOString(),
+    });
+
+    console.log("✅ Tier annulé pour dépôt:", depotId);
+    return { success: true };
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
+    console.error(" Erreur annulation tier:", errorMsg);
+    return { success: false, error: errorMsg };
+  }
+};
+
+/**
+ * Obtenir le prix d'un tier
+ */
+export const getTierPrice = (tier: "basic" | "advanced" | "elite"): number => {
+  const prices: Record<string, number> = {
+    basic: 10000,
+    advanced: 15000,
+    elite: 20000,
+  };
+  return prices[tier] || 0;
+};
+
+// ==================== SYSTÈME DE VOTE ====================
+
+/**
+ * Obtenir le trimestre courant (ex: "2026-Q2")
+ */
+export const getCurrentQuarter = (): string => {
+  const month = new Date().getMonth() + 1;
+  const year = new Date().getFullYear();
+  const quarter = Math.ceil(month / 3);
+  return `${year}-Q${quarter}`;
+};
+
+/**
+ * Obtenir le classement des votes du trimestre
+ * @returns Top 10 des dépôts par votes
+ */
+export const getVotingRankings = async (): Promise<
+  Array<{
+    depotId: string;
+    vote_count: number;
+    depot_name?: string;
+  }>
+> => {
+  try {
+    const currentQuarter = getCurrentQuarter();
+    const votesRef = ref(db, `votes/${currentQuarter}`);
+    const snapshot = await get(votesRef);
+
+    if (!snapshot.exists()) {
+      return [];
+    }
+
+    const votesData = snapshot.val();
+
+    // Trier par vote_count
+    const ranked = Object.entries(votesData)
+      .filter(([key]) => key !== "metadata")
+      .map(([depotId, data]: any) => ({
+        depotId,
+        vote_count: data.vote_count || 0,
+      }))
+      .sort((a, b) => b.vote_count - a.vote_count)
+      .slice(0, 10); // Top 10
+
+    // Enrichir avec les noms des dépôts
+    const enriched = await Promise.all(
+      ranked.map(async (item) => {
+        try {
+          const depotRef = ref(db, `depots/${item.depotId}`);
+          const depotSnapshot = await get(depotRef);
+          const depotData = depotSnapshot.val();
+          return {
+            ...item,
+            depot_name: depotData?.name || `Dépôt ${item.depotId}`,
+          };
+        } catch {
+          return item;
+        }
+      }),
+    );
+
+    return enriched;
+  } catch (err: unknown) {
+    console.error(" Erreur classement votes:", err);
+    return [];
+  }
+};
+
+/**
+ * Lancer les votes pour le trimestre courant
+ * @param votingDurationDays - Durée des votes en jours (défaut: 3)
+ */
+export const launchVoting = async (
+  votingDurationDays: number = 3,
+): Promise<FirebaseResponse<null>> => {
+  try {
+    const currentQuarter = getCurrentQuarter();
+    const votesSettingsRef = ref(db, `votes_settings/${currentQuarter}`);
+
+    const startedAt = new Date().toISOString();
+    const endsAt = new Date(
+      Date.now() + votingDurationDays * 24 * 60 * 60 * 1000,
+    ).toISOString();
+
+    await set(votesSettingsRef, {
+      status: "VOTING_ACTIVE",
+      started_at: startedAt,
+      ends_at: endsAt,
+      voting_duration_days: votingDurationDays,
+      updated_at: new Date().toISOString(),
+    });
+
+    console.log(`✅ Votes lancés pour ${currentQuarter} jusqu'au ${endsAt}`);
+    return { success: true };
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
+    console.error(" Erreur lancement votes:", errorMsg);
+    return { success: false, error: errorMsg };
+  }
+};
+
+/**
+ * Fermer les votes pour le trimestre courant
+ */
+export const closeVoting = async (): Promise<FirebaseResponse<null>> => {
+  try {
+    const currentQuarter = getCurrentQuarter();
+    const votesSettingsRef = ref(db, `votes_settings/${currentQuarter}`);
+
+    await update(votesSettingsRef, {
+      status: "VOTING_CLOSED",
+      closed_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+
+    console.log(`✅ Votes fermés pour ${currentQuarter}`);
+    return { success: true };
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
+    console.error(" Erreur fermeture votes:", errorMsg);
+    return { success: false, error: errorMsg };
+  }
+};
+
+/**
+ * Obtenir le statut des votes pour le trimestre courant
+ */
+export const getVotingStatus = async (): Promise<any> => {
+  try {
+    const currentQuarter = getCurrentQuarter();
+    const votesSettingsRef = ref(db, `votes_settings/${currentQuarter}`);
+    const snapshot = await get(votesSettingsRef);
+
+    if (!snapshot.exists()) {
+      return {
+        status: "PENDING",
+        started_at: null,
+        ends_at: null,
+        voting_duration_days: 3,
+      };
+    }
+
+    return snapshot.val();
+  } catch (err: unknown) {
+    console.error(" Erreur obtention statut votes:", err);
+    return {
+      status: "PENDING",
+      started_at: null,
+      ends_at: null,
+      voting_duration_days: 3,
+    };
   }
 };
 
@@ -1479,8 +1562,8 @@ export const upgradeToPremium = async (
 
     const depotRef = ref(db, `depots/${depotId}`);
     await update(depotRef, {
-      premium_tier: tier,
-      premium_expiry: premiumUntil.toISOString(),
+      tier: tier,
+      tier_expiry: premiumUntil.toISOString(),
       payment_pending: true,
       updated_at: new Date().toISOString(),
     });

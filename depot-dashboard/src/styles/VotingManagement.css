@@ -1,0 +1,398 @@
+/* ==================== VOTING MANAGEMENT STYLES ==================== */
+
+.voting-management {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.voting-management h2 {
+  color: #2c3e50;
+  margin-bottom: 24px;
+  font-size: 24px;
+  text-align: center;
+}
+
+.voting-management h3 {
+  color: #34495e;
+  margin-top: 20px;
+  margin-bottom: 12px;
+  font-size: 18px;
+}
+
+/* ==================== STATUS SECTION ==================== */
+
+.voting-status {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.voting-status h3 {
+  color: white;
+  margin: 0 0 12px 0;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.status-badge.pending {
+  background: rgba(255, 193, 7, 0.3);
+  color: #fff;
+  border: 2px solid #ffc107;
+}
+
+.status-badge.voting_active {
+  background: rgba(76, 175, 80, 0.3);
+  color: #fff;
+  border: 2px solid #4caf50;
+}
+
+.status-badge.voting_closed {
+  background: rgba(244, 67, 54, 0.3);
+  color: #fff;
+  border: 2px solid #f44336;
+}
+
+.voting-status p {
+  margin: 8px 0 0 0;
+  font-size: 14px;
+}
+
+/* ==================== VOTING CONTROLS ==================== */
+
+.voting-controls {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 4px solid #667eea;
+}
+
+.control-input {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.control-input label {
+  min-width: 150px;
+  font-weight: 500;
+  color: #34495e;
+}
+
+.control-input input {
+  padding: 8px 12px;
+  border: 1px solid #bdc3c7;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 80px;
+}
+
+.control-input input:disabled {
+  background-color: #ecf0f1;
+  color: #95a5a6;
+  cursor: not-allowed;
+}
+
+.voting-controls button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-right: 10px;
+  margin-top: 10px;
+}
+
+.btn-start {
+  background: linear-gradient(135deg, #4caf50, #388e3c);
+  color: white;
+}
+
+.btn-start:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.btn-start:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.btn-close {
+  background: linear-gradient(135deg, #f44336, #d32f2f);
+  color: white;
+}
+
+.btn-close:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+}
+
+.btn-close:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* ==================== TIER MANAGEMENT ==================== */
+
+.tier-management {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 4px solid #ff9800;
+}
+
+.tier-input-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr 150px;
+  gap: 12px;
+  align-items: end;
+}
+
+.depot-select,
+.tier-input-group select {
+  padding: 10px;
+  border: 1px solid #bdc3c7;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: white;
+  cursor: pointer;
+}
+
+.depot-select:focus,
+.tier-input-group select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.btn-upgrade {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #ff9800, #e68900);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-upgrade:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+}
+
+.btn-upgrade:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* ==================== VOTING RESULTS TABLE ==================== */
+
+.voting-results {
+  margin-top: 24px;
+}
+
+.rankings-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.rankings-table thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.rankings-table th {
+  padding: 12px;
+  text-align: left;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.rankings-table td {
+  padding: 12px;
+  border-bottom: 1px solid #ecf0f1;
+  font-size: 14px;
+}
+
+.rankings-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.rankings-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.vote-count {
+  font-weight: bold;
+  color: #667eea;
+  font-size: 16px;
+}
+
+.tier-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.tier-badge.basic {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.tier-badge.advanced {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.tier-badge.elite {
+  background: #fce4ec;
+  color: #c2185b;
+}
+
+.tier-badge.none {
+  background: #f5f5f5;
+  color: #757575;
+}
+
+.no-data {
+  text-align: center;
+  color: #95a5a6;
+  font-style: italic;
+  padding: 20px !important;
+}
+
+.btn-remove-tier {
+  padding: 4px 10px;
+  background: #f44336;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-remove-tier:hover {
+  background: #d32f2f;
+  transform: scale(1.05);
+}
+
+/* ==================== PRICING SECTION ==================== */
+
+.pricing-info {
+  background: #f0f4ff;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 24px;
+  border-left: 4px solid #667eea;
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.pricing-card {
+  background: white;
+  padding: 16px;
+  border-radius: 8px;
+  text-align: center;
+  border-top: 4px solid;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.pricing-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.pricing-card.basic {
+  border-top-color: #1565c0;
+}
+
+.pricing-card.advanced {
+  border-top-color: #e65100;
+}
+
+.pricing-card.elite {
+  border-top-color: #c2185b;
+}
+
+.pricing-card h4 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  color: #2c3e50;
+}
+
+.pricing-card .price {
+  font-size: 24px;
+  font-weight: bold;
+  color: #667eea;
+  margin: 8px 0;
+}
+
+.pricing-card p {
+  margin: 4px 0;
+  color: #7f8c8d;
+  font-size: 13px;
+}
+
+/* ==================== RESPONSIVE DESIGN ==================== */
+
+@media (max-width: 768px) {
+  .voting-management {
+    padding: 16px;
+  }
+
+  .tier-input-group {
+    grid-template-columns: 1fr;
+  }
+
+  .pricing-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .voting-controls button {
+    width: 100%;
+    margin-right: 0;
+  }
+
+  .rankings-table {
+    font-size: 12px;
+  }
+
+  .rankings-table th,
+  .rankings-table td {
+    padding: 8px;
+  }
+}

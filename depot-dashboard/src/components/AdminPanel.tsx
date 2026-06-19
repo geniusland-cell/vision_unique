@@ -10,6 +10,7 @@ import {
   upgradeToPremium,
 } from "../firebase";
 import FirebaseStats from "./FirebaseStats";
+import VotingManagement from "./VotingManagement";
 import type { User } from "../types";
 import "../styles/AdminPanel.css";
 
@@ -25,7 +26,9 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
   const [managerDetails, setManagerDetails] = useState<any>(null);
   const [loadingDetails, setLoadingDetails] = useState<boolean>(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [activeTab, setActiveTab] = useState<"managers" | "stats">("managers");
+  const [activeTab, setActiveTab] = useState<"managers" | "stats" | "votes">(
+    "managers",
+  );
   const [paymentLoading, setPaymentLoading] = useState<string | null>(null);
   const [premiumLoading, setPremiumLoading] = useState<string | null>(null);
 
@@ -192,6 +195,12 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
             onClick={() => setActiveTab("stats")}
           >
             📊 Statistiques Firebase
+          </button>
+          <button
+            className={`tab-button ${activeTab === "votes" ? "active" : ""}`}
+            onClick={() => setActiveTab("votes")}
+          >
+            🗳️ Gestion des Votes
           </button>
         </div>
 
@@ -423,11 +432,11 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                                         )
                                       }
                                       disabled={premiumLoading === depot.id}
-                                      title="Top 3 par distance"
+                                      title="Top 15 par catégorie"
                                     >
                                       {premiumLoading === depot.id
                                         ? "⏳..."
-                                        : "💎 10k (Top 3)"}
+                                        : "💎 10k (Top 15)"}
                                     </button>
                                     <button
                                       className="btn btn-premium btn-advanced"
@@ -439,7 +448,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                                         )
                                       }
                                       disabled={premiumLoading === depot.id}
-                                      title="Top 10 du trimestre"
+                                      title="Top 10 par catégorie"
                                     >
                                       {premiumLoading === depot.id
                                         ? "⏳..."
@@ -455,11 +464,11 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                                         )
                                       }
                                       disabled={premiumLoading === depot.id}
-                                      title="Top 3 Elite (Prioritaire)"
+                                      title="Top 3 par catégorie"
                                     >
                                       {premiumLoading === depot.id
                                         ? "⏳..."
-                                        : "💎💎💎 20k (Elite)"}
+                                        : "💎💎💎 20k (Top 3)"}
                                     </button>
                                   </div>
                                   <small className="premium-info">
@@ -518,6 +527,13 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
         {activeTab === "stats" && (
           <div className="admin-stats-view">
             <FirebaseStats />
+          </div>
+        )}
+
+        {/* Contenu Gestion des Votes */}
+        {activeTab === "votes" && (
+          <div className="admin-votes-view">
+            <VotingManagement />
           </div>
         )}
       </div>

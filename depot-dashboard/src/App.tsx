@@ -4,6 +4,7 @@ import AdminPanel from "./components/AdminPanel";
 import StatsGrid from "./components/StatsGrid";
 import DepotCard from "./components/DepotCard";
 import UpdateNotification from "./components/UpdateNotification";
+import VotingChart from "./components/VotingChart";
 import "./App.css";
 import "./auth.css";
 import { useAuth } from "./auth";
@@ -66,6 +67,7 @@ function App(): ReactNode {
   const [subscriptionAlert, setSubscriptionAlert] = useState<boolean>(false);
   const [isRenewingSubscription, setIsRenewingSubscription] =
     useState<boolean>(false);
+  const [showVotingChart, setShowVotingChart] = useState<boolean>(false);
 
   // Appliquer dark mode au body
   useEffect(() => {
@@ -206,8 +208,8 @@ function App(): ReactNode {
         signUpData.password,
         signUpData.phone,
         signUpData.phone_whatsapp,
-        signUpData.address, // Adresse du dépôt
         signUpData.quartier,
+        signUpData.address, // Adresse du dépôt
         signUpData.depot_name, // Nom personnalisé du dépôt
       );
 
@@ -518,6 +520,7 @@ function App(): ReactNode {
         }}
         onToggleDarkMode={toggleDarkMode}
         isDarkMode={isDarkMode}
+        onShowVotingChart={() => setShowVotingChart(true)}
       />
 
       <div className="main-container">
@@ -605,6 +608,12 @@ function App(): ReactNode {
       <footer className="app-footer">
         <p>© 2026 | Depot Dashboard Genesis v1.0 | Powered by Vision Unique</p>
       </footer>
+
+      {/* 🗳️ Modal Classement des Votes */}
+      <VotingChart
+        isOpen={showVotingChart}
+        onClose={() => setShowVotingChart(false)}
+      />
     </div>
   );
 }

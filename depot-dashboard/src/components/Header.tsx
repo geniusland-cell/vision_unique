@@ -7,6 +7,7 @@ interface HeaderProps {
   onLogout: () => Promise<void>;
   onToggleDarkMode: () => void;
   isDarkMode: boolean;
+  onShowVotingChart?: () => void;
 }
 
 const Header = ({
@@ -14,6 +15,7 @@ const Header = ({
   onLogout,
   onToggleDarkMode,
   isDarkMode,
+  onShowVotingChart,
 }: HeaderProps): ReactNode => {
   return (
     <div className="header">
@@ -37,6 +39,15 @@ const Header = ({
                   .toUpperCase()}
               </div>
             </>
+          )}
+          {onShowVotingChart && (
+            <button
+              className="voting-chart-btn"
+              onClick={onShowVotingChart}
+              title="Voir le classement des votes"
+            >
+              📊 Classement
+            </button>
           )}
           <button
             className="dark-mode-toggle"

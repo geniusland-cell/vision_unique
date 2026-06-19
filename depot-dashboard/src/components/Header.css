@@ -82,6 +82,31 @@
   transform: translateY(0);
 }
 
+.voting-chart-btn {
+  padding: 10px 16px;
+  background: linear-gradient(45deg, #4caf50, #66bb6a);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 10px rgba(76, 175, 80, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.voting-chart-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+}
+
+.voting-chart-btn:active {
+  transform: translateY(0);
+}
+
 .logout-btn {
   padding: 10px 20px;
   background: linear-gradient(45deg, #009739, #ce1126);

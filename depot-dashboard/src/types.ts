@@ -47,6 +47,9 @@ export interface Depot {
   quartier?: string;
   subscription_status?: "active" | "inactive";
   subscription_expiry?: string; // ISO date (calculated as now + 30 days)
+  tier?: "basic" | "advanced" | "elite" | "none"; // Premium tier
+  tier_expiry?: string; // ISO date - when tier expires
+  tier_rank?: number; // Position within the tier for this category
   created_at: string; // ISO date
   updated_at: string; // ISO date
 }
