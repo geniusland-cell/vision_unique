@@ -9,7 +9,6 @@ import {
   updateSubscription,
   upgradeToPremium,
 } from "../firebase";
-import FirebaseStats from "./FirebaseStats";
 import VotingManagement from "./VotingManagement";
 import type { User } from "../types";
 import "../styles/AdminPanel.css";
@@ -189,12 +188,6 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
             onClick={() => setActiveTab("managers")}
           >
             👥 Managers
-          </button>
-          <button
-            className={`tab-button ${activeTab === "stats" ? "active" : ""}`}
-            onClick={() => setActiveTab("stats")}
-          >
-            📊 Statistiques Firebase
           </button>
           <button
             className={`tab-button ${activeTab === "votes" ? "active" : ""}`}
@@ -520,13 +513,6 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                 <div className="no-data">Impossible de charger les détails</div>
               )}
             </div>
-          </div>
-        )}
-
-        {/* Contenu Statistiques Firebase */}
-        {activeTab === "stats" && (
-          <div className="admin-stats-view">
-            <FirebaseStats />
           </div>
         )}
 

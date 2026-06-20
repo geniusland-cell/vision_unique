@@ -1,7 +1,6 @@
 import { useState, useEffect, ReactNode } from "react";
 import Header from "./components/Header";
 import AdminPanel from "./components/AdminPanel";
-import StatsGrid from "./components/StatsGrid";
 import DepotCard from "./components/DepotCard";
 import UpdateNotification from "./components/UpdateNotification";
 import VotingChart from "./components/VotingChart";
@@ -10,15 +9,11 @@ import "./auth.css";
 import { useAuth } from "./auth";
 import {
   registerUser,
-  getQuartiers,
-  initializeQuartiers,
-  detectAndLogin,
   calculateDaysRemaining,
-  updateSubscription,
   markPaymentPending,
-  checkAndDeactivateExpiredDepots,
+  detectAndLogin,
 } from "./firebase";
-import { getManagerDepots, getDepotProducts } from "./firebase";
+import { getManagerDepots } from "./firebase";
 import type { Depot, Quartier } from "./types";
 
 function App(): ReactNode {
@@ -58,18 +53,14 @@ function App(): ReactNode {
   });
   const [depots, setDepots] = useState<Depot[]>([]);
   const [selectedDepot, setSelectedDepot] = useState<Depot | null>(null);
-  const [depotProducts, setDepotProducts] = useState<any[]>([]);
-  const [showStats, setShowStats] = useState<boolean>(false);
   const [isLoadingDepots, setIsLoadingDepots] = useState<boolean>(false);
 
-  // ← NOUVEAU: States pour la gestion d'expiration d'abonnement
   const [daysRemaining, setDaysRemaining] = useState<number | null>(null);
   const [subscriptionAlert, setSubscriptionAlert] = useState<boolean>(false);
   const [isRenewingSubscription, setIsRenewingSubscription] =
     useState<boolean>(false);
   const [showVotingChart, setShowVotingChart] = useState<boolean>(false);
 
-  // Appliquer dark mode au body
   useEffect(() => {
     if (isDarkMode) {
       document.body.classList.add("dark-mode");
@@ -78,7 +69,6 @@ function App(): ReactNode {
     }
   }, [isDarkMode]);
 
-  // Charger les quartier au montage
   useEffect(() => {
     // Quartiers pre-definis de Brazaville
     const defaultQuartiers = [
@@ -94,12 +84,8 @@ function App(): ReactNode {
     ];
 
     setQuartiers(defaultQuartiers as Quartier[]);
-
-    // Les quartiers sont gérés manuellement via un script de seed,
-    // pas besoin de les créer automatiquement lors du démarrage
   }, []);
 
-  // Charger les données du manager une fois connecté
   useEffect(() => {
     if (user) {
       const loadManagerData = async () => {
@@ -107,17 +93,12 @@ function App(): ReactNode {
           setIsLoadingDepots(true);
           console.log(" Chargement des dépôts du manager:", user.id);
 
-          // Charger les dépôts du manager
           const depotsResult = await getManagerDepots(user.id);
           const depotsData = depotsResult.success ? depotsResult.data : [];
           setDepots(depotsData || []);
 
           if (depotsData && depotsData.length > 0) {
             setSelectedDepot(depotsData[0]);
-
-            // Charger les produits du premier dépôt
-            const productsResult = await getDepotProducts(depotsData[0].id);
-            setDepotProducts(productsResult.data || []);
           }
 
           console.log(" Données du manager chargées");
@@ -132,7 +113,6 @@ function App(): ReactNode {
     }
   }, [user]);
 
-  // ← NOUVEAU: useEffect pour calculer l'expiration de l'abonnement
   useEffect(() => {
     if (selectedDepot && selectedDepot.subscription_expiry) {
       const remaining = calculateDaysRemaining(
@@ -140,7 +120,6 @@ function App(): ReactNode {
       );
       setDaysRemaining(remaining);
 
-      // Afficher l'alerte si < 7 jours ou expiré
       if (remaining < 7) {
         setSubscriptionAlert(true);
       } else {
@@ -163,18 +142,12 @@ function App(): ReactNode {
     const depot = depots.find((d) => d.id === depotId);
     if (depot) {
       setSelectedDepot(depot);
-
-      // Charger les produits du nouveau dépôt
-      const productsResult = await getDepotProducts(depot.id);
-      setDepotProducts(productsResult.data || []);
     }
   };
 
   const handleDepotUpdated = (updatedDepot: Depot) => {
-    // Mettre à jour le dépôt sélectionné avec les nouvelles données
     setSelectedDepot(updatedDepot);
 
-    // Mettre à jour le dépôt dans la liste des dépôts
     setDepots((prevDepots) =>
       prevDepots.map((d) => (d.id === updatedDepot.id ? updatedDepot : d)),
     );
@@ -242,7 +215,6 @@ function App(): ReactNode {
     }
   };
 
-  // ← NOUVEAU: Fonction pour renouveler l'abonnement (bouton "Payer")
   const handleRenewSubscription = async () => {
     if (!selectedDepot) return;
 
@@ -253,7 +225,7 @@ function App(): ReactNode {
       const res = await markPaymentPending(selectedDepot.id);
       if (res.success) {
         alert(
-          "Notification envoyée à l'admin. Veuillez effectuer le paiement MOMO au +242 067 67 81 28 et l'admin renouvellera le dépôt.",
+          "Notification envoyée à l'admin. Veuillez effectuer le paiement MOMO au +242 06 767 81 28 et l'admin renouvellera le dépôt.",
         );
       } else {
         alert("Erreur notification: " + (res.error || "unknown"));
@@ -275,7 +247,7 @@ function App(): ReactNode {
             <div className="login-header">
               <div className="logo">
                 <div className="logo-icon">D</div>
-                <span>DÉPÔT DASHBOARD</span>
+                <span>DEPÔT DASHBOARD</span>
               </div>
               <h2>
                 {isSignUp ? "Créer un compte Manager" : "Connexion Manager"}
@@ -530,21 +502,6 @@ function App(): ReactNode {
             <div className="spinner"></div>
             <p>Chargement des dépôts...</p>
           </div>
-        )}
-
-        {/* Bouton de statistiques */}
-        {!isLoadingDepots && (
-          <button
-            className="stats-toggle-btn"
-            onClick={() => setShowStats(!showStats)}
-          >
-            📊 Statistiques
-          </button>
-        )}
-
-        {/* Afficher les stats seulement si showStats est true */}
-        {showStats && !isLoadingDepots && (
-          <StatsGrid products={depotProducts} />
         )}
 
         {/* Depot Selector */}

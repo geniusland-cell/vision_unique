@@ -95,6 +95,16 @@
       }
     },
 
+    "votes_settings": {
+      ".read": "auth != null",
+      ".write": "root.child('users').child(auth.uid).child('role').val() === 'admin'",
+
+      "$quarter": {
+        ".read": "auth != null",
+        ".write": "root.child('users').child(auth.uid).child('role').val() === 'admin'"
+      }
+    },
+
     "categories": {
       ".read": "auth != null",
       ".write": "root.child('users').child(auth.uid).child('role').val() === 'admin'",
