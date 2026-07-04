@@ -39,8 +39,7 @@ const VotingChart = ({ isOpen, onClose }: VotingChartProps): ReactNode => {
         setRankings(data);
         setQuarter(getCurrentQuarter());
         setLoading(false);
-      } catch (err) {
-        console.error(" Erreur chargement données:", err);
+      } catch {
         setLoading(false);
       }
     };

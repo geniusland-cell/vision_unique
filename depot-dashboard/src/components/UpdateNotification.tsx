@@ -34,9 +34,7 @@ export default function UpdateNotification(): ReactNode {
             setUpdateAvailable(true);
           }
           sessionStorage.setItem("app_version", newVersion);
-        } catch (error) {
-          console.error("Error checking for updates:", error);
-        }
+        } catch {}
       }
     };
 

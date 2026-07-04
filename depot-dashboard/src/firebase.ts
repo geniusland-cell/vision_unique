@@ -14,6 +14,24 @@ import {
 } from "firebase/storage";
 import type { User, Depot, Category, FirebaseResponse } from "./types";
 import { getCoordinatesForQuartier } from "./utils/quartierCoordinates";
+import {
+  calculateVotingEndDate,
+  normalizeVotingDurationDays,
+} from "./utils/voting.ts";
+
+const isDevelopment = import.meta.env.DEV;
+
+const safeLog = (message: string, ...args: unknown[]) => {
+  if (isDevelopment) {
+    console.log(message, ...args);
+  }
+};
+
+const safeError = (message: string, ...args: unknown[]) => {
+  if (isDevelopment) {
+    console.error(message, ...args);
+  }
+};
 
 // Configuration Firebase (IDENTIQUE)
 const firebaseConfig = {
@@ -34,9 +52,7 @@ export const auth = getAuth(app);
 export const db = getDatabase(app);
 export const storage = getStorage(app);
 
-// =====================================
-// HELPER: Generate email from phone
-// =====================================
+
 function generateEmailFromPhone(phone: string): string {
   // Remove all non-numeric characters
   let cleanPhone = phone.replace(/[^\d]/g, "");
@@ -49,9 +65,7 @@ function generateEmailFromPhone(phone: string): string {
   return `manager${cleanPhone}@maman-power.app`;
 }
 
-// =====================================
-// INSCRIPTION - Create new manager user + auto-create depot
-// =====================================
+
 export const registerUser = async (
   name: string,
   phone: string,
@@ -87,7 +101,7 @@ export const registerUser = async (
 
     // Generate email from phone
     const userEmail = generateEmailFromPhone(phone);
-    console.log("📝 Inscription Manager pour", phone, "→", userEmail);
+    safeLog("📝 Inscription Manager pour", phone, "→", userEmail);
 
     // 1. Create Firebase Auth user
     const { user: authUser } = await createUserWithEmailAndPassword(
@@ -96,7 +110,7 @@ export const registerUser = async (
       password,
     );
 
-    console.log("✅ Compte Manager créé. UID:", authUser.uid);
+    safeLog("✅ Compte Manager créé.");
 
     // 2. Create user profile in Realtime Database
     const userRef = ref(db, `users/${authUser.uid}`);
@@ -113,7 +127,7 @@ export const registerUser = async (
       updated_at: new Date().toISOString(),
     });
 
-    console.log("✅ Profil Manager créé dans Realtime DB");
+    safeLog("✅ Profil Manager créé dans Realtime DB");
 
     // 3. Auto-create unique depot for this manager
     const newDepotRef = push(ref(db, "depots"));
@@ -143,7 +157,7 @@ export const registerUser = async (
       updated_at: new Date().toISOString(),
     });
 
-    console.log("✅ Dépôt auto-créé:", depotName);
+    safeLog("✅ Dépôt auto-créé.");
 
     // 4. Initialize depot with default products
     await initializeDepotProducts(newDepotRef.key);
@@ -164,7 +178,7 @@ export const registerUser = async (
     };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error("❌ Erreur d'inscription Manager:", errorMsg);
+    safeError("❌ Erreur d'inscription Manager:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -177,7 +191,7 @@ export const loginByEmail = async (
   password: string,
 ): Promise<FirebaseResponse<User>> => {
   try {
-    console.log("📧 Tentative connexion ADMIN pour:", email);
+    safeLog("📧 Tentative connexion ADMIN");
 
     // 1. Authenticate with Firebase
     const { user: authUser } = await signInWithEmailAndPassword(
@@ -186,14 +200,14 @@ export const loginByEmail = async (
       password,
     );
 
-    console.log("✅ Authentification ADMIN réussie pour:", email);
+    safeLog("✅ Authentification ADMIN réussie");
 
     // 2. Get user profile from Realtime Database
     const userRef = ref(db, `users/${authUser.uid}`);
     const userSnap = await get(userRef);
 
     if (!userSnap.exists()) {
-      console.error("❌ Profil ADMIN non trouvé:", authUser.uid);
+      safeError("❌ Profil ADMIN non trouvé");
       return { success: false, error: "Profil utilisateur non trouvé" };
     }
 
@@ -201,11 +215,11 @@ export const loginByEmail = async (
 
     // Verify admin role
     if (userData.role !== "admin") {
-      console.error("❌ L'utilisateur n'est pas un administrateur");
+      safeError("❌ L'utilisateur n'est pas un administrateur");
       return { success: false, error: "Accès réservé aux administrateurs" };
     }
 
-    console.log("✅ Profil ADMIN chargé:", userData.name);
+    safeLog("✅ Profil ADMIN chargé");
 
     return {
       success: true,
@@ -213,7 +227,7 @@ export const loginByEmail = async (
     };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error("❌ Erreur connexion ADMIN:", errorMsg);
+    safeError("❌ Erreur connexion ADMIN:", errorMsg);
     return { success: false, error: "Email ou mot de passe incorrect" };
   }
 };
@@ -227,10 +241,10 @@ export const detectAndLogin = async (
 ): Promise<FirebaseResponse<User>> => {
   // Check if it's an email (contains @)
   if (identifier.includes("@")) {
-    console.log("📧 Détecté: EMAIL → Tentative connexion ADMIN");
+    safeLog("📧 Détecté: EMAIL → Tentative connexion ADMIN");
     return loginByEmail(identifier, password);
   } else {
-    console.log("📱 Détecté: TÉLÉPHONE → Tentative connexion MANAGER");
+    safeLog("📱 Détecté: TÉLÉPHONE → Tentative connexion MANAGER");
     return loginByPhone(identifier, password);
   }
 };
@@ -243,7 +257,7 @@ export const loginByPhone = async (
   password: string,
 ): Promise<FirebaseResponse<User>> => {
   try {
-    console.log("📱 Tentative connexion Manager pour:", phone);
+    safeLog("📱 Tentative connexion Manager");
 
     // 1. Generate email from phone
     const userEmail = generateEmailFromPhone(phone);
@@ -255,19 +269,19 @@ export const loginByPhone = async (
       password,
     );
 
-    console.log("✅ Authentification Manager réussie pour:", phone);
+    safeLog("✅ Authentification Manager réussie");
 
     // 3. Get user profile from Realtime Database
     const userRef = ref(db, `users/${authUser.uid}`);
     const userSnap = await get(userRef);
 
     if (!userSnap.exists()) {
-      console.error("❌ Profil Manager non trouvé:", authUser.uid);
+      safeError("❌ Profil Manager non trouvé");
       return { success: false, error: "Profil utilisateur non trouvé" };
     }
 
     const userData = userSnap.val();
-    console.log("✅ Profil Manager chargé:", userData.name);
+    safeLog("✅ Profil Manager chargé");
 
     return {
       success: true,
@@ -275,7 +289,7 @@ export const loginByPhone = async (
     };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error("❌ Erreur connexion Manager:", errorMsg);
+    safeError("❌ Erreur connexion Manager:", errorMsg);
     return { success: false, error: "Numéro ou mot de passe incorrect" };
   }
 };
@@ -286,11 +300,11 @@ export const loginByPhone = async (
 export const logoutUser = async (): Promise<FirebaseResponse<null>> => {
   try {
     await signOut(auth);
-    console.log("✅ Déconnexion Manager réussie");
+    safeLog("✅ Déconnexion Manager réussie");
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error("❌ Erreur déconnexion:", errorMsg);
+    safeError("❌ Erreur déconnexion:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -311,7 +325,7 @@ export const getCurrentUser = async (
     return { success: false, error: "Utilisateur non trouvé" };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error("❌ Erreur récupération Manager:", errorMsg);
+    safeError("❌ Erreur récupération Manager:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -342,7 +356,7 @@ export const getManagerDepots = async (
     return { success: true, data: depots };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error("❌ Erreur récupération dépôts:", errorMsg);
+    safeError("❌ Erreur récupération dépôts:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -373,7 +387,7 @@ export const getCategories = async (): Promise<
     return { success: true, data: categories };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error("❌ Erreur récupération catégories:", errorMsg);
+    safeError("❌ Erreur récupération catégories:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -393,11 +407,11 @@ export const createCategory = async (
       is_active: true,
       created_at: new Date().toISOString(),
     });
-    console.log(" Catégorie créée:", categoryData.name);
+    safeLog(" Catégorie créée");
     return { success: true, data: { id: newCatRef.key, ...categoryData } };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur création catégorie:", errorMsg);
+    safeError(" Erreur création catégorie:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -422,11 +436,11 @@ export const updateMultipleProducts = async (
       });
       results.push({ id: update.depotProductId, success: true });
     }
-    console.log(" Produits mis à jour:", results.length);
+    safeLog(" Produits mis à jour");
     return { success: true, data: results };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur mise à jour produits:", errorMsg);
+    safeError(" Erreur mise à jour produits:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -441,11 +455,11 @@ export const deleteDepotProduct = async (
   try {
     const productRef = ref(db, `depots/${depotId}/products/${productId}`);
     await set(productRef, null); // Soft delete by setting to null
-    console.log(" Produit supprimé");
+    safeLog(" Produit supprimé");
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur suppression produit:", errorMsg);
+    safeError(" Erreur suppression produit:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -471,7 +485,7 @@ export const getQuartiers = async (): Promise<FirebaseResponse<any[]>> => {
     return { success: true, data: quartiers };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur récupération quartiers:", errorMsg);
+    safeError(" Erreur récupération quartiers:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -509,7 +523,7 @@ export const backfillDepotCoordinates = async (): Promise<void> => {
     }
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur backfill coordonnées dépôts:", errorMsg);
+    safeError(" Erreur backfill coordonnées dépôts:", errorMsg);
   }
 };
 
@@ -520,7 +534,7 @@ export const initializeQuartiers = async (): Promise<
   FirebaseResponse<null>
 > => {
   try {
-    console.log("📍 Création des quartiers...");
+    safeLog("📍 Création des quartiers...");
 
     const quartiers = [
       {
@@ -600,11 +614,11 @@ export const initializeQuartiers = async (): Promise<
       });
     }
 
-    console.log(" Quartiers créés");
+    safeLog(" Quartiers créés");
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur création quartiers:", errorMsg);
+    safeError(" Erreur création quartiers:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -616,7 +630,7 @@ export const initializeDepots = async (
   managerId: string,
 ): Promise<FirebaseResponse<any>> => {
   try {
-    console.log(" Initialisation des dépôts pour manager:", managerId);
+    safeLog(" Initialisation des dépôts pour manager");
 
     // Dépôt de Brazzaville avec numéros directs et WhatsApp
     const depots = [
@@ -649,13 +663,13 @@ export const initializeDepots = async (
         updated_at: new Date().toISOString(),
       });
       createdDepots.push({ id: newDepotRef.key, ...depot });
-      console.log(" Dépôt créé:", depot.name);
+      safeLog(" Dépôt créé");
     }
 
     return { success: true, data: createdDepots };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur initialisation dépôts:", errorMsg);
+    safeError(" Erreur initialisation dépôts:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -699,11 +713,11 @@ export const initializeDepotProducts = async (
       });
     }
 
-    console.log(` ${products.length} produits initialisés pour le dépôt`);
+    safeLog(` ${products.length} produits initialisés pour le dépôt`);
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur initialisation produits:", errorMsg);
+    safeError(" Erreur initialisation produits:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -727,7 +741,7 @@ export const getDepotProducts = async (
     return { success: true, data: products };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur récupération produits:", errorMsg);
+    safeError(" Erreur récupération produits:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -756,7 +770,7 @@ export const getDepotStats = async (
     return { success: true, data: stats };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur calcul stats:", errorMsg);
+    safeError(" Erreur calcul stats:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -785,7 +799,7 @@ export const updateDepotProduct = async (
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur mise à jour produit:", errorMsg);
+    safeError(" Erreur mise à jour produit:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -820,7 +834,7 @@ export const addDepotProduct = async (
     return { success: true, data: { productId: newProductRef.key } };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur ajout produit:", errorMsg);
+    safeError(" Erreur ajout produit:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -838,7 +852,7 @@ export const removeDepotProduct = async (
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur suppression produit:", errorMsg);
+    safeError(" Erreur suppression produit:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -871,11 +885,11 @@ export const updateDepot = async (
 
     await update(depotRef, updates);
 
-    console.log(" Dépôt mis à jour:", depotId);
+    safeLog(" Dépôt mis à jour");
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur mise à jour dépôt:", errorMsg);
+    safeError(" Erreur mise à jour dépôt:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -903,7 +917,7 @@ export const getDepotById = async (
     };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur récupération dépôt:", errorMsg);
+    safeError(" Erreur récupération dépôt:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -928,7 +942,7 @@ export const getAllProducts = async () => {
     return { success: true, data: products };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur récupération produits:", errorMsg);
+    safeError(" Erreur récupération produits:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -959,11 +973,11 @@ export const getAllManagers = async () => {
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
       );
 
-    console.log(` Récupéré ${managers.length} managers`);
+    safeLog(` Récupéré ${managers.length} managers`);
     return { success: true, data: managers };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur récupération managers:", errorMsg);
+    safeError(" Erreur récupération managers:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -1029,7 +1043,7 @@ export const getManagerDetailsForAdmin = async (
     };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur récupération détails manager:", errorMsg);
+    safeError(" Erreur récupération détails manager:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -1056,7 +1070,7 @@ export const uploadProductImage = async (
       return { success: false, error: "L'image doit faire moins de 5MB" };
     }
 
-    console.log("📸 Upload image:", file.name);
+    safeLog("📸 Upload image");
 
     // Créer un nom unique pour l'image
     const timestamp = Date.now();
@@ -1069,11 +1083,11 @@ export const uploadProductImage = async (
     // Récupérer l'URL publique
     const downloadURL = await getDownloadURL(snapshot.ref);
 
-    console.log(" Image uploadée:", downloadURL);
+    safeLog(" Image uploadée");
     return { success: true, data: { imageUrl: downloadURL } };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur upload image:", errorMsg);
+    safeError(" Erreur upload image:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -1089,11 +1103,11 @@ export const banManager = async (
       updated_at: new Date().toISOString(),
     });
 
-    console.log(" Manager banni:", managerId);
+    safeLog(" Manager banni");
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur bannissement manager:", errorMsg);
+    safeError(" Erreur bannissement manager:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -1109,11 +1123,11 @@ export const unbanManager = async (
       updated_at: new Date().toISOString(),
     });
 
-    console.log(" Manager débanni:", managerId);
+    safeLog(" Manager débanni");
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur débannissement manager:", errorMsg);
+    safeError(" Erreur débannissement manager:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -1129,7 +1143,7 @@ export const createAdminAccount = async (
   reference: string,
 ): Promise<FirebaseResponse<any>> => {
   try {
-    console.log("👨‍💼 Création compte ADMIN:", email);
+    safeLog("👨‍💼 Création compte ADMIN");
 
     // 1. Create Firebase Auth user
     const { user: authUser } = await createUserWithEmailAndPassword(
@@ -1138,7 +1152,7 @@ export const createAdminAccount = async (
       password,
     );
 
-    console.log(" Compte Admin créé. UID:", authUser.uid);
+    safeLog(" Compte Admin créé.");
 
     // 2. Create admin profile in Realtime Database
     const userRef = ref(db, `users/${authUser.uid}`);
@@ -1154,7 +1168,7 @@ export const createAdminAccount = async (
       updated_at: new Date().toISOString(),
     });
 
-    console.log(" Profil Admin créé dans Realtime DB");
+    safeLog(" Profil Admin créé dans Realtime DB");
 
     return {
       success: true,
@@ -1170,7 +1184,7 @@ export const createAdminAccount = async (
     };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur création compte Admin:", errorMsg);
+    safeError(" Erreur création compte Admin:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -1233,11 +1247,11 @@ export const updateSubscription = async (
       updated_at: new Date().toISOString(),
     });
 
-    console.log(" Abonnement renouvelé pour dépôt:", depotId);
+    safeLog(" Abonnement renouvelé pour dépôt");
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur renouvellement abonnement:", errorMsg);
+    safeError(" Erreur renouvellement abonnement:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -1284,16 +1298,11 @@ export const updateSubscriptionWithTier = async (
 
     await update(depotRef, updates);
 
-    console.log(
-      " Abonnement renouvelé avec tier pour dépôt:",
-      depotId,
-      "Tier:",
-      tier,
-    );
+    safeLog(" Abonnement renouvelé avec tier pour dépôt");
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur renouvellement abonnement avec tier:", errorMsg);
+    safeError(" Erreur renouvellement abonnement avec tier:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -1320,18 +1329,11 @@ export const markPaymentPending = async (
       updated_at: new Date().toISOString(),
     });
 
-    console.log(
-      " Paiement en attente marqué pour dépôt:",
-      depotId,
-      "Montant:",
-      amount,
-      "Tier:",
-      tier,
-    );
+    safeLog(" Paiement en attente marqué pour dépôt");
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur marquage paiement:", errorMsg);
+    safeError(" Erreur marquage paiement:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -1361,13 +1363,11 @@ export const upgradeTier = async (
       updated_at: new Date().toISOString(),
     });
 
-    console.log(
-      `✅ Tier ${newTier} appliqué au dépôt ${depotId} jusqu'au ${tierExpiryDate}`,
-    );
+    safeLog(`✅ Tier ${newTier} appliqué au dépôt`);
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur upgrade tier:", errorMsg);
+    safeError(" Erreur upgrade tier:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -1386,11 +1386,11 @@ export const removeTier = async (
       updated_at: new Date().toISOString(),
     });
 
-    console.log("✅ Tier annulé pour dépôt:", depotId);
+    safeLog("✅ Tier annulé pour dépôt");
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur annulation tier:", errorMsg);
+    safeError(" Erreur annulation tier:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -1470,7 +1470,7 @@ export const getVotingRankings = async (): Promise<
 
     return enriched;
   } catch (err: unknown) {
-    console.error(" Erreur classement votes:", err);
+    safeError(" Erreur classement votes:", err);
     return [];
   }
 };
@@ -1499,11 +1499,11 @@ export const launchVoting = async (
       updated_at: new Date().toISOString(),
     });
 
-    console.log(`✅ Votes lancés pour ${currentQuarter} jusqu'au ${endsAt}`);
+    safeLog(`✅ Votes lancés pour ${currentQuarter}`);
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur lancement votes:", errorMsg);
+    safeError(" Erreur lancement votes:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -1522,11 +1522,11 @@ export const closeVoting = async (): Promise<FirebaseResponse<null>> => {
       updated_at: new Date().toISOString(),
     });
 
-    console.log(`✅ Votes fermés pour ${currentQuarter}`);
+    safeLog(`✅ Votes fermés pour ${currentQuarter}`);
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur fermeture votes:", errorMsg);
+    safeError(" Erreur fermeture votes:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -1564,13 +1564,11 @@ export const updateVotingDuration = async (
 
     await update(votesSettingsRef, updatePayload);
 
-    console.log(
-      `✅ Durée de vote mise à jour pour ${currentQuarter}: ${normalizedDuration} jours`,
-    );
+    safeLog(`✅ Durée de vote mise à jour pour ${currentQuarter}`);
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur mise à jour durée votes:", errorMsg);
+    safeError(" Erreur mise à jour durée votes:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -1595,7 +1593,7 @@ export const getVotingStatus = async (): Promise<any> => {
 
     return snapshot.val();
   } catch (err: unknown) {
-    console.error(" Erreur obtention statut votes:", err);
+    safeError(" Erreur obtention statut votes:", err);
     return {
       status: "PENDING",
       started_at: null,
@@ -1645,13 +1643,13 @@ export const migrateExistingDepots = async (): Promise<any> => {
     // Appliquer toutes les mises à jour en une seule opération
     if (migratedCount > 0) {
       await update(ref(db), updates);
-      console.log(` Migration: ${migratedCount} dépôts migrés`);
+      safeLog(` Migration: ${migratedCount} dépôts migrés`);
     }
 
     return { success: true, migratedCount };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur migration dépôts:", errorMsg);
+    safeError(" Erreur migration dépôts:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -1686,11 +1684,7 @@ export const checkAndDeactivateExpiredDepots = async (): Promise<any> => {
 
         // Si la date d'expiration est passée ET le dépôt est actif
         if (expiryDate < now && depot.is_active !== false) {
-          console.log(
-            ` ⚠️ Dépôt ${depot.name} expiré depuis ${Math.floor(
-              (now.getTime() - expiryDate.getTime()) / (1000 * 60 * 60 * 24),
-            )} jours - Désactivation...`,
-          );
+          safeLog(" ⚠️ Dépôt expiré - Désactivation...");
 
           updates[`depots/${depotId}/is_active`] = false;
           updates[`depots/${depotId}/subscription_status`] = "inactive";
@@ -1702,13 +1696,13 @@ export const checkAndDeactivateExpiredDepots = async (): Promise<any> => {
     // Appliquer les mises à jour
     if (deactivatedCount > 0) {
       await update(ref(db), updates);
-      console.log(` ✅ ${deactivatedCount} dépôt(s) désactivé(s)`);
+      safeLog(` ✅ ${deactivatedCount} dépôt(s) désactivé(s)`);
     }
 
     return { success: true, deactivatedCount };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur vérification dépôts expirés:", errorMsg);
+    safeError(" Erreur vérification dépôts expirés:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -1742,13 +1736,11 @@ export const upgradeToPremium = async (
       updated_at: new Date().toISOString(),
     });
 
-    console.log(
-      ` Dépôt ${depotId} mis à niveau en ${tier} jusqu'au ${premiumUntil.toISOString()}`,
-    );
+    safeLog(` Dépôt mis à niveau en ${tier}`);
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error(" Erreur upgrade premium:", errorMsg);
+    safeError(" Erreur upgrade premium:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };

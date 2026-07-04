@@ -28,17 +28,12 @@ export default function CategoriesManagement({
   const getDepotCategories = (): Category[] => {
     if (products.length === 0 || categories.length === 0) return [];
 
-    console.log("All products:", products);
-    console.log("All categories available:", categories);
     const categoryIds = [
       ...new Set(products.map((p) => p.products?.category_id).filter(Boolean)),
     ];
-    console.log("Category IDs found:", categoryIds);
     const filteredCategories = categories.filter((cat) =>
       categoryIds.includes(cat.id),
     );
-    console.log("Filtered categories:", filteredCategories);
-    console.log("Categories length:", filteredCategories.length);
     return filteredCategories;
   };
 
@@ -54,7 +49,6 @@ export default function CategoriesManagement({
       try {
         const result = await createCategory(newCategory);
         if (result.success) {
-          console.log("Catégorie créée avec succès:", result.data);
           setNewCategory({ name: "", description: "" });
           setShowModal(false);
           alert("Catégorie ajoutée avec succès!");
@@ -63,8 +57,7 @@ export default function CategoriesManagement({
         } else {
           alert("Erreur lors de la création: " + result.error);
         }
-      } catch (error) {
-        console.error("Erreur création catégorie:", error);
+      } catch {
         alert("Erreur lors de la création de la catégorie");
       }
     }
@@ -72,13 +65,9 @@ export default function CategoriesManagement({
 
   const getCategoryQualities = (categoryId: string | null): any[] => {
     // Filtrer les produits par categorie
-    console.log("Products structure:", products);
-    console.log("Looking for category ID:", categoryId);
     const filtered = products.filter((p) => {
-      console.log("Product:", p);
       return p.products?.category_id === categoryId;
     });
-    console.log("Filtered products:", filtered);
     return filtered || [];
   };
 
@@ -119,8 +108,6 @@ export default function CategoriesManagement({
   };
 
   const handleSaveChanges = async () => {
-    console.log("Sauvegarde des modifications:", editingQualities);
-
     try {
       // Préparer les mises à jour multiples
       const updates = Object.entries(editingQualities).map(
@@ -135,7 +122,6 @@ export default function CategoriesManagement({
       const result = await updateMultipleProducts(updates);
 
       if (result.success) {
-        console.log("Modifications sauvegardées avec succès:", result.data);
         setEditingQualities({});
         setHasUnsavedChanges(false);
         alert("Modifications sauvegardées avec succès!");
@@ -144,8 +130,7 @@ export default function CategoriesManagement({
       } else {
         alert("Erreur lors de la sauvegarde: " + result.error);
       }
-    } catch (error) {
-      console.error("Erreur sauvegarde:", error);
+    } catch {
       alert("Erreur lors de la sauvegarde des modifications");
     }
   };
@@ -156,7 +141,6 @@ export default function CategoriesManagement({
   };
 
   const handleEditProduct = (product: any): void => {
-    console.log("Éditer le produit:", product);
     // Activer le mode édition pour ce produit
     setEditingQualities((prev) => ({
       ...prev,
@@ -170,7 +154,6 @@ export default function CategoriesManagement({
   };
 
   const handleDeleteProduct = async (product: any): Promise<void> => {
-    console.log("Supprimer le produit:", product);
     if (
       window.confirm(
         `Êtes-vous sûr de vouloir supprimer "${product.products?.name}" ?`,
@@ -185,8 +168,7 @@ export default function CategoriesManagement({
         } else {
           alert("Erreur lors de la suppression: " + result.error);
         }
-      } catch (error) {
-        console.error("Erreur suppression produit:", error);
+      } catch {
         alert("Erreur lors de la suppression du produit");
       }
     }

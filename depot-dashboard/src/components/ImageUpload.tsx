@@ -74,8 +74,7 @@ export default function ImageUpload({
       } else {
         throw new Error("Pas d'URL reçue de Cloudinary");
       }
-    } catch (err) {
-      console.error("Upload error:", err);
+    } catch {
       setError("❌ Erreur lors du téléchargement. Vérifiez votre connexion.");
       setIsUploading(false);
     }

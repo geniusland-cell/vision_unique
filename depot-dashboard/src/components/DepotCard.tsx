@@ -49,8 +49,7 @@ export default function DepotCard({
       } else {
         alert("❌ Erreur: " + result.error);
       }
-    } catch (error) {
-      console.error("Erreur sauvegarde:", error);
+    } catch {
       alert("❌ Erreur lors de la sauvegarde");
     } finally {
       setIsEditing(false);

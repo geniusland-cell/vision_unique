@@ -53,10 +53,6 @@ export const useAuth = (): {
             setUser(result.data);
             // SAUVEGARDER dans localStorage pour prochain chargement instantané
             localStorage.setItem("user", JSON.stringify(result.data));
-            console.log(
-              ` Session ${result.data.role.toUpperCase()} restaurée pour:`,
-              result.data.name,
-            );
           } else {
             setUser(null);
             localStorage.removeItem("user");
@@ -103,10 +99,6 @@ export const useAuth = (): {
         setUser(result.data);
         // SAUVEGARDER dans localStorage
         localStorage.setItem("user", JSON.stringify(result.data));
-        console.log(
-          ` Connexion ${result.data.role.toUpperCase()} réussie:`,
-          result.data.name,
-        );
         return { success: true, user: result.data };
       } else {
         const errorMsg = result.error || "Erreur de connexion";
@@ -166,7 +158,6 @@ export const useAuth = (): {
         setUser(result.data);
         // SAUVEGARDER dans localStorage
         localStorage.setItem("user", JSON.stringify(result.data));
-        console.log(" Inscription Manager réussie:", result.data.name);
         return { success: true, user: result.data };
       } else {
         const errorMsg = result.error || "Erreur d'inscription";
@@ -196,7 +187,6 @@ export const useAuth = (): {
       await logoutUser();
       setUser(null);
       localStorage.removeItem("user");
-      console.log(" Déconnexion réussie");
       return { success: true };
     } catch (err: unknown) {
       const errorMsg =

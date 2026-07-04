@@ -57,8 +57,7 @@ function VotingManagement({}: VotingManagementProps): ReactNode {
 
       const rankingsResult = await getVotingRankings();
       setRankings(rankingsResult || []);
-    } catch (error) {
-      console.error("Erreur chargement données votes:", error);
+    } catch {
     } finally {
       setLoading(false);
     }
@@ -78,8 +77,7 @@ function VotingManagement({}: VotingManagementProps): ReactNode {
         alert("❌ Erreur: " + result.error);
       }
       setLoading(false);
-    } catch (error) {
-      console.error("Erreur démarrage votes:", error);
+    } catch {
       setLoading(false);
     }
   };
@@ -96,8 +94,7 @@ function VotingManagement({}: VotingManagementProps): ReactNode {
         alert("❌ Erreur: " + result.error);
       }
       setLoading(false);
-    } catch (error) {
-      console.error("Erreur fermeture votes:", error);
+    } catch {
       setLoading(false);
     }
   };
@@ -116,8 +113,7 @@ function VotingManagement({}: VotingManagementProps): ReactNode {
         alert("❌ Erreur: " + result.error);
       }
       setLoading(false);
-    } catch (error) {
-      console.error("Erreur mise à jour durée votes:", error);
+    } catch {
       setLoading(false);
     }
   };
@@ -139,8 +135,7 @@ function VotingManagement({}: VotingManagementProps): ReactNode {
         loadVotingData();
       }
       setLoading(false);
-    } catch (error) {
-      console.error("Erreur upgrade tier:", error);
+    } catch {
       setLoading(false);
     }
   };
@@ -157,8 +152,7 @@ function VotingManagement({}: VotingManagementProps): ReactNode {
         loadVotingData();
       }
       setLoading(false);
-    } catch (error) {
-      console.error("Erreur suppression tier:", error);
+    } catch {
       setLoading(false);
     }
   };

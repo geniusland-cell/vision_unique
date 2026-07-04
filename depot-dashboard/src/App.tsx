@@ -100,7 +100,6 @@ function App(): ReactNode {
       const loadManagerData = async () => {
         try {
           setIsLoadingDepots(true);
-          console.log(" Chargement des dépôts du manager:", user.id);
 
           const depotsResult = await getManagerDepots(user.id);
           const depotsData = depotsResult.success ? depotsResult.data : [];
@@ -110,10 +109,8 @@ function App(): ReactNode {
             setSelectedDepot(depotsData[0]);
           }
 
-          console.log(" Données du manager chargées");
           setIsLoadingDepots(false);
-        } catch (error) {
-          console.error(" Erreur chargement données manager:", error);
+        } catch {
           setIsLoadingDepots(false);
         }
       };
@@ -215,8 +212,7 @@ function App(): ReactNode {
       } else {
         setSignUpError(result.error || "Erreur lors de la création du compte");
       }
-    } catch (error) {
-      console.error("Erreur inscription:", error);
+    } catch {
       setSignUpError(
         "Erreur lors de la création du compte: " +
           (error instanceof Error ? error.message : "Erreur inconnue"),
@@ -257,8 +253,7 @@ function App(): ReactNode {
       } else {
         alert("Erreur notification: " + (res.error || "unknown"));
       }
-    } catch (error) {
-      console.error("Erreur renouvellement abonnement:", error);
+    } catch {
       alert(" Erreur lors du renouvellement de l'abonnement");
     } finally {
       setIsRenewingSubscription(false);

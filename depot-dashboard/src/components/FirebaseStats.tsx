@@ -49,8 +49,7 @@ const FirebaseStats = (): ReactNode => {
       setError(
         "📍 Les statistiques détaillées sont disponibles dans la Console Firebase → Realtime Database → Usage",
       );
-    } catch (err) {
-      console.error("Erreur chargement stats Firebase:", err);
+    } catch {
       setError("Impossible de charger les statistiques détaillées");
     } finally {
       setLoading(false);

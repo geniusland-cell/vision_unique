@@ -45,8 +45,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
       setLoading(true);
       const result = await getAllManagers();
       setManagers(result?.data || []);
-    } catch (error) {
-      console.error("Erreur lors du chargement des managers:", error);
+    } catch {
     } finally {
       setLoading(false);
     }
@@ -60,11 +59,9 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
         setManagerDetails(result.data);
       } else {
         setManagerDetails(null);
-        console.error("Erreur:", result?.error);
       }
       setSelectedManager(managerId);
-    } catch (error) {
-      console.error("Erreur lors du chargement des détails du manager:", error);
+    } catch {
       setManagerDetails(null);
     } finally {
       setLoadingDetails(false);
@@ -80,9 +77,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
           setSelectedManager(null);
           setManagerDetails(null);
         }
-      } catch (error) {
-        console.error("Erreur lors du bannissement du manager:", error);
-      }
+      } catch {}
     }
   };
 
@@ -94,9 +89,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
         if (selectedManager === managerId) {
           loadManagerDetails(managerId);
         }
-      } catch (error) {
-        console.error("Erreur lors du débannissement du manager:", error);
-      }
+      } catch {}
     }
   };
 
@@ -115,8 +108,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
         } else {
           alert(" Erreur: " + result.error);
         }
-      } catch (error) {
-        console.error("Erreur lors du traitement du paiement:", error);
+      } catch {
         alert("Erreur lors du traitement du paiement");
       } finally {
         setPaymentLoading(null);
@@ -145,8 +137,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
         } else {
           alert(" Erreur: " + result.error);
         }
-      } catch (error) {
-        console.error("Erreur lors du traitement du paiement:", error);
+      } catch {
         alert("Erreur lors du traitement du paiement");
       } finally {
         setPaymentLoading(null);
@@ -173,8 +164,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
         } else {
           alert(" Erreur: " + result.error);
         }
-      } catch (error) {
-        console.error("Erreur lors de l'upgrade premium:", error);
+      } catch {
         alert("Erreur lors de l'upgrade premium");
       } finally {
         setPremiumLoading(null);
