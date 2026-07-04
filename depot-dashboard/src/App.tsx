@@ -12,6 +12,7 @@ import {
   calculateDaysRemaining,
   markPaymentPending,
   detectAndLogin,
+  backfillDepotCoordinates,
 } from "./firebase";
 import { getManagerDepots } from "./firebase";
 import type { Depot, Quartier } from "./types";
@@ -87,6 +88,14 @@ function App(): ReactNode {
   }, []);
 
   useEffect(() => {
+    const initializeDashboardData = async () => {
+      await backfillDepotCoordinates();
+    };
+
+    initializeDashboardData();
+  }, []);
+
+  useEffect(() => {
     if (user) {
       const loadManagerData = async () => {
         try {
@@ -120,7 +129,7 @@ function App(): ReactNode {
       );
       setDaysRemaining(remaining);
 
-      if (remaining < 7) {
+      if (selectedDepot.payment_pending || remaining < 7) {
         setSubscriptionAlert(true);
       } else {
         setSubscriptionAlert(false);
@@ -215,17 +224,35 @@ function App(): ReactNode {
     }
   };
 
-  const handleRenewSubscription = async () => {
+  const handleRenewSubscription = async (
+    amount: number,
+    tier: "none" | "basic" | "advanced" | "elite",
+  ) => {
     if (!selectedDepot) return;
 
     setIsRenewingSubscription(true);
     try {
       // Manager cannot directly renew via admin function.
       // Mark payment pending so admin can confirm and renew after MOMO reception.
-      const res = await markPaymentPending(selectedDepot.id);
+      const res = await markPaymentPending(selectedDepot.id, amount, tier);
       if (res.success) {
+        const pendingDepot = {
+          ...selectedDepot,
+          payment_pending: true,
+          payment_amount: amount,
+          requested_tier: tier,
+          subscription_status: "inactive" as const,
+        };
+
+        setSelectedDepot(pendingDepot);
+        setDepots((prevDepots) =>
+          prevDepots.map((depot) =>
+            depot.id === selectedDepot.id ? pendingDepot : depot,
+          ),
+        );
+
         alert(
-          "Notification envoyée à l'admin. Veuillez effectuer le paiement MOMO au +242 06 767 81 28 et l'admin renouvellera le dépôt.",
+          `Notification envoyée à l'admin. Veuillez effectuer le paiement de ${amount.toLocaleString()} FCFA au +242 06 767 81 28 et l'admin validera votre ${tier === "none" ? "renouvellement standard" : "upgrade " + tier.toUpperCase()}.`,
         );
       } else {
         alert("Erreur notification: " + (res.error || "unknown"));
@@ -540,15 +567,66 @@ function App(): ReactNode {
                 <p className="status-warning">Status: À renouveler</p>
               </>
             )}
-            <button
-              onClick={handleRenewSubscription}
-              disabled={isRenewingSubscription}
-              className="btn-payer"
-            >
-              {isRenewingSubscription
-                ? "⏳ Renouvellement..."
-                : "💳 Payer (+30 jours)"}
-            </button>
+            {selectedDepot.payment_pending ? (
+              <div className="payment-pending-message">
+                <p> Paiement en attente de validation admin</p>
+                <p className="payment-info">
+                  Effectuez le paiement MOMO au +242 06 767 81 28
+                </p>
+                <div className="payment-selection-info">
+                  <p>
+                    <strong>Montant sélectionné:</strong>{" "}
+                    {selectedDepot.payment_amount?.toLocaleString()} FCFA
+                  </p>
+                  <p>
+                    <strong>Forfait demandé:</strong>{" "}
+                    {selectedDepot.requested_tier === "none"
+                      ? "Standard"
+                      : selectedDepot.requested_tier?.toUpperCase()}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="payment-buttons-container">
+                <h4>Choisissez votre forfait:</h4>
+                <button
+                  onClick={() => handleRenewSubscription(6000, "none")}
+                  disabled={isRenewingSubscription}
+                  className="btn-payment-option btn-standard"
+                >
+                  💳 6,000 FCFA
+                  <br />
+                  <small>Standard (+30j)</small>
+                </button>
+                <button
+                  onClick={() => handleRenewSubscription(10000, "basic")}
+                  disabled={isRenewingSubscription}
+                  className="btn-payment-option btn-basic"
+                >
+                  💎 10,000 FCFA
+                  <br />
+                  <small>Premium Basic (Top 15)</small>
+                </button>
+                <button
+                  onClick={() => handleRenewSubscription(15000, "advanced")}
+                  disabled={isRenewingSubscription}
+                  className="btn-payment-option btn-advanced"
+                >
+                  💎💎 15,000 FCFA
+                  <br />
+                  <small>Premium Advanced (Top 10)</small>
+                </button>
+                <button
+                  onClick={() => handleRenewSubscription(20000, "elite")}
+                  disabled={isRenewingSubscription}
+                  className="btn-payment-option btn-elite"
+                >
+                  💎💎💎 20,000 FCFA
+                  <br />
+                  <small>Premium Elite (Top 3)</small>
+                </button>
+              </div>
+            )}
           </div>
         )}
 
@@ -566,7 +644,7 @@ function App(): ReactNode {
         <p>© 2026 | Depot Dashboard Genesis v1.0 | Powered by Vision Unique</p>
       </footer>
 
-      {/* 🗳️ Modal Classement des Votes */}
+      {/*  Modal Classement des Votes */}
       <VotingChart
         isOpen={showVotingChart}
         onClose={() => setShowVotingChart(false)}

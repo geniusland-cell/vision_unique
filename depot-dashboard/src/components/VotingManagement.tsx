@@ -5,6 +5,7 @@ import {
   getVotingStatus,
   launchVoting,
   closeVoting,
+  updateVotingDuration,
   upgradeTier,
   removeTier,
   getTierPrice,
@@ -101,6 +102,26 @@ function VotingManagement({}: VotingManagementProps): ReactNode {
     }
   };
 
+  const handleUpdateDuration = async () => {
+    try {
+      setLoading(true);
+      const result = await updateVotingDuration(
+        votingSettings.voting_period_days,
+      );
+
+      if (result.success) {
+        alert("✅ Durée des votes mise à jour");
+        loadVotingData();
+      } else {
+        alert("❌ Erreur: " + result.error);
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Erreur mise à jour durée votes:", error);
+      setLoading(false);
+    }
+  };
+
   const handleUpgradeTier = async () => {
     if (!selectedDepotId) {
       alert("Sélectionnez un dépôt");
@@ -174,10 +195,12 @@ function VotingManagement({}: VotingManagementProps): ReactNode {
             onChange={(e) =>
               setVotingSettings({
                 ...votingSettings,
-                voting_period_days: parseInt(e.target.value),
+                voting_period_days: Number.isNaN(parseInt(e.target.value))
+                  ? 3
+                  : parseInt(e.target.value),
               })
             }
-            disabled={votingSettings.status !== "PENDING"}
+            disabled={loading || votingSettings.status === "VOTING_CLOSED"}
           />
         </div>
 
@@ -187,6 +210,14 @@ function VotingManagement({}: VotingManagementProps): ReactNode {
           disabled={loading || votingSettings.status !== "PENDING"}
         >
           🟢 Lancer les votes
+        </button>
+
+        <button
+          className="btn-update"
+          onClick={handleUpdateDuration}
+          disabled={loading || votingSettings.status === "VOTING_CLOSED"}
+        >
+          📝 Modifier la durée
         </button>
 
         <button
@@ -306,12 +337,12 @@ function VotingManagement({}: VotingManagementProps): ReactNode {
           </div>
           <div className="pricing-card advanced">
             <h4>🟨 ADVANCED</h4>
-            <p className="price">20 000 FCFA</p>
+            <p className="price">15 000 FCFA</p>
             <p>Top 10 par catégorie</p>
           </div>
           <div className="pricing-card elite">
             <h4>🟥 ELITE</h4>
-            <p className="price">25 000 FCFA</p>
+            <p className="price">20 000 FCFA</p>
             <p>Top 3 par catégorie</p>
           </div>
         </div>

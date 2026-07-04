@@ -4,7 +4,6 @@
  * (Shared between maman-power-app and depot-dashboard)
  */
 
-// ==================== USER TYPES ====================
 export type UserRole = "vendor" | "manager" | "admin";
 
 export interface User {
@@ -15,23 +14,21 @@ export interface User {
   role: UserRole;
   is_active: boolean;
   subscription_status?: "active" | "inactive" | "free";
-  subscription_expiry?: string; // ISO date
+  subscription_expiry?: string;
   priority_level?: number;
-  created_at: string; // ISO date
-  updated_at: string; // ISO date
+  created_at: string;
+  updated_at: string;
 }
 
-// ==================== CATEGORY TYPES ====================
 export interface Category {
   id: string;
   name: string;
   emoji: string;
   description: string;
   is_active: boolean;
-  created_at: string; // ISO date
+  created_at: string;
 }
 
-// ==================== DEPOT TYPES ====================
 export interface Depot {
   id: string;
   user_id: string;
@@ -46,15 +43,20 @@ export interface Depot {
   is_active: boolean;
   quartier?: string;
   subscription_status?: "active" | "inactive";
-  subscription_expiry?: string; // ISO date (calculated as now + 30 days)
-  tier?: "basic" | "advanced" | "elite" | "none"; // Premium tier
-  tier_expiry?: string; // ISO date - when tier expires
-  tier_rank?: number; // Position within the tier for this category
-  created_at: string; // ISO date
-  updated_at: string; // ISO date
+  subscription_expiry?: string;
+  tier?: "basic" | "advanced" | "elite" | "none";
+  tier_expiry?: string;
+  tier_rank?: number;
+  payment_pending?: boolean;
+  payment_notified_at?: string;
+  payment_amount?: number; // Amount the depot wants to pay (6000, 10000, 15000, 20000)
+  requested_tier?: "none" | "basic" | "advanced" | "elite"; // Tier the depot wants to upgrade to
+  promo_image_url?: string;
+  promo_video_url?: string;
+  created_at: string;
+  updated_at: string;
 }
 
-// ==================== PRODUCT TYPES ====================
 export interface Product {
   id: string;
   depot_id: string;
@@ -63,21 +65,19 @@ export interface Product {
   description?: string;
   price: number;
   base_price?: number;
-  unit: string; // "kg", "L", "unité", etc.
+  unit: string;
   stock?: number;
   image_url?: string;
   is_available: boolean;
-  created_at: string; // ISO date
-  updated_at: string; // ISO date
+  created_at: string;
+  updated_at: string;
 }
 
-// ==================== DEPOT WITH PRODUCTS ====================
 export interface DepotWithProducts extends Depot {
   products: Product[];
-  distance?: number; // Calculated in km
+  distance?: number;
 }
 
-// ==================== FIREBASE RESPONSE TYPES ====================
 export interface FirebaseResponse<T> {
   success: boolean;
   data?: T;
@@ -102,7 +102,6 @@ export interface PaginationResponse<T> {
   error?: string;
 }
 
-// ==================== AUTH HOOK TYPES ====================
 export interface UseAuthReturn {
   user: User | null;
   loading: boolean;
@@ -119,23 +118,20 @@ export interface UseAuthReturn {
   isAdmin: () => boolean;
 }
 
-// ==================== CACHE TYPES ====================
 export interface CacheData {
   categories: Category[];
   depots: Depot[];
-  lastSync: string; // ISO date
-  expiresAt: string; // ISO date
+  lastSync: string;
+  expiresAt: string;
 }
 
-// ==================== SUBSCRIPTION TYPES ====================
 export interface SubscriptionStatus {
   isActive: boolean;
   daysRemaining: number;
-  expiryDate?: string; // ISO date
+  expiryDate?: string;
   status: "active" | "warning" | "inactive";
 }
 
-// ==================== QUARTIER TYPES ====================
 export interface Quartier {
   id: string;
   name: string;
@@ -144,7 +140,6 @@ export interface Quartier {
   description?: string;
 }
 
-// ==================== COMPONENT PROPS ====================
 export interface DepotCardProps {
   depot: DepotWithProducts;
   selectedCategory: string | null;

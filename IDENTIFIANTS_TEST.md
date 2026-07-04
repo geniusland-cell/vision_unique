@@ -64,8 +64,9 @@
 ## 🏪 DÉPÔTS CRÉÉS
 
 | Manager     | Dépôt                  | Quartier  | Tél Appel         | Tél WhatsApp      |
+
 | ----------- | ---------------------- | --------- | ----------------- | ----------------- |
-| Jean Backup | Dépôt Jean - Poto-Poto | Poto-Poto | +242 06 555 44 33 | +242 06 555 44 33 |
+
 
 ---
 
@@ -77,14 +78,6 @@
 - Mot de passe: revolution3d
 - Nom: Test User
 - App: http://localhost:5174/maman-power-app/
-
-✅ **MANAGER À TESTER** (Gérer son dépôt):
-
-- Téléphone: +242 06 555 44 33
-- Mot de passe: manager123
-- Nom: Jean Backup
-- App: http://localhost:5173/
-- Dépôt: Dépôt Jean - Poto-Poto
 
 ✅ **ADMIN À TESTER** (Gestion système + Bannir managers):
 

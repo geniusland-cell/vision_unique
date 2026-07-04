@@ -1,6 +1,4 @@
 import { useState, useEffect, ReactNode } from "react";
-import { getDatabase, ref, get } from "firebase/database";
-import { db } from "../firebase";
 import "../styles/FirebaseStats.css";
 
 interface FirebaseStatsData {
@@ -31,7 +29,6 @@ const FirebaseStats = (): ReactNode => {
 
   useEffect(() => {
     loadFirebaseStats();
-    // Rafraîchir les stats toutes les 5 minutes
     const interval = setInterval(loadFirebaseStats, 300000);
     return () => clearInterval(interval);
   }, []);

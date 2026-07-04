@@ -29,6 +29,8 @@ export default function DepotCard({
         editedDepot.name,
         editedDepot.phone,
         editedDepot.phone,
+        editedDepot.promo_image_url,
+        editedDepot.promo_video_url,
       );
 
       if (result.success) {
@@ -150,6 +152,69 @@ export default function DepotCard({
               {depot.is_active ? "🟢 Actif" : "🔴 Inactif"}
             </span>
           </div>
+
+          {/* Premium Promo Fields - Only for advanced/elite tiers */}
+          {isEditing &&
+            (depot.tier === "advanced" || depot.tier === "elite") && (
+              <>
+                <div className="detail-row premium-field">
+                  <label>🖼️ URL Image Promo</label>
+                  <input
+                    type="url"
+                    value={editedDepot.promo_image_url || ""}
+                    onChange={(e) =>
+                      handleChange("promo_image_url", e.target.value)
+                    }
+                    placeholder="https://..."
+                  />
+                </div>
+                {depot.tier === "elite" && (
+                  <div className="detail-row premium-field">
+                    <label>🎬 URL Vidéo Promo</label>
+                    <input
+                      type="url"
+                      value={editedDepot.promo_video_url || ""}
+                      onChange={(e) =>
+                        handleChange("promo_video_url", e.target.value)
+                      }
+                      placeholder="https://youtube.com/..."
+                    />
+                  </div>
+                )}
+              </>
+            )}
+
+          {/* Display Promo Content (View Mode) */}
+          {!isEditing &&
+            (depot.tier === "advanced" || depot.tier === "elite") && (
+              <>
+                {depot.promo_image_url && (
+                  <div className="detail-row promo-display">
+                    <label>🖼️ Image Promo</label>
+                    <img
+                      src={depot.promo_image_url}
+                      alt="Promo"
+                      className="promo-image"
+                      onClick={() =>
+                        window.open(depot.promo_image_url, "_blank")
+                      }
+                    />
+                  </div>
+                )}
+                {depot.tier === "elite" && depot.promo_video_url && (
+                  <div className="detail-row promo-display">
+                    <label>🎬 Vidéo Promo</label>
+                    <div className="promo-video-container">
+                      <iframe
+                        src={depot.promo_video_url}
+                        className="promo-video"
+                        allowFullScreen
+                      />
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
 
           {isEditing && (
             <div className="edit-actions">

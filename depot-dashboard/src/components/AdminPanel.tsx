@@ -8,6 +8,7 @@ import {
   getSubscriptionStatus,
   updateSubscription,
   upgradeToPremium,
+  updateSubscriptionWithTier,
 } from "../firebase";
 import VotingManagement from "./VotingManagement";
 import type { User } from "../types";
@@ -86,7 +87,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
   };
 
   const handleUnbanManager = async (managerId: string) => {
-    if (window.confirm("Êtes-vous sûr de vouloir débannir ce manager?")) {
+    if (window.confirm("Êtes-vous sûr de vouloir débannir ce manager ?")) {
       try {
         await unbanManager(managerId);
         loadManagers();
@@ -109,12 +110,40 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
         setPaymentLoading(depotId);
         const result = await updateSubscription(depotId);
         if (result.success) {
+          alert(" Paiement traité avec succès! Dépôt renouvelé pour 30 jours.");
+          loadManagerDetails(selectedManager || "");
+        } else {
+          alert(" Erreur: " + result.error);
+        }
+      } catch (error) {
+        console.error("Erreur lors du traitement du paiement:", error);
+        alert("Erreur lors du traitement du paiement");
+      } finally {
+        setPaymentLoading(null);
+      }
+    }
+  };
+
+  const handleValidatePayment = async (
+    depotId: string,
+    amount: number,
+    tier: "none" | "basic" | "advanced" | "elite",
+  ) => {
+    if (
+      window.confirm(
+        `Confirmer le paiement de ${amount.toLocaleString()} FCFA pour ${tier === "none" ? "renouvellement standard" : "upgrade " + tier.toUpperCase()} (+30 jours)?`,
+      )
+    ) {
+      try {
+        setPaymentLoading(depotId);
+        const result = await updateSubscriptionWithTier(depotId, tier);
+        if (result.success) {
           alert(
-            "✅ Paiement traité avec succès! Dépôt renouvelé pour 30 jours.",
+            `Paiement de ${amount.toLocaleString()} FCFA validé! Dépôt ${tier === "none" ? "renouvelé" : "upgradé en " + tier.toUpperCase()} pour 30 jours.`,
           );
           loadManagerDetails(selectedManager || "");
         } else {
-          alert("❌ Erreur: " + result.error);
+          alert(" Erreur: " + result.error);
         }
       } catch (error) {
         console.error("Erreur lors du traitement du paiement:", error);
@@ -139,12 +168,10 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
         setPremiumLoading(depotId);
         const result = await upgradeToPremium(depotId, tier, 30);
         if (result.success) {
-          alert(
-            `✅ Dépôt mis à niveau en ${tier.toUpperCase()} pour 30 jours!`,
-          );
+          alert(` Dépôt mis à niveau en ${tier.toUpperCase()} pour 30 jours!`);
           loadManagerDetails(selectedManager || "");
         } else {
-          alert("❌ Erreur: " + result.error);
+          alert(" Erreur: " + result.error);
         }
       } catch (error) {
         console.error("Erreur lors de l'upgrade premium:", error);
@@ -193,7 +220,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
             className={`tab-button ${activeTab === "votes" ? "active" : ""}`}
             onClick={() => setActiveTab("votes")}
           >
-            🗳️ Gestion des Votes
+            Gestion des Votes
           </button>
         </div>
 
@@ -320,7 +347,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                       <span className="value">{managerDetails.phone}</span>
                     </div>
                     <div className="info-row">
-                      <span className="label">Statut:</span>
+                      <span className="label">Statut manager:</span>
                       <span
                         className={`status ${managerDetails.is_active ? "active" : "banned"}`}
                       >
@@ -344,6 +371,13 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                             const isExpired = daysRemaining < 0;
                             const isWarning =
                               daysRemaining >= 0 && daysRemaining < 7;
+                            const statusLabel = depot.payment_pending
+                              ? "En attente"
+                              : isExpired
+                                ? "Inactif"
+                                : isWarning
+                                  ? "À renouveler"
+                                  : "Actif";
 
                             return (
                               <div
@@ -352,18 +386,37 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                               >
                                 <div className="depot-header">
                                   <h4>{depot.name}</h4>
-                                  <span
-                                    className={`subscription-badge ${subStatus}`}
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      gap: "8px",
+                                      flexWrap: "wrap",
+                                    }}
                                   >
-                                    {isExpired
-                                      ? "⚠️ EXPIRÉ"
-                                      : isWarning
-                                        ? `⏰ ${daysRemaining}j restants`
-                                        : `✓ ${daysRemaining}j`}
-                                  </span>
+                                    <span
+                                      className={`subscription-badge ${subStatus}`}
+                                    >
+                                      {isExpired
+                                        ? "⚠️ EXPIRÉ"
+                                        : isWarning
+                                          ? `⏰ ${daysRemaining}j restants`
+                                          : `✓ ${daysRemaining}j`}
+                                    </span>
+                                    <span className="payment-pending">
+                                      Statut dépôt: {statusLabel}
+                                    </span>
+                                  </div>
                                   {depot.payment_pending && (
                                     <span className="payment-pending">
-                                      📩 Paiement signalé
+                                      📩 Paiement signalé (
+                                      {depot.payment_amount?.toLocaleString() ||
+                                        "—"}{" "}
+                                      FCFA -{" "}
+                                      {depot.requested_tier === "none"
+                                        ? "Standard"
+                                        : depot.requested_tier?.toUpperCase() ||
+                                          "Standard"}
+                                      )
                                     </span>
                                   )}
                                 </div>
@@ -390,85 +443,112 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                                 </div>
 
                                 {/* Payment Button for Expired/Warning */}
-                                {(isExpired || isWarning) && (
+                                {depot.payment_pending ? (
                                   <div className="payment-action">
                                     <button
-                                      className="btn btn-payment"
+                                      className="btn btn-payment btn-validate"
                                       onClick={() =>
-                                        handlePaymentDepot(depot.id)
+                                        handleValidatePayment(
+                                          depot.id,
+                                          depot.payment_amount || 6000,
+                                          depot.requested_tier || "none",
+                                        )
                                       }
                                       disabled={paymentLoading === depot.id}
                                     >
                                       {paymentLoading === depot.id
                                         ? "⏳ Traitement..."
-                                        : `💳 Payer 5000 FCFA (+30j)`}
+                                        : ` Valider ${depot.payment_amount?.toLocaleString()} FCFA (${depot.requested_tier === "none" ? "Standard" : depot.requested_tier?.toUpperCase()})`}
                                     </button>
                                     <small className="payment-info">
-                                      Numéro: +242 067 67 81 28 (Maman Power)
+                                      Montant reçu:{" "}
+                                      {depot.payment_amount?.toLocaleString()}{" "}
+                                      FCFA
+                                    </small>
+                                  </div>
+                                ) : (
+                                  (isExpired || isWarning) && (
+                                    <div className="payment-action">
+                                      <button
+                                        className="btn btn-payment"
+                                        onClick={() =>
+                                          handlePaymentDepot(depot.id)
+                                        }
+                                        disabled={paymentLoading === depot.id}
+                                      >
+                                        {paymentLoading === depot.id
+                                          ? "⏳ Traitement..."
+                                          : `💳 Payer 6000 FCFA (+30j)`}
+                                      </button>
+                                      <small className="payment-info">
+                                        Numéro: +242 067 67 81 28 (Maman Power)
+                                      </small>
+                                    </div>
+                                  )
+                                )}
+
+                                {/* Premium Tier Buttons - Only show if no payment pending */}
+                                {!depot.payment_pending && (
+                                  <div className="premium-upgrade-section">
+                                    <div className="premium-title">
+                                      💎 Système Premium (Classement Spécial)
+                                    </div>
+                                    <div className="premium-buttons">
+                                      <button
+                                        className="btn btn-premium btn-basic"
+                                        onClick={() =>
+                                          handleUpgradePremium(
+                                            depot.id,
+                                            "basic",
+                                            10000,
+                                          )
+                                        }
+                                        disabled={premiumLoading === depot.id}
+                                        title="Top 15 par catégorie"
+                                      >
+                                        {premiumLoading === depot.id
+                                          ? "⏳..."
+                                          : "💎 10k (Top 15)"}
+                                      </button>
+                                      <button
+                                        className="btn btn-premium btn-advanced"
+                                        onClick={() =>
+                                          handleUpgradePremium(
+                                            depot.id,
+                                            "advanced",
+                                            15000,
+                                          )
+                                        }
+                                        disabled={premiumLoading === depot.id}
+                                        title="Top 10 par catégorie"
+                                      >
+                                        {premiumLoading === depot.id
+                                          ? "⏳..."
+                                          : "💎💎 15k (Top 10)"}
+                                      </button>
+                                      <button
+                                        className="btn btn-premium btn-elite"
+                                        onClick={() =>
+                                          handleUpgradePremium(
+                                            depot.id,
+                                            "elite",
+                                            20000,
+                                          )
+                                        }
+                                        disabled={premiumLoading === depot.id}
+                                        title="Top 3 par catégorie"
+                                      >
+                                        {premiumLoading === depot.id
+                                          ? "⏳..."
+                                          : "💎💎💎 20k (Top 3)"}
+                                      </button>
+                                    </div>
+                                    <small className="premium-info">
+                                      Les tiers premium garantissent une
+                                      meilleure visibilité pour 30 jours
                                     </small>
                                   </div>
                                 )}
-
-                                {/* Premium Tier Buttons */}
-                                <div className="premium-upgrade-section">
-                                  <div className="premium-title">
-                                    💎 Système Premium (Classement Spécial)
-                                  </div>
-                                  <div className="premium-buttons">
-                                    <button
-                                      className="btn btn-premium btn-basic"
-                                      onClick={() =>
-                                        handleUpgradePremium(
-                                          depot.id,
-                                          "basic",
-                                          10000,
-                                        )
-                                      }
-                                      disabled={premiumLoading === depot.id}
-                                      title="Top 15 par catégorie"
-                                    >
-                                      {premiumLoading === depot.id
-                                        ? "⏳..."
-                                        : "💎 10k (Top 15)"}
-                                    </button>
-                                    <button
-                                      className="btn btn-premium btn-advanced"
-                                      onClick={() =>
-                                        handleUpgradePremium(
-                                          depot.id,
-                                          "advanced",
-                                          15000,
-                                        )
-                                      }
-                                      disabled={premiumLoading === depot.id}
-                                      title="Top 10 par catégorie"
-                                    >
-                                      {premiumLoading === depot.id
-                                        ? "⏳..."
-                                        : "💎💎 15k (Top 10)"}
-                                    </button>
-                                    <button
-                                      className="btn btn-premium btn-elite"
-                                      onClick={() =>
-                                        handleUpgradePremium(
-                                          depot.id,
-                                          "elite",
-                                          20000,
-                                        )
-                                      }
-                                      disabled={premiumLoading === depot.id}
-                                      title="Top 3 par catégorie"
-                                    >
-                                      {premiumLoading === depot.id
-                                        ? "⏳..."
-                                        : "💎💎💎 20k (Top 3)"}
-                                    </button>
-                                  </div>
-                                  <small className="premium-info">
-                                    Les tiers premium garantissent une meilleure
-                                    visibilité pour 30 jours
-                                  </small>
-                                </div>
 
                                 {/* Products in this depot */}
                                 {depot.products &&

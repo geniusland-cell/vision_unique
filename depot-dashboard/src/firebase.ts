@@ -13,6 +13,7 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import type { User, Depot, Category, FirebaseResponse } from "./types";
+import { getCoordinatesForQuartier } from "./utils/quartierCoordinates";
 
 // Configuration Firebase (IDENTIQUE)
 const firebaseConfig = {
@@ -120,12 +121,15 @@ export const registerUser = async (
     const depotName = depot_name?.trim()
       ? depot_name
       : `Dépôt ${name.split(" ")[0]} - ${quartier}`;
+    const coordinates = getCoordinatesForQuartier(quartier);
 
     await set(newDepotRef, {
       name: depotName,
       location: address || quartier,
       quartier: quartier,
       address: address, // Adresse du dépôt
+      latitude: coordinates.latitude,
+      longitude: coordinates.longitude,
       phone_direct: phone_direct,
       phone_whatsapp: phone_whatsapp,
       managed_by: authUser.uid,
@@ -472,6 +476,43 @@ export const getQuartiers = async (): Promise<FirebaseResponse<any[]>> => {
   }
 };
 
+export const backfillDepotCoordinates = async (): Promise<void> => {
+  try {
+    const depotsRef = ref(db, "depots");
+    const snapshot = await get(depotsRef);
+
+    if (!snapshot.exists()) {
+      return;
+    }
+
+    const depotsData = snapshot.val();
+    const updates: Record<string, Record<string, unknown>> = {};
+
+    Object.entries(depotsData).forEach(([depotId, depot]: [string, any]) => {
+      const hasCoordinates =
+        typeof depot?.latitude === "number" &&
+        typeof depot?.longitude === "number";
+
+      if (hasCoordinates || !depot?.quartier) {
+        return;
+      }
+
+      const coordinates = getCoordinatesForQuartier(depot.quartier);
+      updates[depotId] = {
+        latitude: coordinates.latitude,
+        longitude: coordinates.longitude,
+      };
+    });
+
+    if (Object.keys(updates).length > 0) {
+      await update(ref(db, "depots"), updates);
+    }
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
+    console.error(" Erreur backfill coordonnées dépôts:", errorMsg);
+  }
+};
+
 // =====================================
 // initialisation des quartiers (9 quartiers de Brazzaville)
 // =====================================
@@ -592,10 +633,13 @@ export const initializeDepots = async (
     const createdDepots = [];
     for (const depot of depots) {
       const newDepotRef = push(ref(db, "depots"));
+      const coordinates = getCoordinatesForQuartier(depot.quartier);
       await set(newDepotRef, {
         name: depot.name,
         location: depot.location,
         quartier: depot.quartier,
+        latitude: coordinates.latitude,
+        longitude: coordinates.longitude,
         phone_direct: depot.phone_direct,
         phone_whatsapp: depot.phone_whatsapp,
         description: depot.description,
@@ -799,24 +843,31 @@ export const removeDepotProduct = async (
   }
 };
 
-// =====================================
-// UPDATE DEPOT INFO (name, phone, etc.)
-// =====================================
 export const updateDepot = async (
   depotId: string,
   name: string,
   phone_direct: string,
   phone_whatsapp: string,
+  promo_image_url?: string,
+  promo_video_url?: string,
 ): Promise<FirebaseResponse<null>> => {
   try {
     const depotRef = ref(db, `depots/${depotId}`);
 
-    const updates = {
+    const updates: any = {
       name: name,
       phone_direct: phone_direct,
       phone_whatsapp: phone_whatsapp,
       updated_at: new Date().toISOString(),
     };
+
+    if (promo_image_url !== undefined) {
+      updates.promo_image_url = promo_image_url;
+    }
+
+    if (promo_video_url !== undefined) {
+      updates.promo_video_url = promo_video_url;
+    }
 
     await update(depotRef, updates);
 
@@ -1176,6 +1227,9 @@ export const updateSubscription = async (
       subscription_status: "active",
       payment_pending: false,
       payment_notified_at: null,
+      payment_amount: null,
+      requested_tier: null,
+      is_active: true,
       updated_at: new Date().toISOString(),
     });
 
@@ -1189,21 +1243,91 @@ export const updateSubscription = async (
 };
 
 /**
+ * Renouvelle l'abonnement d'un dépôt avec un tier spécifique (+30 jours)
+ * @param {string} depotId - ID du dépôt
+ * @param {string} tier - Tier à appliquer (none, basic, advanced, elite)
+ * @returns {Promise<{success: boolean, error?: string}>}
+ */
+export const updateSubscriptionWithTier = async (
+  depotId: string,
+  tier: "none" | "basic" | "advanced" | "elite",
+): Promise<FirebaseResponse<null>> => {
+  try {
+    const depotRef = ref(db, `depots/${depotId}`);
+
+    // Ajouter 30 jours a partir de maintenant
+    const newExpiryDate = new Date(
+      Date.now() + 30 * 24 * 60 * 60 * 1000,
+    ).toISOString();
+
+    // Calculer tier expiry
+    const tierExpiryDate = new Date(
+      Date.now() + 30 * 24 * 60 * 60 * 1000,
+    ).toISOString();
+
+    const updates: any = {
+      subscription_expiry: newExpiryDate,
+      subscription_status: "active",
+      payment_pending: false,
+      payment_notified_at: null,
+      payment_amount: null,
+      requested_tier: null,
+      is_active: true,
+      updated_at: new Date().toISOString(),
+    };
+
+    // Mettre à jour le tier si ce n'est pas "none"
+    if (tier !== "none") {
+      updates.tier = tier;
+      updates.tier_expiry = tierExpiryDate;
+    }
+
+    await update(depotRef, updates);
+
+    console.log(
+      " Abonnement renouvelé avec tier pour dépôt:",
+      depotId,
+      "Tier:",
+      tier,
+    );
+    return { success: true };
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
+    console.error(" Erreur renouvellement abonnement avec tier:", errorMsg);
+    return { success: false, error: errorMsg };
+  }
+};
+
+/**
  * Marquer qu'un dépôt a effectué un paiement (le manager notifie l'admin)
  * @param depotId
+ * @param amount - Montant que le dépôt veut payer
+ * @param tier - Tier que le dépôt veut obtenir
  */
 export const markPaymentPending = async (
   depotId: string,
+  amount: number,
+  tier: "none" | "basic" | "advanced" | "elite",
 ): Promise<FirebaseResponse<null>> => {
   try {
     const depotRef = ref(db, `depots/${depotId}`);
     await update(depotRef, {
       payment_pending: true,
+      payment_amount: amount,
+      requested_tier: tier,
+      subscription_status: "inactive",
       payment_notified_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     });
 
-    console.log(" Paiement en attente marqué pour dépôt:", depotId);
+    console.log(
+      " Paiement en attente marqué pour dépôt:",
+      depotId,
+      "Montant:",
+      amount,
+      "Tier:",
+      tier,
+    );
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
@@ -1408,6 +1532,50 @@ export const closeVoting = async (): Promise<FirebaseResponse<null>> => {
 };
 
 /**
+ * Mettre à jour la durée des votes pour le trimestre courant
+ */
+export const updateVotingDuration = async (
+  votingDurationDays: number,
+): Promise<FirebaseResponse<null>> => {
+  try {
+    const currentQuarter = getCurrentQuarter();
+    const votesSettingsRef = ref(db, `votes_settings/${currentQuarter}`);
+    const snapshot = await get(votesSettingsRef);
+
+    if (!snapshot.exists()) {
+      return { success: false, error: "Aucun cycle de vote n'a été lancé" };
+    }
+
+    const currentSettings = snapshot.val() || {};
+    const normalizedDuration = normalizeVotingDurationDays(votingDurationDays);
+
+    const updatePayload: Record<string, unknown> = {
+      voting_duration_days: normalizedDuration,
+      updated_at: new Date().toISOString(),
+    };
+
+    if (currentSettings.status === "VOTING_ACTIVE") {
+      const startedAt = currentSettings.started_at || new Date().toISOString();
+      updatePayload.ends_at = calculateVotingEndDate(
+        startedAt,
+        normalizedDuration,
+      );
+    }
+
+    await update(votesSettingsRef, updatePayload);
+
+    console.log(
+      `✅ Durée de vote mise à jour pour ${currentQuarter}: ${normalizedDuration} jours`,
+    );
+    return { success: true };
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
+    console.error(" Erreur mise à jour durée votes:", errorMsg);
+    return { success: false, error: errorMsg };
+  }
+};
+
+/**
  * Obtenir le statut des votes pour le trimestre courant
  */
 export const getVotingStatus = async (): Promise<any> => {
@@ -1564,7 +1732,13 @@ export const upgradeToPremium = async (
     await update(depotRef, {
       tier: tier,
       tier_expiry: premiumUntil.toISOString(),
-      payment_pending: true,
+      payment_pending: false,
+      payment_amount: null,
+      requested_tier: null,
+      subscription_status: "active",
+      subscription_expiry: premiumUntil.toISOString(),
+      is_active: true,
+      payment_notified_at: null,
       updated_at: new Date().toISOString(),
     });
 

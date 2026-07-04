@@ -6,26 +6,17 @@ import {
   removeDepotProduct,
   getCategories,
 } from "../firebase";
-import ImageUpload from "./ImageUpload";
-import {
-  optimizeProductCard,
-  optimizeThumbnail,
-  optimizeModalImage,
-} from "../utils/cloudinary";
 import type { Depot, Category } from "../types";
 import "./DepotProducts.css";
-import "./ImageUpload.css";
 
 interface DepotProductsProps {
   depot: Depot;
   isEditing: boolean;
-  onClose: () => void;
 }
 
 export default function DepotProducts({
   depot,
   isEditing,
-  onClose,
 }: DepotProductsProps) {
   const depotId = depot.id;
   const [categories, setCategories] = useState<Category[]>([]);
@@ -46,8 +37,7 @@ export default function DepotProducts({
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [editData, setEditData] = useState<Record<string, any>>({});
-  const [imagePreview, setImagePreview] = useState<string>("");
-  const [selectedImage, setSelectedImage] = useState<string | null>(null); // Modal lightbox
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [newProduct, setNewProduct] = useState<{
     name: string;
     category: string;
@@ -105,15 +95,6 @@ export default function DepotProducts({
     };
   }, [loadProducts]);
 
-  // Handle image upload for new products - DEPRECATED (now using ImageUpload component)
-  // Keep for backward compatibility but not used anymore
-  const handleImageUpload = async (file: File): Promise<void> => {
-    console.warn(
-      "handleImageUpload is deprecated, use ImageUpload component instead",
-    );
-  };
-
-  // Modal lightbox functions
   const openImageModal = (imageUrl: string): void => {
     setSelectedImage(imageUrl);
   };
@@ -199,7 +180,6 @@ export default function DepotProducts({
         unit: "kg",
         image: "",
       });
-      setImagePreview("");
       loadProducts();
       alert("Produit ajouté");
     } else {
@@ -222,7 +202,7 @@ export default function DepotProducts({
                 <div key={product.id} className="product-line">
                   {product.image ? (
                     <img
-                      src={optimizeThumbnail(product.image)}
+                      src={product.image}
                       alt={product.name}
                       className="product-thumb-small"
                       title={product.name}
@@ -327,7 +307,7 @@ export default function DepotProducts({
                     <div className="image-edit-container">
                       {editData[product.id]?.image ? (
                         <img
-                          src={optimizeProductCard(editData[product.id].image)}
+                          src={editData[product.id].image}
                           alt={product.name}
                           className="product-image-thumb"
                         />
@@ -335,11 +315,18 @@ export default function DepotProducts({
                         <div className="product-image-placeholder-edit">📦</div>
                       )}
                       <div className="image-edit-buttons">
-                        <ImageUpload
-                          onImageUpload={(imageUrl: string) => {
-                            handleEditChange(product.id, "image", imageUrl);
-                          }}
-                          buttonText="📸 Upload"
+                        <input
+                          type="url"
+                          placeholder="URL de l'image"
+                          value={editData[product.id]?.image || ""}
+                          onChange={(e) =>
+                            handleEditChange(
+                              product.id,
+                              "image",
+                              e.target.value,
+                            )
+                          }
+                          className="image-url-input"
                         />
                       </div>
                     </div>
@@ -419,13 +406,15 @@ export default function DepotProducts({
                 <option value="régime">régime</option>
               </select>
 
-              {/* Image Upload Section - Cloudinary */}
-              <ImageUpload
-                onImageUpload={(imageUrl: string) => {
-                  setNewProduct({ ...newProduct, image: imageUrl });
-                  setImagePreview(imageUrl);
-                }}
-                buttonText="📸 Importer image produit"
+              {/* Image URL Input - Replaces Cloudinary Upload */}
+              <input
+                type="url"
+                placeholder="URL de l'image du produit"
+                value={newProduct.image}
+                onChange={(e) =>
+                  setNewProduct({ ...newProduct, image: e.target.value })
+                }
+                className="image-url-input"
               />
 
               <button className="btn-add" onClick={handleAddProduct}>
@@ -442,7 +431,7 @@ export default function DepotProducts({
       {selectedImage && (
         <div className="image-modal-overlay" onClick={closeImageModal}>
           <img
-            src={optimizeModalImage(selectedImage)}
+            src={selectedImage}
             alt="Enlarged"
             className="image-modal-image"
             onClick={(e) => e.stopPropagation()}
