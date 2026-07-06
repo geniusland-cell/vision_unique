@@ -67,6 +67,7 @@ export interface Product {
   base_price?: number;
   unit: string;
   stock?: number;
+  stock_quantity?: number;
   image_url?: string;
   is_available: boolean;
   created_at: string;

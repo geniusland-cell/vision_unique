@@ -7,7 +7,6 @@ interface ImageUploadProps {
 
 export default function ImageUpload({
   onImageUpload,
-  buttonText = "📸 Importer image",
 }: ImageUploadProps): ReactNode {
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
@@ -94,7 +93,7 @@ export default function ImageUpload({
     }
 
     input.onchange = (e) =>
-      handleFileSelect(e as React.ChangeEvent<HTMLInputElement>);
+      handleFileSelect(e as unknown as React.ChangeEvent<HTMLInputElement>);
     input.click();
   };
 

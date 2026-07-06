@@ -58,6 +58,7 @@ function App(): ReactNode {
 
   const [daysRemaining, setDaysRemaining] = useState<number | null>(null);
   const [subscriptionAlert, setSubscriptionAlert] = useState<boolean>(false);
+  const [showUpgradeNotice, setShowUpgradeNotice] = useState<boolean>(false);
   const [isRenewingSubscription, setIsRenewingSubscription] =
     useState<boolean>(false);
   const [showVotingChart, setShowVotingChart] = useState<boolean>(false);
@@ -120,18 +121,43 @@ function App(): ReactNode {
   }, [user]);
 
   useEffect(() => {
-    if (selectedDepot && selectedDepot.subscription_expiry) {
-      const remaining = calculateDaysRemaining(
-        selectedDepot.subscription_expiry,
-      );
-      setDaysRemaining(remaining);
-
-      if (selectedDepot.payment_pending || remaining < 7) {
-        setSubscriptionAlert(true);
-      } else {
-        setSubscriptionAlert(false);
-      }
+    if (!selectedDepot) {
+      setDaysRemaining(null);
+      setSubscriptionAlert(false);
+      setShowUpgradeNotice(false);
+      return;
     }
+
+    const remaining = selectedDepot.subscription_expiry
+      ? calculateDaysRemaining(selectedDepot.subscription_expiry)
+      : null;
+    setDaysRemaining(remaining);
+
+    const isPremiumTier = ["basic", "advanced", "elite"].includes(
+      selectedDepot.tier || "none",
+    );
+    const isPaymentPending = Boolean(selectedDepot.payment_pending);
+
+    if (isPremiumTier) {
+      setSubscriptionAlert(false);
+      setShowUpgradeNotice(false);
+      return;
+    }
+
+    if (isPaymentPending || (remaining !== null && remaining < 7)) {
+      setSubscriptionAlert(true);
+      setShowUpgradeNotice(false);
+      return;
+    }
+
+    setSubscriptionAlert(false);
+    setShowUpgradeNotice(true);
+
+    const timer = window.setTimeout(() => {
+      setShowUpgradeNotice(false);
+    }, 15000);
+
+    return () => window.clearTimeout(timer);
   }, [selectedDepot]);
 
   const toggleDarkMode = () => {
@@ -212,11 +238,10 @@ function App(): ReactNode {
       } else {
         setSignUpError(result.error || "Erreur lors de la création du compte");
       }
-    } catch {
-      setSignUpError(
-        "Erreur lors de la création du compte: " +
-          (error instanceof Error ? error.message : "Erreur inconnue"),
-      );
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Erreur inconnue";
+      setSignUpError("Erreur lors de la création du compte: " + errorMessage);
     }
   };
 
@@ -225,6 +250,12 @@ function App(): ReactNode {
     tier: "none" | "basic" | "advanced" | "elite",
   ) => {
     if (!selectedDepot) return;
+
+    const confirmed = window.confirm(
+      `Confirmez-vous ce choix : ${tier === "none" ? "renouvellement standard" : "forfait " + tier.toUpperCase()} à ${amount.toLocaleString()} FCFA ?`,
+    );
+
+    if (!confirmed) return;
 
     setIsRenewingSubscription(true);
     try {
@@ -543,9 +574,35 @@ function App(): ReactNode {
           </div>
         )}
 
+        {!isLoadingDepots && showUpgradeNotice && selectedDepot && (
+          <div className="subscription-upgrade-banner">
+            <strong>✨ Nouveau :</strong> débloquez les images et vidéos de vos
+            produits en passant à l’offre premium de{" "}
+            <strong>10 000 à 15 000 FCFA</strong>.
+            <span>
+              Profitez d’un meilleur visuel pour attirer plus de clients.
+            </span>
+            <button
+              type="button"
+              className="subscription-upgrade-btn"
+              onClick={() => setSubscriptionAlert(true)}
+            >
+              Renouveler / Passer premium
+            </button>
+          </div>
+        )}
+
         {/* ← NOUVEAU: Alerte et bouton Payer pour l'expiration de l'abonnement */}
         {!isLoadingDepots && subscriptionAlert && selectedDepot && (
           <div className="subscription-alert">
+            <button
+              type="button"
+              className="subscription-alert-close"
+              onClick={() => setSubscriptionAlert(false)}
+              aria-label="Fermer la notice de renouvellement"
+            >
+              ✕
+            </button>
             {daysRemaining !== null && daysRemaining < 0 ? (
               <>
                 <h3>⚠️ Votre abonnement a expiré!</h3>

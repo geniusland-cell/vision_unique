@@ -6,12 +6,14 @@
 }
 
 .stat-card {
-  background: rgba(255, 255, 255, 0.95);
+  background: linear-gradient(135deg, #166b3f 0%, #2f8f57 100%);
+  color: #ffffff;
   padding: 20px;
   border-radius: 15px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
   text-align: center;
   transition: transform 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .stat-card:hover {
@@ -53,28 +55,30 @@
 
 .stat-number {
   font-size: 32px;
-  font-weight: bold;
-  color: #2c3e50;
+  font-weight: 700;
+  color: #ffffff;
   margin-bottom: 5px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .stat-label {
-  color: #7f8c8d;
+  color: #eaf7ef;
   font-size: 14px;
+  font-weight: 500;
 }
 
 /* Dark Mode Styles */
 .dark-mode .stat-card {
-  background: rgba(30, 41, 59, 0.95);
-  border: 1px solid rgba(75, 85, 99, 0.3);
+  background: linear-gradient(135deg, #165c35 0%, #2f7a4a 100%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .dark-mode .stat-number {
-  color: #f1f5f9;
+  color: #ffffff;
 }
 
 .dark-mode .stat-label {
-  color: #94a3b8;
+  color: #eaf7ef;
 }
 
 .dark-mode .stat-change.negative {

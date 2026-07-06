@@ -10,7 +10,6 @@ import {
   removeTier,
   getTierPrice,
 } from "../firebase";
-import type { Depot } from "../types";
 import "../styles/VotingManagement.css";
 
 interface VotingManagementProps {}

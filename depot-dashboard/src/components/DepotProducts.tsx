@@ -12,11 +12,13 @@ import "./DepotProducts.css";
 interface DepotProductsProps {
   depot: Depot;
   isEditing: boolean;
+  onClose?: () => void;
 }
 
 export default function DepotProducts({
   depot,
   isEditing,
+  onClose,
 }: DepotProductsProps) {
   const depotId = depot.id;
   const [categories, setCategories] = useState<Category[]>([]);
@@ -101,6 +103,10 @@ export default function DepotProducts({
 
   const closeImageModal = (): void => {
     setSelectedImage(null);
+  };
+
+  const handleCloseEdit = (): void => {
+    onClose?.();
   };
 
   const handleEditChange = (
@@ -315,19 +321,31 @@ export default function DepotProducts({
                         <div className="product-image-placeholder-edit">📦</div>
                       )}
                       <div className="image-edit-buttons">
-                        <input
-                          type="url"
-                          placeholder="URL de l'image"
-                          value={editData[product.id]?.image || ""}
-                          onChange={(e) =>
-                            handleEditChange(
-                              product.id,
-                              "image",
-                              e.target.value,
-                            )
-                          }
-                          className="image-url-input"
-                        />
+                        {depot.tier === "basic" ||
+                        depot.tier === "advanced" ||
+                        depot.tier === "elite" ? (
+                          <input
+                            type="url"
+                            placeholder="URL de l'image"
+                            value={editData[product.id]?.image || ""}
+                            onChange={(e) =>
+                              handleEditChange(
+                                product.id,
+                                "image",
+                                e.target.value,
+                              )
+                            }
+                            className="image-url-input"
+                          />
+                        ) : (
+                          <div className="premium-lock-notice">
+                            <small>
+                              🔒 Les images de produits sont réservées aux
+                              offres premium. Passez à 10 000–15 000 FCFA pour
+                              débloquer cette option.
+                            </small>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </td>
@@ -344,6 +362,11 @@ export default function DepotProducts({
                     >
                       Supprimer
                     </button>
+                    {isEditing && (
+                      <button className="btn-cancel" onClick={handleCloseEdit}>
+                        Fermer
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -406,16 +429,29 @@ export default function DepotProducts({
                 <option value="régime">régime</option>
               </select>
 
-              {/* Image URL Input - Replaces Cloudinary Upload */}
-              <input
-                type="url"
-                placeholder="URL de l'image du produit"
-                value={newProduct.image}
-                onChange={(e) =>
-                  setNewProduct({ ...newProduct, image: e.target.value })
-                }
-                className="image-url-input"
-              />
+              {depot.tier === "basic" ||
+              depot.tier === "advanced" ||
+              depot.tier === "elite" ? (
+                <>
+                  {/* Image URL Input - Replaces Cloudinary Upload */}
+                  <input
+                    type="url"
+                    placeholder="URL de l'image du produit"
+                    value={newProduct.image}
+                    onChange={(e) =>
+                      setNewProduct({ ...newProduct, image: e.target.value })
+                    }
+                    className="image-url-input"
+                  />
+                </>
+              ) : (
+                <div className="premium-lock-notice">
+                  <small>
+                    🔒 Les images de produits sont réservées aux offres premium.
+                    Passez à 10 000–15 000 FCFA pour débloquer cette option.
+                  </small>
+                </div>
+              )}
 
               <button className="btn-add" onClick={handleAddProduct}>
                 Ajouter
