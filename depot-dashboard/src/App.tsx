@@ -455,12 +455,21 @@ function App(): ReactNode {
                 />
               </div>
 
-              <button type="submit" className="login-btn" disabled={loading}>
-                {loading
-                  ? "Traitement..."
-                  : isSignUp
-                    ? " S'inscrire"
-                    : " Se connecter"}
+              <button
+                type="submit"
+                className={`login-btn ${loading ? "loading" : ""}`}
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <span className="login-spinner" aria-hidden="true" />
+                    Traitement...
+                  </>
+                ) : isSignUp ? (
+                  " S'inscrire"
+                ) : (
+                  " Se connecter"
+                )}
               </button>
             </form>
 

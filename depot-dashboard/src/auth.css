@@ -117,6 +117,29 @@
   box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
 }
 
+.login-btn.loading {
+  position: relative;
+  cursor: wait;
+}
+
+.login-btn.loading .login-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+  vertical-align: middle;
+  animation: login-spin 0.8s linear infinite;
+}
+
+@keyframes login-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .login-btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
