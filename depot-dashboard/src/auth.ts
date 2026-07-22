@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { auth } from "./firebase";
-import { loginByPhone, logoutUser, getCurrentUser } from "./firebase";
+import { detectAndLogin, logoutUser, getCurrentUser } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import type { User } from "./types";
 
@@ -85,7 +85,7 @@ export const useAuth = (): {
     setError(null);
 
     try {
-      const result = await loginByPhone(phone, password);
+      const result = await detectAndLogin(phone, password);
 
       if (result.success && result.data) {
         // Accepter managers ET admins

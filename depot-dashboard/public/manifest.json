@@ -7,6 +7,7 @@
   "background_color": "#ffffff",
   "theme_color": "#009739",
   "orientation": "portrait-primary",
+  "version": "1784730071660",
   "icons": [
     {
       "src": "/favicon.svg",
@@ -27,7 +28,11 @@
       "purpose": "maskable"
     }
   ],
-  "categories": ["business", "productivity", "shopping"],
+  "categories": [
+    "business",
+    "productivity",
+    "shopping"
+  ],
   "screenshots": [
     {
       "src": "/favicon.svg",

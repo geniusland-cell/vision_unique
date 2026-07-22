@@ -4,6 +4,8 @@ import {
   getManagerDetailsForAdmin,
   banManager,
   unbanManager,
+  banDepot,
+  unbanDepot,
   calculateDaysRemaining,
   getSubscriptionStatus,
   updateSubscription,
@@ -31,6 +33,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
   );
   const [paymentLoading, setPaymentLoading] = useState<string | null>(null);
   const [premiumLoading, setPremiumLoading] = useState<string | null>(null);
+  const [banLoading, setBanLoading] = useState<string | null>(null);
 
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
@@ -90,6 +93,44 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
           loadManagerDetails(managerId);
         }
       } catch {}
+    }
+  };
+
+  const handleBanDepot = async (depotId: string) => {
+    if (
+      window.confirm(
+        "Êtes-vous sûr de vouloir bannir ce dépôt? Il ne s'affichera plus dans l'app des mamans.",
+      )
+    ) {
+      try {
+        setBanLoading(depotId);
+        await banDepot(depotId);
+        if (selectedManager) {
+          loadManagerDetails(selectedManager);
+        }
+      } catch {
+      } finally {
+        setBanLoading(null);
+      }
+    }
+  };
+
+  const handleUnbanDepot = async (depotId: string) => {
+    if (
+      window.confirm(
+        "Êtes-vous sûr de vouloir débannir ce dépôt? Il s'affichera à nouveau dans l'app des mamans.",
+      )
+    ) {
+      try {
+        setBanLoading(depotId);
+        await unbanDepot(depotId);
+        if (selectedManager) {
+          loadManagerDetails(selectedManager);
+        }
+      } catch {
+      } finally {
+        setBanLoading(null);
+      }
     }
   };
 
@@ -409,6 +450,37 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                                       )
                                     </span>
                                   )}
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      gap: "8px",
+                                      marginTop: "8px",
+                                    }}
+                                  >
+                                    {depot.is_active !== false ? (
+                                      <button
+                                        className="btn btn-ban"
+                                        onClick={() => handleBanDepot(depot.id)}
+                                        disabled={banLoading === depot.id}
+                                      >
+                                        {banLoading === depot.id
+                                          ? "⏳..."
+                                          : "🚫 Bannir"}
+                                      </button>
+                                    ) : (
+                                      <button
+                                        className="btn btn-unban"
+                                        onClick={() =>
+                                          handleUnbanDepot(depot.id)
+                                        }
+                                        disabled={banLoading === depot.id}
+                                      >
+                                        {banLoading === depot.id
+                                          ? "⏳..."
+                                          : "✅ Débannir"}
+                                      </button>
+                                    )}
+                                  </div>
                                 </div>
 
                                 <div className="depot-info">

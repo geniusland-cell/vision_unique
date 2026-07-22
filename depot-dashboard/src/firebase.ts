@@ -52,7 +52,6 @@ export const auth = getAuth(app);
 export const db = getDatabase(app);
 export const storage = getStorage(app);
 
-
 function generateEmailFromPhone(phone: string): string {
   // Remove all non-numeric characters
   let cleanPhone = phone.replace(/[^\d]/g, "");
@@ -64,7 +63,6 @@ function generateEmailFromPhone(phone: string): string {
 
   return `manager${cleanPhone}@maman-power.app`;
 }
-
 
 export const registerUser = async (
   name: string,
@@ -207,8 +205,11 @@ export const loginByEmail = async (
     const userSnap = await get(userRef);
 
     if (!userSnap.exists()) {
-      safeError("❌ Profil ADMIN non trouvé");
-      return { success: false, error: "Profil utilisateur non trouvé" };
+      safeError("❌ Profil ADMIN non trouvé dans Realtime Database");
+      return {
+        success: false,
+        error: "Profil utilisateur non trouvé dans la base de données",
+      };
     }
 
     const userData = userSnap.val();
@@ -249,9 +250,6 @@ export const detectAndLogin = async (
   }
 };
 
-// =====================================
-// CONNEXION - Login with phone + password (MANAGER)
-// =====================================
 export const loginByPhone = async (
   phone: string,
   password: string,
@@ -784,6 +782,7 @@ export const updateDepotProduct = async (
   price: number,
   stockQuantity: number,
   image: string = "",
+  unit: string = "",
 ): Promise<FirebaseResponse<null>> => {
   try {
     const productRef = ref(db, `depots/${depotId}/products/${productId}`);
@@ -794,6 +793,9 @@ export const updateDepotProduct = async (
     };
     if (image) {
       updates.image = image;
+    }
+    if (unit) {
+      updates.unit = unit;
     }
     await update(productRef, updates);
     return { success: true };
@@ -1128,6 +1130,46 @@ export const unbanManager = async (
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
     safeError(" Erreur débannissement manager:", errorMsg);
+    return { success: false, error: errorMsg };
+  }
+};
+
+// Bannir un dépôt
+export const banDepot = async (
+  depotId: string,
+): Promise<FirebaseResponse<null>> => {
+  try {
+    const depotRef = ref(db, `depots/${depotId}`);
+    await update(depotRef, {
+      is_active: false,
+      updated_at: new Date().toISOString(),
+    });
+
+    safeLog(" Dépôt banni");
+    return { success: true };
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
+    safeError(" Erreur bannissement dépôt:", errorMsg);
+    return { success: false, error: errorMsg };
+  }
+};
+
+// Débannir un dépôt
+export const unbanDepot = async (
+  depotId: string,
+): Promise<FirebaseResponse<null>> => {
+  try {
+    const depotRef = ref(db, `depots/${depotId}`);
+    await update(depotRef, {
+      is_active: true,
+      updated_at: new Date().toISOString(),
+    });
+
+    safeLog(" Dépôt débanni");
+    return { success: true };
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
+    safeError(" Erreur débannissement dépôt:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };

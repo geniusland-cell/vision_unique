@@ -8,6 +8,7 @@ interface HeaderProps {
   onToggleDarkMode: () => void;
   isDarkMode: boolean;
   onShowVotingChart?: () => void;
+  onShowHelp?: () => void;
 }
 
 const Header = ({
@@ -16,6 +17,7 @@ const Header = ({
   onToggleDarkMode,
   isDarkMode,
   onShowVotingChart,
+  onShowHelp,
 }: HeaderProps): ReactNode => {
   return (
     <div className="header">
@@ -56,6 +58,11 @@ const Header = ({
           >
             {isDarkMode ? "S" : "N"}
           </button>
+          {onShowHelp && (
+            <button className="help-btn" onClick={onShowHelp} title="Aide">
+              ?
+            </button>
+          )}
           <button className="logout-btn" onClick={onLogout}>
             Déconnexion
           </button>

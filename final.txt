@@ -1,0 +1,159 @@
+VISION UNIQUE – TOP COMPLET DES FONCTIONNALITÉS DES DEUX APPS
+
+1. CONTEXTE GENERAL
+
+Il existe deux applications liées au même écosystème :
+- depot-dashboard : application pour les managers/dépôts
+- maman-power-app : application pour les vendeuses/mamans
+
+Les deux utilisent Firebase (auth, dépôts, produits, abonnements, tiers premium, images, votes).
+
+2. APP 1 – DEPOT DASHBOARD (côté manager)
+
+2.1 Authentification et création de compte
+- Les managers peuvent se connecter ou créer un compte.
+- À l’inscription, un dépôt est automatiquement créé avec les informations du manager.
+- Le dépôt reçoit une configuration de base avec abonnement actif et date d’expiration initiale.
+
+2.2 Gestion du dépôt
+- Le manager peut sélectionner un dépôt parmi ceux qu’il gère.
+- Il peut consulter les informations du dépôt, l’adresse, le quartier, les coordonnées, etc.
+- Le dashboard affiche un panneau de gestion, un aperçu du statut du dépôt et les options de renouvellement / premium.
+
+2.3 Système d’abonnement et forfaits
+Les forfaits disponibles sont :
+- Standard : 6 000 FCFA, renouvellement standard (+30 jours)
+- Basic : 10 000 FCFA, Premium Basic (Top 15)
+- Advanced : 15 000 FCFA, Premium Advanced (Top 10)
+- Elite : 20 000 FCFA, Premium Elite (Top 3)
+
+Logique de l’abonnement :
+- Si l’abonnement est encore valide, le dépôt reste actif.
+- Si l’abonnement approche de la fin (moins de 7 jours), une alerte de fin d’abonnement apparaît.
+- Si l’abonnement est expiré, l’alerte passe en état inactif.
+- Si un paiement est en attente (payment_pending=true), l’interface montre un état de paiement en attente.
+- Le bouton “Payer” déclenche un flux de confirmation avant toute action.
+- Le choix du forfait est confirmé avant validation.
+
+2.4 Règles d’affichage de la notice / alerte
+- L’alerte “abonnement expire bientôt” reste visible pour les dépôts ayant un abonnement standard en fin de validité.
+- La notice de passage premium n’est pas montrée si le dépôt est déjà sur un tier premium (basic/advanced/elite).
+- La notice de passage premium peut s’afficher brièvement pour un dépôt standard encore actif, puis se referme automatiquement après 15 secondes.
+- Les dépôts déjà premium n’affichent pas cette notice.
+
+2.5 Premium / tiers
+- Le dépôt peut passer à un tier premium : basic, advanced, elite.
+- Les tiers premium ont une date d’expiration spécifique (tier_expiry).
+- Les éléments premium sont activés uniquement si le dépôt a un tier actif.
+- Les dépôts premium affichent les contenus premium associés.
+
+2.6 Conditions d’affichage des images
+- Les produits peuvent avoir une image.
+- L’interface d’édition accepte uniquement des fichiers image.
+- Si aucune image n’est fournie, un placeholder est affiché.
+- Les images peuvent être téléchargées et stockées puis affichées.
+
+2.7 Contenu promo premium
+- Les champs de promo image et promo vidéo sont visibles seulement pour les dépôts advanced/elite.
+- La vidéo promo est réservée au tier elite.
+- L’image promo peut être éditée pour advanced/elite.
+- Les champs premium ne sont pas affichés pour un dépôt standard.
+
+2.8 Votes et gestion admin
+- Le dashboard contient une gestion de votes.
+- L’admin peut valider les paiements et appliquer la mise à jour du statut du dépôt.
+- L’admin peut aussi activer ou retirer un tier premium.
+
+3. APP 2 – MAMAN POWER APP (côté vendeuse)
+
+3.1 Authentification
+- Les vendeuses/mamans se connectent avec leurs identifiants.
+- L’application affiche ensuite la liste des dépôts disponibles autour d’elles.
+
+3.2 Chargement et tri des dépôts
+- Les dépôts sont récupérés depuis Firebase.
+- L’application n’affiche pas les dépôts qui ne respectent pas les règles de visibilité métier.
+- Les dépôts sont triés par priorité premium puis par distance.
+
+3.3 Règles de visibilité métier des dépôts
+Un dépôt est visible uniquement si toutes les conditions suivantes sont respectées :
+- is_active === true
+- payment_pending !== true
+- la date d’abonnement n’est pas expirée
+- subscription_status est actif, ou il n’y a pas de statut indiqué
+
+Si une de ces conditions n’est pas remplie, le dépôt n’est pas affiché.
+
+3.4 Priorité premium et visibilité par catégorie
+- Elite : visible en priorité (Top 3 par catégorie)
+- Advanced : visible en priorité (Top 10 par catégorie)
+- Basic : visible en priorité (Top 15 par catégorie)
+- Standard : visible sans priorité
+
+Si une catégorie est sélectionnée, l’application applique des limites de visibilité par tier :
+- elite : 3 dépôts max
+- advanced : 10 dépôts max
+- basic : 15 dépôts max
+
+3.5 Affichage des produits sur la carte dépôt
+- Chaque dépôt affiche la liste de ses produits.
+- Chaque ligne produit est organisée horizontalement pour afficher clairement :
+  - nom du produit
+  - prix
+  - stock
+
+3.6 Conditions d’affichage des images de produits
+- Si un produit a une image (product.image ou product.image_url), l’image est affichée.
+- Si aucune image n’est présente, un placeholder emoji est affiché à la place.
+- Cliquer sur l’image ouvre une vue agrandie en modal.
+
+3.7 Contenu promo premium côté vendeuse
+- Les contenus promo sont affichés uniquement si le dépôt est advanced ou elite.
+- L’image promo est affichée si une URL est disponible.
+- La vidéo promo est affichée seulement si le dépôt est elite et si une URL vidéo est disponible.
+- Si le dépôt n’est pas premium, ce bloc n’est pas affiché.
+
+3.8 Actions disponibles sur la carte dépôt
+- Appel direct
+- WhatsApp
+- Infos du dépôt
+- Favoris
+- Vote (si la fonction vote est activée)
+
+3.9 Cache et optimisation
+- Les quartiers et certaines données sont mis en cache pour limiter les accès Firebase.
+- Les images sont optimisées pour un rendu plus rapide.
+- L’application tente d’éviter les requêtes inutiles.
+
+4. RÉSUMÉ DES FORFAITS ET DE LEURS EFFETS
+
+Forfait Standard
+- Prix : 6 000 FCFA
+- Effet : abonnement normal, pas de visibilité premium
+- Contenu premium non affiché
+
+Forfait Basic
+- Prix : 10 000 FCFA
+- Effet : premium basic, visibilité augmentée (Top 15)
+- Contenu premium possible selon logique métier
+
+Forfait Advanced
+- Prix : 15 000 FCFA
+- Effet : premium advanced, visibilité augmentée (Top 10)
+- Affiche les contenus promo image
+
+Forfait Elite
+- Prix : 20 000 FCFA
+- Effet : premium elite, visibilité augmentée (Top 3)
+- Affiche les contenus promo image + vidéo
+
+5. POINTS CRITIQUES IMPORTANTS
+- La logique de visibilité côté vendeur est stricte : un dépôt non actif, en attente de paiement ou expiré ne s’affiche pas.
+- Les contenus premium sont conditionnés au tier actif.
+- Les images sont optionnelles et remplacées par un placeholder si absent.
+- La notice de renouvellement est gérée différemment selon le statut du dépôt et la logique premium.
+
+6. CONCLUSION
+Les deux applications sont cohérentes entre elles :
+- le dashboard permet au manager de gérer son dépôt, son abonnement et ses contenus premium ;
+- l’app vendeuse affiche uniquement les dépôts réellement visibles, avec une logique premium et une expérience adaptée à leur niveau de visibilité.

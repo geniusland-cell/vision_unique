@@ -134,6 +134,7 @@ export default function DepotProducts({
       parseFloat(product.price),
       parseInt(product.stock_quantity),
       product.image || "",
+      product.unit || "",
     );
 
     if (result.success) {
@@ -307,6 +308,7 @@ export default function DepotProducts({
                       <option value="sac">sac</option>
                       <option value="bouteille">bouteille</option>
                       <option value="régime">régime</option>
+                      <option value="carton">carton</option>
                     </select>
                   </td>
                   <td className="product-image-cell">
@@ -427,6 +429,7 @@ export default function DepotProducts({
                 <option value="sac">sac</option>
                 <option value="bouteille">bouteille</option>
                 <option value="régime">régime</option>
+                <option value="carton">carton</option>
               </select>
 
               {depot.tier === "basic" ||

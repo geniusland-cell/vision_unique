@@ -11,7 +11,6 @@ import {
   registerUser,
   calculateDaysRemaining,
   markPaymentPending,
-  detectAndLogin,
   backfillDepotCoordinates,
 } from "./firebase";
 import { getManagerDepots } from "./firebase";
@@ -62,6 +61,7 @@ function App(): ReactNode {
   const [isRenewingSubscription, setIsRenewingSubscription] =
     useState<boolean>(false);
   const [showVotingChart, setShowVotingChart] = useState<boolean>(false);
+  const [showHelpModal, setShowHelpModal] = useState<boolean>(false);
 
   useEffect(() => {
     if (isDarkMode) {
@@ -316,9 +316,9 @@ function App(): ReactNode {
               onSubmit={
                 isSignUp
                   ? handleSignUp
-                  : (e) => {
+                  : async (e) => {
                       e.preventDefault();
-                      detectAndLogin(loginData.identifier, loginData.password);
+                      await login(loginData.identifier, loginData.password);
                     }
               }
             >
@@ -555,6 +555,7 @@ function App(): ReactNode {
         onToggleDarkMode={toggleDarkMode}
         isDarkMode={isDarkMode}
         onShowVotingChart={() => setShowVotingChart(true)}
+        onShowHelp={() => setShowHelpModal(true)}
       />
 
       <div className="main-container">
@@ -700,16 +701,127 @@ function App(): ReactNode {
         )}
       </div>
 
-      {/* Footer */}
       <footer className="app-footer">
         <p>© 2026 | Depot Dashboard Genesis v1.0 | Powered by Vision Unique</p>
+        <a
+          href="https://wa.me/242067678128?text=Bonjour,%20je%20voudrais%20donner%20mon%20avis%20sur%20les%20am%C3%A9liorations%20logistiques%20du%20Depot%20Dashboard"
+          className="whatsapp-feedback-btn"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          💬 Donnez votre avis sur WhatsApp
+        </a>
       </footer>
 
-      {/*  Modal Classement des Votes */}
       <VotingChart
         isOpen={showVotingChart}
         onClose={() => setShowVotingChart(false)}
       />
+
+      {showHelpModal && (
+        <div
+          className="help-modal-overlay"
+          onClick={() => setShowHelpModal(false)}
+        >
+          <div
+            className="help-modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="help-modal-header">
+              <h2>À propos de Depot Dashboard</h2>
+              <button
+                className="help-modal-close"
+                onClick={() => setShowHelpModal(false)}
+              >
+                ✕
+              </button>
+            </div>
+            <div className="help-modal-body">
+              <div className="help-section">
+                <h3> Qu'est-ce que Depot Dashboard ?</h3>
+                <p>
+                  Depot Dashboard est une application de gestion pour les
+                  managers de dépôts. Elle permet de gérer vos produits, vos
+                  stocks, votre abonnement et d'améliorer votre logistique.
+                </p>
+              </div>
+              <div className="help-section">
+                <h3> Comment ça fonctionne?</h3>
+                <ul>
+                  <li>
+                    <strong>Gestion des produits:</strong> Ajoutez, modifiez ou
+                    supprimez vos produits avec prix et stock pour une meilleure
+                    organisation
+                  </li>
+                  <li>
+                    <strong>Stock:</strong> Suivez vos quantités en stock et
+                    mettez à jour vos unités pour une meilleure gestion
+                  </li>
+                  <li>
+                    <strong>Abonnement:</strong> Renouvelez votre abonnement
+                    mensuel pour garder votre dépôt actif
+                  </li>
+                  <li>
+                    <strong>Premium:</strong> Upgradez vers les tiers premium
+                    (Basic, Advanced, Elite) pour une meilleure visibilité vous
+                    béneficeriez ici de la fonctionnalité de mettre une image
+                    sur vos produits et dans certains cas une courte video
+                  </li>
+                </ul>
+              </div>
+              <div className="help-section">
+                <h3>💎 Système Premium</h3>
+                <ul>
+                  <li>
+                    <strong>Basic (10 000 FCFA):</strong> Top 15 par catégorie :
+                    votre depot s'affichera parmi les 15 pemier depot visible
+                    par les utilisateurs
+                  </li>
+                  <li>
+                    <strong>Advanced (15 000 FCFA):</strong> Top 10 par
+                    catégorie : votre depot s'affichera parmi les 10 pemier
+                    depot visible par les utilisateurs
+                  </li>
+                  <li>
+                    <strong>Elite (20 000 FCFA):</strong> Top 3 par catégorie :
+                    votre depot s'affichera parmi les 3 pemier depot visible par
+                    les utilisateurs
+                  </li>
+                </ul>
+              </div>
+              <div className="help-section">
+                <h3>Système de Vote</h3>
+                <p>
+                  Les mamans votent pour leurs dépôts préférés. Les meilleurs
+                  dépôts gagnent en visibilité dans le classement trimestriel
+                  par illustration un depot avec un abonnment basic, avec une
+                  bonne note lors des votes aura la meme visubilité et jouiera
+                  des memes privilege que celui qui à un abonnment élite.
+                </p>
+              </div>
+              <div className="help-section">
+                <h3>💬 Besoin d'aide?</h3>
+                <p>
+                  Utilisez le bouton WhatsApp au bas du l'Application pour nous
+                  contacter et donner votre avis sur les améliorations
+                  logistiques .
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Fixed Logo */}
+      <a
+        href="https://geniusland.netlify.app"
+        className="fixed-logo"
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Vision Unique"
+      >
+        <img src="/photo-pro.jpg" alt="Vision Unique Logo" />
+      </a>
     </div>
   );
 }
