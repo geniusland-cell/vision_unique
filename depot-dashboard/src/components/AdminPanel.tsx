@@ -106,7 +106,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
         setBanLoading(depotId);
         await banDepot(depotId);
         if (selectedManager) {
-          loadManagerDetails(selectedManager);
+          await loadManagerDetails(selectedManager);
         }
       } catch {
       } finally {
@@ -125,7 +125,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
         setBanLoading(depotId);
         await unbanDepot(depotId);
         if (selectedManager) {
-          loadManagerDetails(selectedManager);
+          await loadManagerDetails(selectedManager);
         }
       } catch {
       } finally {
@@ -298,7 +298,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                               handleBanManager(manager.id);
                             }}
                           >
-                            Bannir
+                            🚫 Bannir
                           </button>
                         </div>
                       </div>
@@ -344,7 +344,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                               handleUnbanManager(manager.id);
                             }}
                           >
-                            Débannir
+                            ✅ Débannir
                           </button>
                         </div>
                       </div>
@@ -399,21 +399,25 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                             );
                             const subStatus =
                               getSubscriptionStatus(daysRemaining);
+                            const isBanned = depot.is_active === false;
                             const isExpired = daysRemaining < 0;
                             const isWarning =
                               daysRemaining >= 0 && daysRemaining < 7;
-                            const statusLabel = depot.payment_pending
-                              ? "En attente"
-                              : isExpired
-                                ? "Inactif"
-                                : isWarning
-                                  ? "À renouveler"
-                                  : "Actif";
+                            const statusLabel = isBanned
+                              ? "Banni"
+                              : depot.payment_pending
+                                ? "En attente"
+                                : isExpired ||
+                                    depot.subscription_status === "inactive"
+                                  ? "Inactif"
+                                  : isWarning
+                                    ? "À renouveler"
+                                    : "Actif";
 
                             return (
                               <div
                                 key={depot.id}
-                                className={`depot-item ${isExpired ? "expired" : isWarning ? "warning" : "active"}`}
+                                className={`depot-item ${isBanned ? "banned" : isExpired ? "expired" : isWarning ? "warning" : "active"}`}
                               >
                                 <div className="depot-header">
                                   <h4>{depot.name}</h4>
@@ -425,13 +429,15 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                                     }}
                                   >
                                     <span
-                                      className={`subscription-badge ${subStatus}`}
+                                      className={`subscription-badge ${isBanned ? "inactive" : subStatus}`}
                                     >
-                                      {isExpired
-                                        ? "⚠️ EXPIRÉ"
-                                        : isWarning
-                                          ? `⏰ ${daysRemaining}j restants`
-                                          : `✓ ${daysRemaining}j`}
+                                      {isBanned
+                                        ? "🚫 BANNI"
+                                        : isExpired
+                                          ? "⚠️ EXPIRÉ"
+                                          : isWarning
+                                            ? `⏰ ${daysRemaining}j restants`
+                                            : `✓ ${daysRemaining}j`}
                                     </span>
                                     <span className="payment-pending">
                                       Statut dépôt: {statusLabel}

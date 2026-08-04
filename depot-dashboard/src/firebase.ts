@@ -346,10 +346,16 @@ export const getManagerDepots = async (
     const depots = Object.keys(depotsData)
       .filter(
         (key) =>
-          depotsData[key].is_active === true &&
-          depotsData[key].managed_by === managerId,
+          depotsData[key].managed_by === managerId &&
+          depotsData[key].is_active !== false,
       )
-      .map((key) => ({ id: key, ...depotsData[key] }));
+      .map((key) => ({ id: key, ...depotsData[key] }))
+      .sort((a, b) => {
+        const aTime = new Date(a.updated_at || 0).getTime();
+        const bTime = new Date(b.updated_at || 0).getTime();
+        return bTime - aTime;
+      })
+      .slice(0, 1);
 
     return { success: true, data: depots };
   } catch (err: unknown) {
@@ -1012,8 +1018,18 @@ export const getManagerDetailsForAdmin = async (
 
     const allDepots = depotsSnapshot.val();
     const managerDepots = Object.keys(allDepots)
-      .filter((key) => allDepots[key].managed_by === managerId)
-      .map((key) => ({ id: key, ...allDepots[key] }));
+      .filter(
+        (key) =>
+          allDepots[key].managed_by === managerId &&
+          allDepots[key].is_active !== false,
+      )
+      .map((key) => ({ id: key, ...allDepots[key] }))
+      .sort((a, b) => {
+        const aTime = new Date(a.updated_at || 0).getTime();
+        const bTime = new Date(b.updated_at || 0).getTime();
+        return bTime - aTime;
+      })
+      .slice(0, 1);
 
     // 3. Pour chaque dépôt, récupérer les produits EN PARALLÈLE
     const depotsWithProducts = await Promise.all(
@@ -1142,6 +1158,11 @@ export const banDepot = async (
     const depotRef = ref(db, `depots/${depotId}`);
     await update(depotRef, {
       is_active: false,
+      subscription_status: "inactive",
+      payment_pending: false,
+      payment_amount: null,
+      requested_tier: null,
+      payment_notified_at: null,
       updated_at: new Date().toISOString(),
     });
 
@@ -1162,6 +1183,11 @@ export const unbanDepot = async (
     const depotRef = ref(db, `depots/${depotId}`);
     await update(depotRef, {
       is_active: true,
+      subscription_status: "active",
+      payment_pending: false,
+      payment_amount: null,
+      requested_tier: null,
+      payment_notified_at: null,
       updated_at: new Date().toISOString(),
     });
 
@@ -1363,6 +1389,7 @@ export const markPaymentPending = async (
   try {
     const depotRef = ref(db, `depots/${depotId}`);
     await update(depotRef, {
+      is_active: true,
       payment_pending: true,
       payment_amount: amount,
       requested_tier: tier,
@@ -1402,6 +1429,10 @@ export const upgradeTier = async (
     await update(depotRef, {
       tier: newTier,
       tier_expiry: tierExpiryDate,
+      payment_pending: false,
+      payment_amount: null,
+      requested_tier: null,
+      subscription_status: "active",
       updated_at: new Date().toISOString(),
     });
 
