@@ -138,7 +138,21 @@ function App(): ReactNode {
     );
     const isPaymentPending = Boolean(selectedDepot.payment_pending);
 
-    if (isPremiumTier) {
+    // Vérifier si le tier premium est expiré
+    const tierRemaining = selectedDepot.tier_expiry
+      ? calculateDaysRemaining(selectedDepot.tier_expiry)
+      : null;
+    const isTierExpired = tierRemaining !== null && tierRemaining < 0;
+
+    // Si le tier est expiré, afficher l'alerte
+    if (isPremiumTier && isTierExpired) {
+      setSubscriptionAlert(true);
+      setShowUpgradeNotice(false);
+      return;
+    }
+
+    // Si le tier est actif, pas d'alerte
+    if (isPremiumTier && !isTierExpired) {
       setSubscriptionAlert(false);
       setShowUpgradeNotice(false);
       return;
