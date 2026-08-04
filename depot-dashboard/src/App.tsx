@@ -268,26 +268,32 @@ function App(): ReactNode {
   const handleRenewSubscription = async (
     amount: number,
     tier: "none" | "basic" | "advanced" | "elite",
+    billingCycle: "monthly" | "quarterly" = "monthly",
   ) => {
     if (!selectedDepot) return;
 
     const confirmed = window.confirm(
-      `Confirmez-vous ce choix : ${tier === "none" ? "renouvellement standard" : "forfait " + tier.toUpperCase()} à ${amount.toLocaleString()} FCFA ?`,
+      `Confirmez-vous ce choix : ${tier === "none" ? "renouvellement standard" : "forfait " + tier.toUpperCase()} ${billingCycle === "quarterly" ? "trimestriel" : "mensuel"} à ${amount.toLocaleString()} FCFA ?`,
     );
 
     if (!confirmed) return;
 
     setIsRenewingSubscription(true);
     try {
-      // Manager cannot directly renew via admin function.
-      // Mark payment pending so admin can confirm and renew after MOMO reception.
-      const res = await markPaymentPending(selectedDepot.id, amount, tier);
+      const res = await markPaymentPending(
+        selectedDepot.id,
+        amount,
+        tier,
+        billingCycle,
+      );
       if (res.success) {
         const pendingDepot = {
           ...selectedDepot,
           payment_pending: true,
           payment_amount: amount,
           requested_tier: tier,
+          requested_cycle: billingCycle,
+          subscription_plan: billingCycle,
           subscription_status: "inactive" as const,
         };
 
@@ -299,7 +305,7 @@ function App(): ReactNode {
         );
 
         alert(
-          `Notification envoyée à l'admin. Veuillez effectuer le paiement de ${amount.toLocaleString()} FCFA au +242 06 767 81 28 et l'admin validera votre ${tier === "none" ? "renouvellement standard" : "upgrade " + tier.toUpperCase()}.`,
+          `Notification envoyée à l'admin. Veuillez effectuer le paiement de ${amount.toLocaleString()} FCFA au +242 06 767 81 28 et l'admin validera votre ${tier === "none" ? "renouvellement standard" : "upgrade " + tier.toUpperCase()} (${billingCycle === "quarterly" ? "trimestriel" : "mensuel"}).`,
         );
       } else {
         alert("Erreur notification: " + (res.error || "unknown"));
@@ -672,40 +678,81 @@ function App(): ReactNode {
               <div className="payment-buttons-container">
                 <h4>Choisissez votre forfait:</h4>
                 <button
-                  onClick={() => handleRenewSubscription(6000, "none")}
+                  onClick={() =>
+                    handleRenewSubscription(6000, "none", "monthly")
+                  }
                   disabled={isRenewingSubscription}
                   className="btn-payment-option btn-standard"
                 >
                   💳 6,000 FCFA
                   <br />
-                  <small>Standard (+30j)</small>
+                  <small>Standard Mensuel (+30j)</small>
                 </button>
                 <button
-                  onClick={() => handleRenewSubscription(10000, "basic")}
+                  onClick={() =>
+                    handleRenewSubscription(10000, "basic", "monthly")
+                  }
                   disabled={isRenewingSubscription}
                   className="btn-payment-option btn-basic"
                 >
                   💎 10,000 FCFA
                   <br />
-                  <small>Premium Basic (Top 15)</small>
+                  <small>Premium Basic Mensuel (Top 15)</small>
                 </button>
                 <button
-                  onClick={() => handleRenewSubscription(15000, "advanced")}
+                  onClick={() =>
+                    handleRenewSubscription(15000, "advanced", "monthly")
+                  }
                   disabled={isRenewingSubscription}
                   className="btn-payment-option btn-advanced"
                 >
                   💎💎 15,000 FCFA
                   <br />
-                  <small>Premium Advanced (Top 10)</small>
+                  <small>Premium Advanced Mensuel (Top 10)</small>
                 </button>
                 <button
-                  onClick={() => handleRenewSubscription(20000, "elite")}
+                  onClick={() =>
+                    handleRenewSubscription(20000, "elite", "monthly")
+                  }
                   disabled={isRenewingSubscription}
                   className="btn-payment-option btn-elite"
                 >
                   💎💎💎 20,000 FCFA
                   <br />
-                  <small>Premium Elite (Top 3)</small>
+                  <small>Premium Elite Mensuel (Top 3)</small>
+                </button>
+                <button
+                  onClick={() =>
+                    handleRenewSubscription(28000, "basic", "quarterly")
+                  }
+                  disabled={isRenewingSubscription}
+                  className="btn-payment-option btn-basic"
+                >
+                  💎 28,000 FCFA
+                  <br />
+                  <small>Premium Basic Trimestriel (Top 15)</small>
+                </button>
+                <button
+                  onClick={() =>
+                    handleRenewSubscription(42000, "advanced", "quarterly")
+                  }
+                  disabled={isRenewingSubscription}
+                  className="btn-payment-option btn-advanced"
+                >
+                  💎💎 42,000 FCFA
+                  <br />
+                  <small>Premium Advanced Trimestriel (Top 10)</small>
+                </button>
+                <button
+                  onClick={() =>
+                    handleRenewSubscription(56000, "elite", "quarterly")
+                  }
+                  disabled={isRenewingSubscription}
+                  className="btn-payment-option btn-elite"
+                >
+                  💎💎💎 56,000 FCFA
+                  <br />
+                  <small>Premium Elite Trimestriel (Top 3)</small>
                 </button>
               </div>
             )}

@@ -161,18 +161,23 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
     depotId: string,
     amount: number,
     tier: "none" | "basic" | "advanced" | "elite",
+    billingCycle: "monthly" | "quarterly" = "monthly",
   ) => {
     if (
       window.confirm(
-        `Confirmer le paiement de ${amount.toLocaleString()} FCFA pour ${tier === "none" ? "renouvellement standard" : "upgrade " + tier.toUpperCase()} (+30 jours)?`,
+        `Confirmer le paiement de ${amount.toLocaleString()} FCFA pour ${tier === "none" ? "renouvellement standard" : "upgrade " + tier.toUpperCase()} (${billingCycle === "quarterly" ? "trimestriel" : "mensuel"})?`,
       )
     ) {
       try {
         setPaymentLoading(depotId);
-        const result = await updateSubscriptionWithTier(depotId, tier);
+        const result = await updateSubscriptionWithTier(
+          depotId,
+          tier,
+          billingCycle,
+        );
         if (result.success) {
           alert(
-            `Paiement de ${amount.toLocaleString()} FCFA validé! Dépôt ${tier === "none" ? "renouvelé" : "upgradé en " + tier.toUpperCase()} pour 30 jours.`,
+            `Paiement de ${amount.toLocaleString()} FCFA validé! Dépôt ${tier === "none" ? "renouvelé" : "upgradé en " + tier.toUpperCase()} pour ${billingCycle === "quarterly" ? "90 jours" : "30 jours"}.`,
           );
           loadManagerDetails(selectedManager || "");
         } else {
@@ -190,17 +195,26 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
     depotId: string,
     tier: "basic" | "advanced" | "elite",
     price: number,
+    durationDays: number,
+    billingCycle: "monthly" | "quarterly" = "monthly",
   ) => {
     if (
       window.confirm(
-        `Confirmer l'upgrade vers ${tier.toUpperCase()} pour ${price} FCFA (30 jours)?`,
+        `Confirmer l'upgrade vers ${tier.toUpperCase()} pour ${price} FCFA (${billingCycle === "quarterly" ? "90 jours" : "30 jours"})?`,
       )
     ) {
       try {
         setPremiumLoading(depotId);
-        const result = await upgradeToPremium(depotId, tier, 30);
+        const result = await upgradeToPremium(
+          depotId,
+          tier,
+          durationDays,
+          billingCycle,
+        );
         if (result.success) {
-          alert(` Dépôt mis à niveau en ${tier.toUpperCase()} pour 30 jours!`);
+          alert(
+            ` Dépôt mis à niveau en ${tier.toUpperCase()} pour ${billingCycle === "quarterly" ? "90 jours" : "30 jours"}!`,
+          );
           loadManagerDetails(selectedManager || "");
         } else {
           alert(" Erreur: " + result.error);
@@ -297,8 +311,9 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                               e.stopPropagation();
                               handleBanManager(manager.id);
                             }}
+                            title="Bannir le manager et son dépôt principal"
                           >
-                            🚫 Bannir
+                            🚫 Bannir manager
                           </button>
                         </div>
                       </div>
@@ -343,8 +358,9 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                               e.stopPropagation();
                               handleUnbanManager(manager.id);
                             }}
+                            title="Débannir le manager et réactiver son dépôt principal"
                           >
-                            ✅ Débannir
+                            ✅ Débannir manager
                           </button>
                         </div>
                       </div>
@@ -394,9 +410,15 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                         <h3>Dépôts ({managerDetails.depots.length})</h3>
                         <div className="depots-list">
                           {managerDetails.depots.map((depot: any) => {
-                            const daysRemaining = calculateDaysRemaining(
-                              depot.subscription_expiry,
-                            );
+                            const rawSubscriptionExpiry =
+                              depot?.subscription_expiry;
+                            const hasRealSubscriptionExpiry =
+                              typeof rawSubscriptionExpiry === "string" &&
+                              rawSubscriptionExpiry.trim().length > 0;
+
+                            const daysRemaining = hasRealSubscriptionExpiry
+                              ? calculateDaysRemaining(rawSubscriptionExpiry)
+                              : -1;
                             const subStatus =
                               getSubscriptionStatus(daysRemaining);
                             const isBanned = depot.is_active === false;
@@ -471,7 +493,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                                       >
                                         {banLoading === depot.id
                                           ? "⏳..."
-                                          : "🚫 Bannir"}
+                                          : "🚫 Bannir dépôt"}
                                       </button>
                                     ) : (
                                       <button
@@ -483,7 +505,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                                       >
                                         {banLoading === depot.id
                                           ? "⏳..."
-                                          : "✅ Débannir"}
+                                          : "✅ Débannir dépôt"}
                                       </button>
                                     )}
                                   </div>
@@ -500,11 +522,11 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                                     <strong>Longitude:</strong>{" "}
                                     {depot.longitude}
                                   </p>
-                                  {depot.subscription_expiry && (
+                                  {hasRealSubscriptionExpiry && (
                                     <p>
                                       <strong>Expiration:</strong>{" "}
                                       {new Date(
-                                        depot.subscription_expiry,
+                                        rawSubscriptionExpiry,
                                       ).toLocaleDateString("fr-FR")}
                                     </p>
                                   )}
@@ -569,14 +591,16 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                                             depot.id,
                                             "basic",
                                             10000,
+                                            30,
+                                            "monthly",
                                           )
                                         }
                                         disabled={premiumLoading === depot.id}
-                                        title="Top 15 par catégorie"
+                                        title="Top 15 par catégorie (mensuel)"
                                       >
                                         {premiumLoading === depot.id
                                           ? "⏳..."
-                                          : "💎 10k (Top 15)"}
+                                          : "💎 10k / mois (Top 15)"}
                                       </button>
                                       <button
                                         className="btn btn-premium btn-advanced"
@@ -585,14 +609,16 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                                             depot.id,
                                             "advanced",
                                             15000,
+                                            30,
+                                            "monthly",
                                           )
                                         }
                                         disabled={premiumLoading === depot.id}
-                                        title="Top 10 par catégorie"
+                                        title="Top 10 par catégorie (mensuel)"
                                       >
                                         {premiumLoading === depot.id
                                           ? "⏳..."
-                                          : "💎💎 15k (Top 10)"}
+                                          : "💎💎 15k / mois (Top 10)"}
                                       </button>
                                       <button
                                         className="btn btn-premium btn-elite"
@@ -601,14 +627,70 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                                             depot.id,
                                             "elite",
                                             20000,
+                                            30,
+                                            "monthly",
                                           )
                                         }
                                         disabled={premiumLoading === depot.id}
-                                        title="Top 3 par catégorie"
+                                        title="Top 3 par catégorie (mensuel)"
                                       >
                                         {premiumLoading === depot.id
                                           ? "⏳..."
-                                          : "💎💎💎 20k (Top 3)"}
+                                          : "💎💎💎 20k / mois (Top 3)"}
+                                      </button>
+                                      <button
+                                        className="btn btn-premium btn-basic"
+                                        onClick={() =>
+                                          handleUpgradePremium(
+                                            depot.id,
+                                            "basic",
+                                            28000,
+                                            90,
+                                            "quarterly",
+                                          )
+                                        }
+                                        disabled={premiumLoading === depot.id}
+                                        title="Top 15 par catégorie (trimestriel)"
+                                      >
+                                        {premiumLoading === depot.id
+                                          ? "⏳..."
+                                          : "💎 28k / 3 mois (Top 15)"}
+                                      </button>
+                                      <button
+                                        className="btn btn-premium btn-advanced"
+                                        onClick={() =>
+                                          handleUpgradePremium(
+                                            depot.id,
+                                            "advanced",
+                                            42000,
+                                            90,
+                                            "quarterly",
+                                          )
+                                        }
+                                        disabled={premiumLoading === depot.id}
+                                        title="Top 10 par catégorie (trimestriel)"
+                                      >
+                                        {premiumLoading === depot.id
+                                          ? "⏳..."
+                                          : "💎💎 42k / 3 mois (Top 10)"}
+                                      </button>
+                                      <button
+                                        className="btn btn-premium btn-elite"
+                                        onClick={() =>
+                                          handleUpgradePremium(
+                                            depot.id,
+                                            "elite",
+                                            56000,
+                                            90,
+                                            "quarterly",
+                                          )
+                                        }
+                                        disabled={premiumLoading === depot.id}
+                                        title="Top 3 par catégorie (trimestriel)"
+                                      >
+                                        {premiumLoading === depot.id
+                                          ? "⏳..."
+                                          : "💎💎💎 56k / 3 mois (Top 3)"}
                                       </button>
                                     </div>
                                     <small className="premium-info">

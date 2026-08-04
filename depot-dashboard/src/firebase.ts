@@ -1333,32 +1333,33 @@ export const updateSubscription = async (
 export const updateSubscriptionWithTier = async (
   depotId: string,
   tier: "none" | "basic" | "advanced" | "elite",
+  billingCycle: "monthly" | "quarterly" = "monthly",
 ): Promise<FirebaseResponse<null>> => {
   try {
     const depotRef = ref(db, `depots/${depotId}`);
+    const durationDays = billingCycle === "quarterly" ? 90 : 30;
 
-    // Ajouter 30 jours a partir de maintenant
     const newExpiryDate = new Date(
-      Date.now() + 30 * 24 * 60 * 60 * 1000,
+      Date.now() + durationDays * 24 * 60 * 60 * 1000,
     ).toISOString();
 
-    // Calculer tier expiry
     const tierExpiryDate = new Date(
-      Date.now() + 30 * 24 * 60 * 60 * 1000,
+      Date.now() + durationDays * 24 * 60 * 60 * 1000,
     ).toISOString();
 
     const updates: any = {
       subscription_expiry: newExpiryDate,
+      subscription_plan: billingCycle,
       subscription_status: "active",
       payment_pending: false,
       payment_notified_at: null,
       payment_amount: null,
       requested_tier: null,
+      requested_cycle: null,
       is_active: true,
       updated_at: new Date().toISOString(),
     };
 
-    // Mettre à jour le tier si ce n'est pas "none"
     if (tier !== "none") {
       updates.tier = tier;
       updates.tier_expiry = tierExpiryDate;
@@ -1366,7 +1367,7 @@ export const updateSubscriptionWithTier = async (
 
     await update(depotRef, updates);
 
-    safeLog(" Abonnement renouvelé avec tier pour dépôt");
+    safeLog(` Abonnement ${billingCycle} renouvelé avec tier pour dépôt`);
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
@@ -1385,6 +1386,7 @@ export const markPaymentPending = async (
   depotId: string,
   amount: number,
   tier: "none" | "basic" | "advanced" | "elite",
+  billingCycle: "monthly" | "quarterly" = "monthly",
 ): Promise<FirebaseResponse<null>> => {
   try {
     const depotRef = ref(db, `depots/${depotId}`);
@@ -1393,6 +1395,8 @@ export const markPaymentPending = async (
       payment_pending: true,
       payment_amount: amount,
       requested_tier: tier,
+      requested_cycle: billingCycle,
+      subscription_plan: billingCycle,
       subscription_status: "inactive",
       payment_notified_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -1790,6 +1794,7 @@ export const upgradeToPremium = async (
   depotId: string,
   tier: "basic" | "advanced" | "elite",
   durationDays: number = 30,
+  billingCycle: "monthly" | "quarterly" = "monthly",
 ): Promise<FirebaseResponse<null>> => {
   try {
     const premiumUntil = new Date();
@@ -1799,9 +1804,11 @@ export const upgradeToPremium = async (
     await update(depotRef, {
       tier: tier,
       tier_expiry: premiumUntil.toISOString(),
+      subscription_plan: billingCycle,
       payment_pending: false,
       payment_amount: null,
       requested_tier: null,
+      requested_cycle: null,
       subscription_status: "active",
       subscription_expiry: premiumUntil.toISOString(),
       is_active: true,
@@ -1809,7 +1816,7 @@ export const upgradeToPremium = async (
       updated_at: new Date().toISOString(),
     });
 
-    safeLog(` Dépôt mis à niveau en ${tier}`);
+    safeLog(` Dépôt mis à niveau en ${tier} pour ${billingCycle}`);
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
