@@ -1848,7 +1848,41 @@ export const upgradeToPremium = async (
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    safeError(" Erreur upgrade premium:", errorMsg);
+    safeError(" Erreur mise à niveau premium:", errorMsg);
+    return { success: false, error: errorMsg };
+  }
+};
+
+/**
+ * Uploader une image vers Firebase Storage et récupérer l'URL publique
+ * @param file - Fichier image à uploader
+ * @param depotId - ID du dépôt (pour le chemin de stockage)
+ * @returns URL publique de l'image ou erreur
+ */
+export const uploadDepotImage = async (
+  file: File,
+  depotId: string,
+): Promise<FirebaseResponse<string>> => {
+  try {
+    // Créer un nom de fichier unique avec timestamp
+    const timestamp = Date.now();
+    const fileName = `${depotId}_${timestamp}_${file.name}`;
+    const storagePath = `depot_images/${fileName}`;
+
+    // Référence Firebase Storage
+    const imageRef = storageRef(storage, storagePath);
+
+    // Uploader le fichier
+    const snapshot = await uploadBytes(imageRef, file);
+
+    // Récupérer l'URL publique
+    const downloadURL = await getDownloadURL(snapshot.ref);
+
+    safeLog(` Image uploadée avec succès: ${storagePath}`);
+    return { success: true, data: downloadURL };
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
+    safeError(" Erreur upload image:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };

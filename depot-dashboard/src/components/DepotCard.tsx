@@ -1,6 +1,7 @@
 import { useState, ReactNode } from "react";
 import DepotProducts from "./DepotProducts";
 import { updateDepot, getDepotById } from "../firebase";
+import ImageUpload from "./ImageUpload";
 import type { Depot } from "../types";
 import "./DepotCard.css";
 
@@ -157,14 +158,12 @@ export default function DepotCard({
             (depot.tier === "advanced" || depot.tier === "elite") && (
               <>
                 <div className="detail-row premium-field">
-                  <label>🖼️ URL Image Promo</label>
-                  <input
-                    type="url"
-                    value={editedDepot.promo_image_url || ""}
-                    onChange={(e) =>
-                      handleChange("promo_image_url", e.target.value)
+                  <label>🖼️ Image Promo</label>
+                  <ImageUpload
+                    onImageUpload={(url) =>
+                      handleChange("promo_image_url", url)
                     }
-                    placeholder="https://..."
+                    depotId={depot.id}
                   />
                 </div>
                 {depot.tier === "elite" && (

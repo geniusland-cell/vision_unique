@@ -1,40 +1,26 @@
 import { useState, ReactNode } from "react";
+import imageCompression from "browser-image-compression";
+import { uploadDepotImage } from "../firebase";
 
 interface ImageUploadProps {
   onImageUpload: (imageUrl: string) => void;
+  depotId: string;
   buttonText?: string;
 }
 
 export default function ImageUpload({
   onImageUpload,
+  depotId,
 }: ImageUploadProps): ReactNode {
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  const cloudinaryCloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
-
-  // Vérifier que les variables d'environnement sont configurées
-  if (!cloudinaryCloudName || !uploadPreset) {
-    return (
-      <div style={{ color: "red", padding: "10px" }}>
-        ⚠️ Erreur: Configuration Cloudinary manquante dans .env
-      </div>
-    );
-  }
 
   const handleFileSelect = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ): Promise<void> => {
     const file = event.target.files?.[0];
     if (!file) return;
-
-    // Vérifier la taille (max 5MB)
-    if (file.size > 5000000) {
-      setError("❌ Fichier trop volumineux (max 5MB)");
-      return;
-    }
 
     // Vérifier que c'est une image
     if (!file.type.startsWith("image/")) {
@@ -46,32 +32,29 @@ export default function ImageUpload({
     setError(null);
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("upload_preset", uploadPreset);
-      formData.append("cloud_name", cloudinaryCloudName);
+      // Options de compression
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
+      };
 
-      // Uploader directement vers l'API Cloudinary
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/image/upload`,
-        {
-          method: "POST",
-          body: formData,
-        },
+      // Compresser l'image côté client
+      const compressedFile = await imageCompression(file, options);
+
+      console.log(
+        `Image compressée: ${file.size} -> ${compressedFile.size} bytes`,
       );
 
-      if (!response.ok) {
-        throw new Error(`Upload failed with status ${response.status}`);
-      }
+      // Uploader vers Firebase Storage
+      const result = await uploadDepotImage(compressedFile, depotId);
 
-      const data = await response.json();
-
-      if (data.secure_url) {
-        setUploadedImageUrl(data.secure_url);
-        onImageUpload(data.secure_url);
+      if (result.success && result.data) {
+        setUploadedImageUrl(result.data);
+        onImageUpload(result.data);
         setIsUploading(false);
       } else {
-        throw new Error("Pas d'URL reçue de Cloudinary");
+        throw new Error(result.error || "Erreur upload Firebase");
       }
     } catch {
       setError("❌ Erreur lors du téléchargement. Vérifiez votre connexion.");
