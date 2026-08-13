@@ -1605,6 +1605,31 @@ export const closeVoting = async (): Promise<FirebaseResponse<null>> => {
 };
 
 /**
+ * Réinitialiser le cycle de vote pour permettre un nouveau lancement
+ */
+export const resetVoting = async (): Promise<FirebaseResponse<null>> => {
+  try {
+    const currentQuarter = getCurrentQuarter();
+    const votesSettingsRef = ref(db, `votes_settings/${currentQuarter}`);
+
+    await update(votesSettingsRef, {
+      status: "PENDING",
+      started_at: null,
+      ends_at: null,
+      closed_at: null,
+      updated_at: new Date().toISOString(),
+    });
+
+    safeLog(`✅ Cycle de vote réinitialisé pour ${currentQuarter}`);
+    return { success: true };
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
+    safeError(" Erreur réinitialisation votes:", errorMsg);
+    return { success: false, error: errorMsg };
+  }
+};
+
+/**
  * Mettre à jour la durée des votes pour le trimestre courant
  */
 export const updateVotingDuration = async (

@@ -150,6 +150,21 @@
   cursor: not-allowed;
 }
 
+.btn-reset {
+  background: linear-gradient(135deg, #ff9800, #e68900);
+  color: white;
+}
+
+.btn-reset:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+}
+
+.btn-reset:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
 /* ==================== TIER MANAGEMENT ==================== */
 
 .tier-management {

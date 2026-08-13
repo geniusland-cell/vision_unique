@@ -5,6 +5,7 @@ import {
   getVotingStatus,
   launchVoting,
   closeVoting,
+  resetVoting,
   updateVotingDuration,
   upgradeTier,
   removeTier,
@@ -92,6 +93,25 @@ function VotingManagement({}: VotingManagementProps): ReactNode {
 
       if (result.success) {
         alert("✅ Votes fermés! Délibération en cours...");
+        loadVotingData();
+      } else {
+        alert("❌ Erreur: " + result.error);
+      }
+      setLoading(false);
+    } catch {
+      setLoading(false);
+    }
+  };
+
+  const handleResetVoting = async () => {
+    try {
+      setLoading(true);
+      const result = await resetVoting();
+
+      if (result.success) {
+        alert(
+          "✅ Cycle de vote réinitialisé! Vous pouvez maintenant relancer les votes.",
+        );
         loadVotingData();
       } else {
         alert("❌ Erreur: " + result.error);
@@ -223,6 +243,14 @@ function VotingManagement({}: VotingManagementProps): ReactNode {
           disabled={loading || votingSettings.status !== "VOTING_ACTIVE"}
         >
           🔴 Fermer les votes
+        </button>
+
+        <button
+          className="btn-reset"
+          onClick={handleResetVoting}
+          disabled={loading || votingSettings.status === "PENDING"}
+        >
+          🔄 Réinitialiser le cycle
         </button>
       </div>
 
