@@ -74,7 +74,8 @@ function VotingManagement({}: VotingManagementProps): ReactNode {
             `🙏 COLLECTE DE SOUTIEN TRIMESTRIELLE ACTIVÉE\n\n` +
             `La collecte de soutien de 1 000 FCFA à 15 000 FCFA est maintenant active.\n` +
             `Les utilisatrices verront le message de collecte après chaque vote.\n\n` +
-            `📞 Numéro de contact: 06 767 81 28`,
+            `� Paiement par dépôt sur: 06 767 81 28\n` +
+            `💬 WhatsApp pour explications: 06 767 81 28`,
         );
         loadVotingData();
       } else {
