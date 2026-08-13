@@ -1611,7 +1611,9 @@ export const resetVoting = async (): Promise<FirebaseResponse<null>> => {
   try {
     const currentQuarter = getCurrentQuarter();
     const votesSettingsRef = ref(db, `votes_settings/${currentQuarter}`);
+    const votesRef = ref(db, `votes/${currentQuarter}`);
 
+    // Réinitialiser les paramètres de vote
     await update(votesSettingsRef, {
       status: "PENDING",
       started_at: null,
@@ -1620,7 +1622,12 @@ export const resetVoting = async (): Promise<FirebaseResponse<null>> => {
       updated_at: new Date().toISOString(),
     });
 
-    safeLog(`✅ Cycle de vote réinitialisé pour ${currentQuarter}`);
+    // Supprimer tous les votes du trimestre
+    await set(votesRef, null);
+
+    safeLog(
+      `✅ Cycle de vote réinitialisé pour ${currentQuarter} (votes supprimés)`,
+    );
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";

@@ -111,7 +111,7 @@ function VotingManagement({}: VotingManagementProps): ReactNode {
 
       if (result.success) {
         alert(
-          "✅ Cycle de vote réinitialisé! Vous pouvez maintenant relancer les votes.",
+          "✅ Cycle de vote réinitialisé! Tous les votes du trimestre ont été supprimés. Vous pouvez maintenant relancer les votes.",
         );
         loadVotingData();
       } else {
