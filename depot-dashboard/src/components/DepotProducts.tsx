@@ -6,6 +6,7 @@ import {
   removeDepotProduct,
   getCategories,
 } from "../firebase";
+import ImageUpload from "./ImageUpload";
 import type { Depot, Category } from "../types";
 import "./DepotProducts.css";
 
@@ -326,18 +327,11 @@ export default function DepotProducts({
                         {depot.tier === "basic" ||
                         depot.tier === "advanced" ||
                         depot.tier === "elite" ? (
-                          <input
-                            type="url"
-                            placeholder="URL de l'image"
-                            value={editData[product.id]?.image || ""}
-                            onChange={(e) =>
-                              handleEditChange(
-                                product.id,
-                                "image",
-                                e.target.value,
-                              )
+                          <ImageUpload
+                            onImageUpload={(url) =>
+                              handleEditChange(product.id, "image", url)
                             }
-                            className="image-url-input"
+                            depotId={depot.id}
                           />
                         ) : (
                           <div className="premium-lock-notice">
@@ -436,15 +430,11 @@ export default function DepotProducts({
               depot.tier === "advanced" ||
               depot.tier === "elite" ? (
                 <>
-                  {/* Image URL Input - Replaces Cloudinary Upload */}
-                  <input
-                    type="url"
-                    placeholder="URL de l'image du produit"
-                    value={newProduct.image}
-                    onChange={(e) =>
-                      setNewProduct({ ...newProduct, image: e.target.value })
+                  <ImageUpload
+                    onImageUpload={(url) =>
+                      setNewProduct({ ...newProduct, image: url })
                     }
-                    className="image-url-input"
+                    depotId={depot.id}
                   />
                 </>
               ) : (
