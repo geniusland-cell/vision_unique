@@ -1018,18 +1018,14 @@ export const getManagerDetailsForAdmin = async (
 
     const allDepots = depotsSnapshot.val();
     const managerDepots = Object.keys(allDepots)
-      .filter(
-        (key) =>
-          allDepots[key].managed_by === managerId &&
-          allDepots[key].is_active !== false,
-      )
+      .filter((key) => allDepots[key].managed_by === managerId)
       .map((key) => ({ id: key, ...allDepots[key] }))
       .sort((a, b) => {
         const aTime = new Date(a.updated_at || 0).getTime();
         const bTime = new Date(b.updated_at || 0).getTime();
         return bTime - aTime;
       })
-      .slice(0, 1);
+      .slice(0, 5);
 
     // 3. Pour chaque dépôt, récupérer les produits EN PARALLÈLE
     const depotsWithProducts = await Promise.all(
@@ -1273,7 +1269,7 @@ export const calculateDaysRemaining = (
   const now = new Date();
   const expiryDate = new Date(expiryDateString);
   const diffMs = expiryDate.getTime() - now.getTime();
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
   return diffDays;
 };
 

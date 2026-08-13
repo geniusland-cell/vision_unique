@@ -69,7 +69,11 @@ function VotingManagement({}: VotingManagementProps): ReactNode {
 
       if (result.success) {
         alert(
-          `✅ Votes lancés pour ${votingSettings.voting_period_days} jours!`,
+          `✅ Votes lancés pour ${votingSettings.voting_period_days} jours!\n\n` +
+            `🙏 COLLECTE DE SOUTIEN TRIMESTRIELLE ACTIVÉE\n\n` +
+            `La collecte de soutien de 1 000 FCFA à 15 000 FCFA est maintenant active.\n` +
+            `Les utilisatrices verront le message de collecte après chaque vote.\n\n` +
+            `📞 Numéro de contact: 06 767 81 28`,
         );
         loadVotingData();
       } else {
