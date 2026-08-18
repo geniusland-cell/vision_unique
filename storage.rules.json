@@ -1,0 +1,18 @@
+{
+  "rules": {
+    "depot_images": {
+      "$depotId": {
+        "$filename": {
+          "allow read": true,
+          "allow write": "auth != null && request.resource.size < 5 * 1024 * 1024 && request.resource.contentType.matches('image/.*')"
+        }
+      }
+    },
+    "products": {
+      "$filename": {
+        "allow read": true,
+        "allow write": "auth != null && request.resource.size < 5 * 1024 * 1024 && request.resource.contentType.matches('image/.*')"
+      }
+    }
+  }
+}

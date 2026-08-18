@@ -6,18 +6,13 @@ import {
   signOut,
 } from "firebase/auth";
 import { getDatabase, ref, set, get, push, update } from "firebase/database";
-import {
-  getStorage,
-  ref as storageRef,
-  uploadBytes,
-  getDownloadURL,
-} from "firebase/storage";
 import type { User, Depot, Category, FirebaseResponse } from "./types";
 import { getCoordinatesForQuartier } from "./utils/quartierCoordinates";
 import {
   calculateVotingEndDate,
   normalizeVotingDurationDays,
 } from "./utils/voting.ts";
+import { uploadToCloudinary } from "./utils/cloudinaryUpload";
 
 const isDevelopment = import.meta.env.DEV;
 
@@ -50,7 +45,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getDatabase(app);
-export const storage = getStorage(app);
 
 function generateEmailFromPhone(phone: string): string {
   // Remove all non-numeric characters
@@ -1854,9 +1848,9 @@ export const upgradeToPremium = async (
 };
 
 /**
- * Uploader une image vers Firebase Storage et récupérer l'URL publique
+ * Uploader une image vers Cloudinary et récupérer l'URL publique
  * @param file - Fichier image à uploader
- * @param depotId - ID du dépôt (pour le chemin de stockage)
+ * @param depotId - ID du dépôt (pour le dossier de stockage)
  * @returns URL publique de l'image ou erreur
  */
 export const uploadDepotImage = async (
@@ -1864,25 +1858,34 @@ export const uploadDepotImage = async (
   depotId: string,
 ): Promise<FirebaseResponse<string>> => {
   try {
-    // Créer un nom de fichier unique avec timestamp
-    const timestamp = Date.now();
-    const fileName = `${depotId}_${timestamp}_${file.name}`;
-    const storagePath = `depot_images/${fileName}`;
+    safeLog(
+      "📸 Début upload Cloudinary - depotId:",
+      depotId,
+      "file:",
+      file.name,
+      "size:",
+      file.size,
+      "type:",
+      file.type,
+    );
 
-    // Référence Firebase Storage
-    const imageRef = storageRef(storage, storagePath);
+    // Upload vers Cloudinary avec le dossier spécifique au dépôt
+    const result = await uploadToCloudinary(file, `depot_images/${depotId}`);
 
-    // Uploader le fichier
-    const snapshot = await uploadBytes(imageRef, file);
-
-    // Récupérer l'URL publique
-    const downloadURL = await getDownloadURL(snapshot.ref);
-
-    safeLog(` Image uploadée avec succès: ${storagePath}`);
-    return { success: true, data: downloadURL };
+    if (result.success && result.data) {
+      safeLog("✅ Image uploadée avec succès:", result.data);
+      return { success: true, data: result.data };
+    } else {
+      safeError("❌ Erreur upload:", result.error);
+      return {
+        success: false,
+        error: result.error || "Erreur upload Cloudinary",
+      };
+    }
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    safeError(" Erreur upload image:", errorMsg);
+    safeError("❌ Erreur upload image:", errorMsg);
+    safeError("❌ Détails erreur:", err);
     return { success: false, error: errorMsg };
   }
 };

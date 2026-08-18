@@ -59,6 +59,21 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Mobile responsive - réduit la taille sur smartphone */
+@media (max-width: 768px) {
+  .preview-img {
+    max-width: 120px;
+    max-height: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .preview-img {
+    max-width: 100px;
+    max-height: 100px;
+  }
+}
+
 .image-url-text {
   font-size: 12px;
   color: #666;

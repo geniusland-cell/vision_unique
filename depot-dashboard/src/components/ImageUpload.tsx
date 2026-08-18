@@ -6,11 +6,13 @@ interface ImageUploadProps {
   onImageUpload: (imageUrl: string) => void;
   depotId: string;
   buttonText?: string;
+  hidePreview?: boolean; // Option pour cacher le preview si l'image est affichée ailleurs
 }
 
 export default function ImageUpload({
   onImageUpload,
   depotId,
+  hidePreview = false,
 }: ImageUploadProps): ReactNode {
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
@@ -104,7 +106,7 @@ export default function ImageUpload({
           </button>
         </div>
 
-        {uploadedImageUrl && (
+        {uploadedImageUrl && !hidePreview && (
           <div className="image-preview">
             <img src={uploadedImageUrl} alt="Preview" className="preview-img" />
             <p className="image-url-text">{uploadedImageUrl}</p>

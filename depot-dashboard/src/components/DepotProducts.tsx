@@ -332,6 +332,7 @@ export default function DepotProducts({
                               handleEditChange(product.id, "image", url)
                             }
                             depotId={depot.id}
+                            hidePreview={true}
                           />
                         ) : (
                           <div className="premium-lock-notice">
@@ -435,6 +436,7 @@ export default function DepotProducts({
                       setNewProduct({ ...newProduct, image: url })
                     }
                     depotId={depot.id}
+                    hidePreview={true}
                   />
                 </>
               ) : (
