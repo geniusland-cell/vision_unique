@@ -28,8 +28,8 @@ export default function DepotCard({
       const result = await updateDepot(
         depot.id,
         editedDepot.name,
-        editedDepot.phone,
-        editedDepot.phone,
+        editedDepot.phone_direct || "",
+        editedDepot.phone_whatsapp || "",
         editedDepot.promo_image_url,
         editedDepot.promo_video_url,
       );
@@ -71,7 +71,7 @@ export default function DepotCard({
       {/* Header Compact */}
       <div className="depot-header-compact">
         <div className="depot-name-section">
-          <h3> {depot.name}</h3>
+          <h3> {editedDepot.name}</h3>
           <span className="quartier-badge">📍 {depot.location}</span>
         </div>
         <div className="header-actions">
@@ -98,13 +98,13 @@ export default function DepotCard({
             {isEditing ? (
               <input
                 type="tel"
-                value={editedDepot.phone}
-                onChange={(e) => handleChange("phone", e.target.value)}
+                value={editedDepot.phone_direct || ""}
+                onChange={(e) => handleChange("phone_direct", e.target.value)}
                 placeholder="Numéro direct"
               />
             ) : (
-              <a href={`tel:${depot.phone}`} className="phone-link">
-                {depot.phone}
+              <a href={`tel:${editedDepot.phone_direct || editedDepot.phone || ""}`} className="phone-link">
+                {editedDepot.phone_direct || editedDepot.phone || ""}
               </a>
             )}
           </div>
@@ -114,18 +114,18 @@ export default function DepotCard({
             {isEditing ? (
               <input
                 type="tel"
-                value={editedDepot.phone}
-                onChange={(e) => handleChange("phone", e.target.value)}
+                value={editedDepot.phone_whatsapp || ""}
+                onChange={(e) => handleChange("phone_whatsapp", e.target.value)}
                 placeholder="Numéro WhatsApp"
               />
             ) : (
               <a
-                href={`https://wa.me/${depot.phone?.replace(/[^\d+]/g, "")}`}
+                href={`https://wa.me/${(editedDepot.phone_whatsapp || editedDepot.phone || "").replace(/[^\d+]/g, "")}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="phone-link whatsapp-link"
               >
-                {depot.phone}
+                {editedDepot.phone_whatsapp || editedDepot.phone || ""}
               </a>
             )}
           </div>

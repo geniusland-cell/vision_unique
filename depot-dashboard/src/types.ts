@@ -36,7 +36,9 @@ export interface Depot {
   location: string;
   latitude: number;
   longitude: number;
-  phone: string;
+  phone?: string;
+  phone_direct?: string;
+  phone_whatsapp?: string;
   email?: string;
   description?: string;
   image_url?: string;
