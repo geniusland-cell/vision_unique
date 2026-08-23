@@ -683,7 +683,7 @@ export const initializeDepotProducts = async (
     const products = [
       {
         name: "Carpe",
-        category: "Poisson & Viande",
+        category: "Poisson",
         price: 2500,
         stock_quantity: 10,
         unit: "kg",

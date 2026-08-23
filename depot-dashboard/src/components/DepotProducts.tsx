@@ -25,9 +25,6 @@ export default function DepotProducts({
   const [categories, setCategories] = useState<Category[]>([]);
 
   const normalizeCategoryName = (categoryName: string): string => {
-    if (categoryName === "Poisson" || categoryName === "Viande") {
-      return "Poisson & Viande";
-    }
     if (categoryName === "Fruits") {
       return "Fruit et Legume";
     }
