@@ -374,6 +374,65 @@ export const getCategories = async (): Promise<
     }
 
     const categoriesData = snapshot.val();
+
+    // Migration: Supprimer "Poisson & Viande" et créer "Poisson" et "Viande"
+    if (categoriesData["Poisson & Viande"]) {
+      await set(ref(db, "categories/Poisson & Viande"), null);
+      await set(ref(db, "categories/Poisson"), {
+        name: "Poisson",
+        emoji: "🐟",
+        description: "Poissons frais",
+      });
+      await set(ref(db, "categories/Viande"), {
+        name: "Viande",
+        emoji: "🥩",
+        description: "Viandes fraîches",
+      });
+      safeLog(" Migration catégories: Poisson & Viande → Poisson + Viande");
+
+      // Migrer les produits existants
+      const depotsRef = ref(db, "depots");
+      const depotsSnapshot = await get(depotsRef);
+      if (depotsSnapshot.exists()) {
+        const depotsData = depotsSnapshot.val();
+        for (const depotId of Object.keys(depotsData)) {
+          const productsRef = ref(db, `depots/${depotId}/products`);
+          const productsSnapshot = await get(productsRef);
+          if (productsSnapshot.exists()) {
+            const productsData = productsSnapshot.val();
+            for (const productId of Object.keys(productsData)) {
+              const product = productsData[productId];
+              if (product.category === "Poisson & Viande") {
+                // Déterminer la nouvelle catégorie basée sur le nom du produit
+                const productName = product.name.toLowerCase();
+                let newCategory = "Poisson"; // Par défaut
+                if (productName.includes("viande") || productName.includes("bœuf") || productName.includes("boeuf") || productName.includes("poulet") || productName.includes("porc")) {
+                  newCategory = "Viande";
+                }
+                await update(ref(db, `depots/${depotId}/products/${productId}`), { category: newCategory });
+              }
+            }
+          }
+        }
+        safeLog(" Migration produits: Catégories mises à jour");
+      }
+
+      // Recharger après migration
+      const newSnapshot = await get(categoriesRef);
+      if (!newSnapshot.exists()) {
+        return { success: true, data: [] };
+      }
+      const newCategoriesData = newSnapshot.val();
+      const categories = Object.keys(newCategoriesData)
+        .filter(
+          (key) =>
+            newCategoriesData[key].is_active === undefined ||
+            newCategoriesData[key].is_active === true,
+        )
+        .map((key) => ({ id: key, ...newCategoriesData[key] }));
+      return { success: true, data: categories };
+    }
+
     const categories = Object.keys(categoriesData)
       .filter(
         (key) =>

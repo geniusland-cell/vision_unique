@@ -1,11 +1,11 @@
 {
   "rules": {
     "users": {
-      ".read": "auth != null",
-      ".write": false,
+      ".read": "root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      ".write": "auth != null",
       "$uid": {
         ".read": "auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'admin'",
-        ".write": "auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'admin'",
+        ".write": "auth.uid === $uid",
 
         "role": {
           ".write": "root.child('users').child(auth.uid).child('role').val() === 'admin'"
@@ -17,22 +17,22 @@
     },
 
     "managers": {
-      ".read": "auth != null",
-      ".write": false,
+      ".read": "root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      ".write": "auth != null",
 
       "$managerId": {
         ".read": "auth.uid === $managerId || root.child('users').child(auth.uid).child('role').val() === 'admin'",
-        ".write": "auth.uid === $managerId || root.child('users').child(auth.uid).child('role').val() === 'admin'"
+        ".write": "auth.uid === $managerId"
       }
     },
 
     "depots": {
       ".read": "auth != null",
-      ".write": false,
+      ".write": "auth != null",
 
       "$depotId": {
         ".read": "auth != null",
-        ".write": "(!root.child('depots').child($depotId).exists() && auth != null && newData.child('managed_by').val() === auth.uid) || (root.child('depots').child($depotId).child('managed_by').val() === auth.uid) || (root.child('users').child(auth.uid).child('role').val() === 'admin')",
+        ".write": "(!root.child('depots').child($depotId).exists() && auth != null) || (root.child('depots').child($depotId).child('managed_by').val() === auth.uid) || (root.child('users').child(auth.uid).child('role').val() === 'admin')",
 
         "products": {
           ".read": "auth != null",
