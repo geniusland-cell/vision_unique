@@ -1,2 +1,5 @@
 # Local Netlify folder
 .netlify
+
+# University platform (separate project)
+university-platform/

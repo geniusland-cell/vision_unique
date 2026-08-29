@@ -568,7 +568,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                                       >
                                         {paymentLoading === depot.id
                                           ? "⏳ Traitement..."
-                                          : `💳 Payer 6000 FCFA (+30j)`}
+                                          : `💳 Payer 15000 FCFA (+30j)`}
                                       </button>
                                       <small className="payment-info">
                                         Numéro: +242 067 67 81 28 (Maman Power)

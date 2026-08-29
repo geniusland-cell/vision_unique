@@ -614,7 +614,7 @@ function App(): ReactNode {
           <div className="subscription-upgrade-banner">
             <strong>✨ Nouveau :</strong> débloquez les images et vidéos de vos
             produits en passant à l’offre premium de{" "}
-            <strong>10 000 à 15 000 FCFA</strong>.
+            <strong>20 000 à 30 000 FCFA</strong>.
             <span>
               Profitez d’un meilleur visuel pour attirer plus de clients.
             </span>
@@ -679,78 +679,78 @@ function App(): ReactNode {
                 <h4>Choisissez votre forfait:</h4>
                 <button
                   onClick={() =>
-                    handleRenewSubscription(6000, "none", "monthly")
+                    handleRenewSubscription(15000, "none", "monthly")
                   }
                   disabled={isRenewingSubscription}
                   className="btn-payment-option btn-standard"
                 >
-                  💳 6,000 FCFA
+                  💳 15,000 FCFA
                   <br />
                   <small>Standard Mensuel (+30j)</small>
                 </button>
                 <button
                   onClick={() =>
-                    handleRenewSubscription(10000, "basic", "monthly")
+                    handleRenewSubscription(20000, "basic", "monthly")
                   }
                   disabled={isRenewingSubscription}
                   className="btn-payment-option btn-basic"
                 >
-                  💎 10,000 FCFA
+                  💎 20,000 FCFA
                   <br />
                   <small>Premium Basic Mensuel (Top 15)</small>
                 </button>
                 <button
                   onClick={() =>
-                    handleRenewSubscription(15000, "advanced", "monthly")
+                    handleRenewSubscription(25000, "advanced", "monthly")
                   }
                   disabled={isRenewingSubscription}
                   className="btn-payment-option btn-advanced"
                 >
-                  💎💎 15,000 FCFA
+                  💎💎 25,000 FCFA
                   <br />
                   <small>Premium Advanced Mensuel (Top 10)</small>
                 </button>
                 <button
                   onClick={() =>
-                    handleRenewSubscription(20000, "elite", "monthly")
+                    handleRenewSubscription(30000, "elite", "monthly")
                   }
                   disabled={isRenewingSubscription}
                   className="btn-payment-option btn-elite"
                 >
-                  💎💎💎 20,000 FCFA
+                  💎💎💎 30,000 FCFA
                   <br />
                   <small>Premium Elite Mensuel (Top 3)</small>
                 </button>
                 <button
                   onClick={() =>
-                    handleRenewSubscription(28000, "basic", "quarterly")
+                    handleRenewSubscription(56000, "basic", "quarterly")
                   }
                   disabled={isRenewingSubscription}
                   className="btn-payment-option btn-basic"
                 >
-                  💎 28,000 FCFA
+                  💎 56,000 FCFA
                   <br />
                   <small>Premium Basic Trimestriel (Top 15)</small>
                 </button>
                 <button
                   onClick={() =>
-                    handleRenewSubscription(42000, "advanced", "quarterly")
+                    handleRenewSubscription(70000, "advanced", "quarterly")
                   }
                   disabled={isRenewingSubscription}
                   className="btn-payment-option btn-advanced"
                 >
-                  💎💎 42,000 FCFA
+                  💎💎 70,000 FCFA
                   <br />
                   <small>Premium Advanced Trimestriel (Top 10)</small>
                 </button>
                 <button
                   onClick={() =>
-                    handleRenewSubscription(56000, "elite", "quarterly")
+                    handleRenewSubscription(84000, "elite", "quarterly")
                   }
                   disabled={isRenewingSubscription}
                   className="btn-payment-option btn-elite"
                 >
-                  💎💎💎 56,000 FCFA
+                  💎💎💎 84,000 FCFA
                   <br />
                   <small>Premium Elite Trimestriel (Top 3)</small>
                 </button>
@@ -840,17 +840,17 @@ function App(): ReactNode {
                 <h3>💎 Système Premium</h3>
                 <ul>
                   <li>
-                    <strong>Basic (10 000 FCFA):</strong> Top 15 par catégorie :
+                    <strong>Basic (20 000 FCFA):</strong> Top 15 par catégorie :
                     votre depot s'affichera parmi les 15 pemier depot visible
                     par les utilisateurs
                   </li>
                   <li>
-                    <strong>Advanced (15 000 FCFA):</strong> Top 10 par
+                    <strong>Advanced (25 000 FCFA):</strong> Top 10 par
                     catégorie : votre depot s'affichera parmi les 10 pemier
                     depot visible par les utilisateurs
                   </li>
                   <li>
-                    <strong>Elite (20 000 FCFA):</strong> Top 3 par catégorie :
+                    <strong>Elite (30 000 FCFA):</strong> Top 3 par catégorie :
                     votre depot s'affichera parmi les 3 pemier depot visible par
                     les utilisateurs
                   </li>

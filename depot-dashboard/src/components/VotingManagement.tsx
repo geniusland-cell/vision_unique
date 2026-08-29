@@ -278,13 +278,13 @@ function VotingManagement({}: VotingManagementProps): ReactNode {
             onChange={(e) => setSelectedTier(e.target.value as any)}
           >
             <option value="basic">
-              🟦 BASIC - 10 000 FCFA (TOP 15 par catégorie)
+              🟦 BASIC - 20 000 FCFA (TOP 15 par catégorie)
             </option>
             <option value="advanced">
-              🟨 ADVANCED - 15 000 FCFA (TOP 10 par catégorie)
+              🟨 ADVANCED - 25 000 FCFA (TOP 10 par catégorie)
             </option>
             <option value="elite">
-              🟥 ELITE - 20 000 FCFA (TOP 3 par catégorie)
+              🟥 ELITE - 30 000 FCFA (TOP 3 par catégorie)
             </option>
           </select>
 
@@ -358,17 +358,17 @@ function VotingManagement({}: VotingManagementProps): ReactNode {
         <div className="pricing-grid">
           <div className="pricing-card basic">
             <h4>🟦 BASIC</h4>
-            <p className="price">10 000 FCFA</p>
+            <p className="price">20 000 FCFA</p>
             <p>Top 15 par catégorie</p>
           </div>
           <div className="pricing-card advanced">
             <h4>🟨 ADVANCED</h4>
-            <p className="price">15 000 FCFA</p>
+            <p className="price">25 000 FCFA</p>
             <p>Top 10 par catégorie</p>
           </div>
           <div className="pricing-card elite">
             <h4>🟥 ELITE</h4>
-            <p className="price">20 000 FCFA</p>
+            <p className="price">30 000 FCFA</p>
             <p>Top 3 par catégorie</p>
           </div>
         </div>
