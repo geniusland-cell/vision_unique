@@ -13,6 +13,7 @@ import {
   updateSubscriptionWithTier,
 } from "../firebase";
 import VotingManagement from "./VotingManagement";
+import WhatsAppGroupsManagement from "./WhatsAppGroupsManagement";
 import type { User } from "../types";
 import "../styles/AdminPanel.css";
 
@@ -28,7 +29,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
   const [managerDetails, setManagerDetails] = useState<any>(null);
   const [loadingDetails, setLoadingDetails] = useState<boolean>(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [activeTab, setActiveTab] = useState<"managers" | "stats" | "votes">(
+  const [activeTab, setActiveTab] = useState<"managers" | "stats" | "votes" | "whatsapp">(
     "managers",
   );
   const [paymentLoading, setPaymentLoading] = useState<string | null>(null);
@@ -260,6 +261,12 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
             onClick={() => setActiveTab("managers")}
           >
             👥 Managers
+          </button>
+          <button
+            className={`tab-button ${activeTab === "whatsapp" ? "active" : ""}`}
+            onClick={() => setActiveTab("whatsapp")}
+          >
+            📱 Groupes WhatsApp
           </button>
           <button
             className={`tab-button ${activeTab === "votes" ? "active" : ""}`}
@@ -750,6 +757,13 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
         {activeTab === "votes" && (
           <div className="admin-votes-view">
             <VotingManagement />
+          </div>
+        )}
+
+        {/* Contenu Groupes WhatsApp */}
+        {activeTab === "whatsapp" && (
+          <div className="admin-whatsapp-view">
+            <WhatsAppGroupsManagement />
           </div>
         )}
       </div>
