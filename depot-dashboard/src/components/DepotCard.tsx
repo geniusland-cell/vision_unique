@@ -1,8 +1,10 @@
-import { useState, ReactNode } from "react";
+import { useState, useEffect, ReactNode } from "react";
 import DepotProducts from "./DepotProducts";
 import { updateDepot, getDepotById } from "../firebase";
+import { getWhatsAppGroupByDepotId } from "../services/whatsappGroupService";
 import ImageUpload from "./ImageUpload";
 import type { Depot } from "../types";
+import type { WhatsAppGroup } from "../types/whatsapp";
 import "./DepotCard.css";
 
 interface DepotCardProps {
@@ -17,6 +19,24 @@ export default function DepotCard({
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editedDepot, setEditedDepot] = useState<Depot>(depot);
   const [showDetails, setShowDetails] = useState<boolean>(false);
+  const [whatsappGroup, setWhatsappGroup] = useState<WhatsAppGroup | null>(null);
+
+  useEffect(() => {
+    const loadWhatsAppGroup = async () => {
+      if (depot.tier === "advanced" || depot.tier === "elite") {
+        try {
+          const response = await getWhatsAppGroupByDepotId(depot.id);
+          if (response.success && response.data) {
+            setWhatsappGroup(response.data);
+          }
+        } catch (err) {
+          console.error("Erreur chargement groupe WhatsApp:", err);
+        }
+      }
+    };
+
+    loadWhatsAppGroup();
+  }, [depot.id, depot.tier]);
 
   if (!depot) {
     return <div className="depot-card"> Aucun dépôt trouvé</div>;
@@ -194,6 +214,7 @@ export default function DepotCard({
                       alt="Promo"
                       className="promo-image"
                       onClick={() =>
+                        depot.promo_image_url &&
                         window.open(depot.promo_image_url, "_blank")
                       }
                     />
@@ -212,6 +233,34 @@ export default function DepotCard({
                   </div>
                 )}
               </>
+            )}
+
+          {/* WhatsApp Group Status for Advanced/Elite */}
+          {!isEditing &&
+            (depot.tier === "advanced" || depot.tier === "elite") && (
+              <div className="detail-row whatsapp-group-status">
+                <label>📱 Groupe WhatsApp Privé</label>
+                {whatsappGroup ? (
+                  <div className="group-status-active">
+                    <span className="status-indicator">✅ Actif</span>
+                    <span className="member-count">
+                      {whatsappGroup.nombreMembres} membres
+                    </span>
+                    <a
+                      href={whatsappGroup.lienInvitation}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group-link-btn"
+                    >
+                      Voir le groupe
+                    </a>
+                  </div>
+                ) : (
+                  <span className="status-indicator inactive">
+                    ⏳ Non configuré
+                  </span>
+                )}
+              </div>
             )}
 
           {isEditing && (

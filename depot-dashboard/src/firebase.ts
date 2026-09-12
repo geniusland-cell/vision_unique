@@ -111,6 +111,7 @@ export const registerUser = async (
       name: name,
       email: userEmail,
       phone: phone,
+      phone_whatsapp: phone_whatsapp,
       role: "manager",
       is_active: true,
       subscription_status: "free",
