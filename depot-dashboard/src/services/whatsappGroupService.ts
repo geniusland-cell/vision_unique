@@ -21,6 +21,7 @@ export const createWhatsAppGroup = async (
     const groupRef = ref(db, `whatsappGroups/${groupId}`);
     
     const groupData: WhatsAppGroup = {
+      id: groupId,
       depotId,
       depotName,
       lienInvitation,
