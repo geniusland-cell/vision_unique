@@ -623,7 +623,7 @@ function App(): ReactNode {
           <div className="subscription-upgrade-banner">
             <strong>✨ Nouveau :</strong> débloquez les images et vidéos de vos
             produits en passant à l’offre premium de{" "}
-            <strong>20 000 à 30 000 FCFA</strong>.
+            <strong>25 000 à 35 000 FCFA</strong>.
             <span>
               Profitez d’un meilleur visuel pour attirer plus de clients.
             </span>
