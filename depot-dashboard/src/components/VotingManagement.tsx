@@ -277,14 +277,17 @@ function VotingManagement({}: VotingManagementProps): ReactNode {
             value={selectedTier}
             onChange={(e) => setSelectedTier(e.target.value as any)}
           >
-            <option value="basic">
-              🟦 BASIC - 20 000 FCFA (TOP 15 par catégorie)
+            <option value="Basic">
+              🟦 BASIC - 15 000 FCFA (Sans images)
             </option>
-            <option value="advanced">
-              🟨 ADVANCED - 25 000 FCFA (TOP 10 par catégorie)
+            <option value="Pro">
+              🟨 PRO - 25 000 FCFA (Avec photos)
             </option>
-            <option value="elite">
-              🟥 ELITE - 30 000 FCFA (TOP 3 par catégorie)
+            <option value="Advanced">
+              🟩 ADVANCED - 35 000 FCFA (Images + Vidéos)
+            </option>
+            <option value="Elite">
+              🟥 ELITE - 50 000 FCFA (Groupe WhatsApp)
             </option>
           </select>
 
@@ -324,18 +327,18 @@ function VotingManagement({}: VotingManagementProps): ReactNode {
                   <td className="vote-count">{depot.vote_count}</td>
                   <td>
                     <span className={`tier-badge ${depot.tier || "none"}`}>
-                      {!depot.tier || depot.tier === "none"
+                      {!depot.tier
                         ? "Gratuit"
                         : depot.tier.toUpperCase()}
                     </span>
                   </td>
                   <td>
-                    {depot.tier && depot.tier !== "none" && (
+                    {depot.tier && (
                       <button
                         className="btn-remove-tier"
                         onClick={() => handleRemoveTier(depot.depotId)}
                       >
-                        ✕ Retirer
+                        ❌
                       </button>
                     )}
                   </td>
@@ -358,18 +361,23 @@ function VotingManagement({}: VotingManagementProps): ReactNode {
         <div className="pricing-grid">
           <div className="pricing-card basic">
             <h4>🟦 BASIC</h4>
-            <p className="price">20 000 FCFA</p>
-            <p>Top 15 par catégorie</p>
+            <p className="price">15 000 FCFA</p>
+            <p>Sans images</p>
           </div>
           <div className="pricing-card advanced">
-            <h4>🟨 ADVANCED</h4>
+            <h4>🟨 PRO</h4>
             <p className="price">25 000 FCFA</p>
-            <p>Top 10 par catégorie</p>
+            <p>Avec photos</p>
+          </div>
+          <div className="pricing-card advanced">
+            <h4>🟩 ADVANCED</h4>
+            <p className="price">35 000 FCFA</p>
+            <p>Images + Vidéos</p>
           </div>
           <div className="pricing-card elite">
             <h4>🟥 ELITE</h4>
-            <p className="price">30 000 FCFA</p>
-            <p>Top 3 par catégorie</p>
+            <p className="price">50 000 FCFA</p>
+            <p>Groupe WhatsApp</p>
           </div>
         </div>
       </div>

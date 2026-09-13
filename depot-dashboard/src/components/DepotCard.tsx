@@ -23,7 +23,7 @@ export default function DepotCard({
 
   useEffect(() => {
     const loadWhatsAppGroup = async () => {
-      if (depot.tier === "advanced" || depot.tier === "elite") {
+      if (depot.tier === "Advanced" || depot.tier === "Elite") {
         try {
           const response = await getWhatsAppGroupByDepotId(depot.id);
           if (response.success && response.data) {
@@ -173,9 +173,9 @@ export default function DepotCard({
             </span>
           </div>
 
-          {/* Premium Promo Fields - Only for advanced/elite tiers */}
+          {/* Premium Promo Fields - Only for Advanced/Elite tiers */}
           {isEditing &&
-            (depot.tier === "advanced" || depot.tier === "elite") && (
+            (depot.tier === "Advanced" || depot.tier === "Elite") && (
               <>
                 <div className="detail-row premium-field">
                   <label>🖼️ Image Promo</label>
@@ -186,7 +186,7 @@ export default function DepotCard({
                     depotId={depot.id}
                   />
                 </div>
-                {depot.tier === "elite" && (
+                {depot.tier === "Elite" && (
                   <div className="detail-row premium-field">
                     <label>🎬 URL Vidéo Promo</label>
                     <input
@@ -204,7 +204,7 @@ export default function DepotCard({
 
           {/* Display Promo Content (View Mode) */}
           {!isEditing &&
-            (depot.tier === "advanced" || depot.tier === "elite") && (
+            (depot.tier === "Advanced" || depot.tier === "Elite") && (
               <>
                 {depot.promo_image_url && (
                   <div className="detail-row promo-display">
@@ -220,7 +220,7 @@ export default function DepotCard({
                     />
                   </div>
                 )}
-                {depot.tier === "elite" && depot.promo_video_url && (
+                {depot.tier === "Elite" && depot.promo_video_url && (
                   <div className="detail-row promo-display">
                     <label>🎬 Vidéo Promo</label>
                     <div className="promo-video-container">
@@ -237,7 +237,7 @@ export default function DepotCard({
 
           {/* WhatsApp Group Status for Advanced/Elite */}
           {!isEditing &&
-            (depot.tier === "advanced" || depot.tier === "elite") && (
+            (depot.tier === "Advanced" || depot.tier === "Elite") && (
               <div className="detail-row whatsapp-group-status">
                 <label>📱 Groupe WhatsApp Privé</label>
                 {whatsappGroup ? (

@@ -321,9 +321,10 @@ export default function DepotProducts({
                         <div className="product-image-placeholder-edit">📦</div>
                       )}
                       <div className="image-edit-buttons">
-                        {depot.tier === "basic" ||
-                        depot.tier === "advanced" ||
-                        depot.tier === "elite" ? (
+                        {depot.tier === "Basic" ||
+                        depot.tier === "Pro" ||
+                        depot.tier === "Advanced" ||
+                        depot.tier === "Elite" ? (
                           <ImageUpload
                             onImageUpload={(url) =>
                               handleEditChange(product.id, "image", url)
@@ -424,9 +425,10 @@ export default function DepotProducts({
                 <option value="carton">carton</option>
               </select>
 
-              {depot.tier === "basic" ||
-              depot.tier === "advanced" ||
-              depot.tier === "elite" ? (
+              {depot.tier === "Basic" ||
+              depot.tier === "Pro" ||
+              depot.tier === "Advanced" ||
+              depot.tier === "Elite" ? (
                 <>
                   <ImageUpload
                     onImageUpload={(url) =>

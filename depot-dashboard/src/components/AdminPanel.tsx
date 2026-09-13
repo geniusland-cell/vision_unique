@@ -194,7 +194,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
 
   const handleUpgradePremium = async (
     depotId: string,
-    tier: "basic" | "advanced" | "elite",
+    tier: "Basic" | "Pro" | "Advanced" | "Elite",
     price: number,
     durationDays: number,
     billingCycle: "monthly" | "quarterly" = "monthly",
@@ -478,10 +478,8 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                                       {depot.payment_amount?.toLocaleString() ||
                                         "—"}{" "}
                                       FCFA -{" "}
-                                      {depot.requested_tier === "none"
-                                        ? "Standard"
-                                        : depot.requested_tier?.toUpperCase() ||
-                                          "Standard"}
+                                      {depot.requested_tier?.toUpperCase() ||
+                                        "Standard"}
                                       )
                                     </span>
                                   )}
@@ -555,7 +553,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                                     >
                                       {paymentLoading === depot.id
                                         ? "⏳ Traitement..."
-                                        : ` Valider ${depot.payment_amount?.toLocaleString()} FCFA (${depot.requested_tier === "none" ? "Standard" : depot.requested_tier?.toUpperCase()})`}
+                                        : ` Valider ${depot.payment_amount?.toLocaleString()} FCFA (${depot.requested_tier?.toUpperCase() || "Standard"})`}
                                     </button>
                                     <small className="payment-info">
                                       Montant reçu:{" "}
@@ -588,7 +586,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                                 {!depot.payment_pending && (
                                   <div className="premium-upgrade-section">
                                     <div className="premium-title">
-                                      💎 Système Premium (Classement Spécial)
+                                      💎 Système Premium (Fonctionnalités)
                                     </div>
                                     <div className="premium-buttons">
                                       <button
@@ -596,108 +594,90 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                                         onClick={() =>
                                           handleUpgradePremium(
                                             depot.id,
-                                            "basic",
-                                            10000,
-                                            30,
-                                            "monthly",
-                                          )
-                                        }
-                                        disabled={premiumLoading === depot.id}
-                                        title="Top 15 par catégorie (mensuel)"
-                                      >
-                                        {premiumLoading === depot.id
-                                          ? "⏳..."
-                                          : "💎 10k / mois (Top 15)"}
-                                      </button>
-                                      <button
-                                        className="btn btn-premium btn-advanced"
-                                        onClick={() =>
-                                          handleUpgradePremium(
-                                            depot.id,
-                                            "advanced",
+                                            "Basic",
                                             15000,
                                             30,
                                             "monthly",
                                           )
                                         }
                                         disabled={premiumLoading === depot.id}
-                                        title="Top 10 par catégorie (mensuel)"
+                                        title="Basic Mensuel (Sans images)"
                                       >
                                         {premiumLoading === depot.id
                                           ? "⏳..."
-                                          : "💎💎 15k / mois (Top 10)"}
-                                      </button>
-                                      <button
-                                        className="btn btn-premium btn-elite"
-                                        onClick={() =>
-                                          handleUpgradePremium(
-                                            depot.id,
-                                            "elite",
-                                            20000,
-                                            30,
-                                            "monthly",
-                                          )
-                                        }
-                                        disabled={premiumLoading === depot.id}
-                                        title="Top 3 par catégorie (mensuel)"
-                                      >
-                                        {premiumLoading === depot.id
-                                          ? "⏳..."
-                                          : "💎💎💎 20k / mois (Top 3)"}
-                                      </button>
-                                      <button
-                                        className="btn btn-premium btn-basic"
-                                        onClick={() =>
-                                          handleUpgradePremium(
-                                            depot.id,
-                                            "basic",
-                                            28000,
-                                            90,
-                                            "quarterly",
-                                          )
-                                        }
-                                        disabled={premiumLoading === depot.id}
-                                        title="Top 15 par catégorie (trimestriel)"
-                                      >
-                                        {premiumLoading === depot.id
-                                          ? "⏳..."
-                                          : "💎 28k / 3 mois (Top 15)"}
+                                          : "� 15k / mois (Basic)"}
                                       </button>
                                       <button
                                         className="btn btn-premium btn-advanced"
                                         onClick={() =>
                                           handleUpgradePremium(
                                             depot.id,
-                                            "advanced",
-                                            42000,
-                                            90,
-                                            "quarterly",
+                                            "Pro",
+                                            25000,
+                                            30,
+                                            "monthly",
                                           )
                                         }
                                         disabled={premiumLoading === depot.id}
-                                        title="Top 10 par catégorie (trimestriel)"
+                                        title="Pro Mensuel (Avec photos)"
                                       >
                                         {premiumLoading === depot.id
                                           ? "⏳..."
-                                          : "💎💎 42k / 3 mois (Top 10)"}
+                                          : "💎 25k / mois (Pro)"}
                                       </button>
                                       <button
                                         className="btn btn-premium btn-elite"
                                         onClick={() =>
                                           handleUpgradePremium(
                                             depot.id,
-                                            "elite",
-                                            56000,
-                                            90,
-                                            "quarterly",
+                                            "Advanced",
+                                            35000,
+                                            30,
+                                            "monthly",
                                           )
                                         }
                                         disabled={premiumLoading === depot.id}
-                                        title="Top 3 par catégorie (trimestriel)"
+                                        title="Advanced Mensuel (Images + Vidéos)"
                                       >
                                         {premiumLoading === depot.id
                                           ? "⏳..."
-                                          : "💎💎💎 56k / 3 mois (Top 3)"}
+                                          : "💎💎 35k / mois (Advanced)"}
+                                      </button>
+                                      <button
+                                        className="btn btn-premium btn-elite"
+                                        onClick={() =>
+                                          handleUpgradePremium(
+                                            depot.id,
+                                            "Elite",
+                                            50000,
+                                            30,
+                                            "monthly",
+                                          )
+                                        }
+                                        disabled={premiumLoading === depot.id}
+                                        title="Elite Mensuel (Groupe WhatsApp)"
+                                      >
+                                        {premiumLoading === depot.id
+                                          ? "⏳..."
+                                          : "� 50k / mois (Elite)"}
+                                      </button>
+                                      <button
+                                        className="btn btn-premium btn-elite"
+                                        onClick={() =>
+                                          handleUpgradePremium(
+                                            depot.id,
+                                            "Elite",
+                                            75000,
+                                            30,
+                                            "monthly",
+                                          )
+                                        }
+                                        disabled={premiumLoading === depot.id}
+                                        title="Elite Mensuel Complet (Groupe WhatsApp)"
+                                      >
+                                        {premiumLoading === depot.id
+                                          ? "⏳..."
+                                          : "� 75k / mois (Elite Complet)"}
                                       </button>
                                     </div>
                                     <small className="premium-info">

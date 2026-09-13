@@ -1866,12 +1866,12 @@ export const checkAndDeactivateExpiredDepots = async (): Promise<any> => {
 /**
  * Mettre à niveau un dépôt en premium (pour les admins)
  * @param depotId - ID du dépôt
- * @param tier - Type de tier ('basic', 'advanced', 'elite')
+ * @param tier - Type de tier ('Basic', 'Pro', 'Advanced', 'Elite')
  * @param durationDays - Durée en jours (défaut: 30)
  */
 export const upgradeToPremium = async (
   depotId: string,
-  tier: "basic" | "advanced" | "elite",
+  tier: "Basic" | "Pro" | "Advanced" | "Elite",
   durationDays: number = 30,
   billingCycle: "monthly" | "quarterly" = "monthly",
 ): Promise<FirebaseResponse<null>> => {
