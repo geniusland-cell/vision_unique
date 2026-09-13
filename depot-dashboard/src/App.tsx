@@ -133,7 +133,7 @@ function App(): ReactNode {
       : null;
     setDaysRemaining(remaining);
 
-    const isPremiumTier = ["Basic", "Images", "ImagesVideos", "Group"].includes(
+    const isPremiumTier = ["Basic", "Pro", "Advanced", "Elite"].includes(
       selectedDepot.tier || "Basic",
     );
     const isPaymentPending = Boolean(selectedDepot.payment_pending);
@@ -267,7 +267,7 @@ function App(): ReactNode {
 
   const handleRenewSubscription = async (
     amount: number,
-    tier: "Basic" | "Images" | "ImagesVideos" | "Group",
+    tier: "Basic" | "Pro" | "Advanced" | "Elite",
     billingCycle: "monthly" | "quarterly" = "monthly",
   ) => {
     if (!selectedDepot) return;
@@ -677,9 +677,7 @@ function App(): ReactNode {
                   </p>
                   <p>
                     <strong>Forfait demandé:</strong>{" "}
-                    {selectedDepot.requested_tier === "none"
-                      ? "Standard"
-                      : selectedDepot.requested_tier?.toUpperCase()}
+                    {selectedDepot.requested_tier?.toUpperCase()}
                   </p>
                 </div>
               </div>
@@ -693,53 +691,53 @@ function App(): ReactNode {
                   disabled={isRenewingSubscription}
                   className="btn-payment-option btn-basic"
                 >
-                  � 15,000 FCFA
+                  💳 15,000 FCFA
                   <br />
-                  <small>Basic Mensuel (Visibilité)</small>
+                  <small>Basic Mensuel (Sans images)</small>
                 </button>
                 <button
                   onClick={() =>
-                    handleRenewSubscription(25000, "Images", "monthly")
+                    handleRenewSubscription(25000, "Pro", "monthly")
                   }
                   disabled={isRenewingSubscription}
                   className="btn-payment-option btn-advanced"
                 >
                   💎 25,000 FCFA
                   <br />
-                  <small>Images Mensuel (Photos)</small>
+                  <small>Pro Mensuel (Avec photos)</small>
                 </button>
                 <button
                   onClick={() =>
-                    handleRenewSubscription(35000, "ImagesVideos", "monthly")
+                    handleRenewSubscription(35000, "Advanced", "monthly")
                   }
                   disabled={isRenewingSubscription}
                   className="btn-payment-option btn-elite"
                 >
                   💎💎 35,000 FCFA
                   <br />
-                  <small>Images+Vidéos Mensuel</small>
+                  <small>Advanced Mensuel (Images + Vidéos)</small>
                 </button>
                 <button
                   onClick={() =>
-                    handleRenewSubscription(50000, "Group", "monthly")
+                    handleRenewSubscription(50000, "Elite", "monthly")
                   }
                   disabled={isRenewingSubscription}
                   className="btn-payment-option btn-elite"
                 >
-                  � 50,000 FCFA
+                  📱 50,000 FCFA
                   <br />
-                  <small>Groupe Privé Mensuel</small>
+                  <small>Elite Mensuel (Groupe WhatsApp)</small>
                 </button>
                 <button
                   onClick={() =>
-                    handleRenewSubscription(75000, "Group", "monthly")
+                    handleRenewSubscription(75000, "Elite", "monthly")
                   }
                   disabled={isRenewingSubscription}
                   className="btn-payment-option btn-elite"
                 >
                   📱 75,000 FCFA
                   <br />
-                  <small>Groupe Privé Mensuel (Complet)</small>
+                  <small>Elite Mensuel (Groupe WhatsApp Complet)</small>
                 </button>
               </div>
             )}
@@ -816,10 +814,9 @@ function App(): ReactNode {
                     mensuel pour garder votre dépôt actif
                   </li>
                   <li>
-                    <strong>Premium:</strong> Upgradez vers les tiers premium
-                    (Basic, Advanced, Elite) pour une meilleure visibilité vous
-                    béneficeriez ici de la fonctionnalité de mettre une image
-                    sur vos produits et dans certains cas une courte video
+                    <strong>Premium:</strong> Upgradez vers les forfaits premium
+                    (Pro, Advanced, Elite) pour plus de fonctionnalités
+                    comme les photos, vidéos et votre propre groupe WhatsApp
                   </li>
                 </ul>
               </div>
@@ -827,19 +824,20 @@ function App(): ReactNode {
                 <h3>💎 Système Premium</h3>
                 <ul>
                   <li>
-                    <strong>Basic (20 000 FCFA):</strong> Top 15 par catégorie :
-                    votre depot s'affichera parmi les 15 pemier depot visible
-                    par les utilisateurs
+                    <strong>Basic (15 000 FCFA):</strong> Sans images :
+                    votre depot est visible sur l'application sans photos de produits
                   </li>
                   <li>
-                    <strong>Advanced (25 000 FCFA):</strong> Top 10 par
-                    catégorie : votre depot s'affichera parmi les 10 pemier
-                    depot visible par les utilisateurs
+                    <strong>Pro (25 000 FCFA):</strong> Avec photos :
+                    ajoutez des photos à vos produits pour attirer plus de clients
                   </li>
                   <li>
-                    <strong>Elite (30 000 FCFA):</strong> Top 3 par catégorie :
-                    votre depot s'affichera parmi les 3 pemier depot visible par
-                    les utilisateurs
+                    <strong>Advanced (35 000 FCFA):</strong> Images + Vidéos :
+                    ajoutez des photos et des vidéos courtes pour présenter vos produits
+                  </li>
+                  <li>
+                    <strong>Elite (50 000 - 75 000 FCFA):</strong> Groupe WhatsApp :
+                    créez votre propre groupe WhatsApp privé pour vos clients réguliers
                   </li>
                 </ul>
               </div>

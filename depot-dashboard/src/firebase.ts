@@ -1377,12 +1377,12 @@ export const updateSubscription = async (
 /**
  * Renouvelle l'abonnement d'un dépôt avec un tier spécifique (+30 jours)
  * @param {string} depotId - ID du dépôt
- * @param {string} tier - Tier à appliquer (Basic, Images, ImagesVideos, Group)
+ * @param {string} tier - Tier à appliquer (Basic, Pro, Advanced, Elite)
  * @returns {Promise<{success: boolean, error?: string}>}
  */
 export const updateSubscriptionWithTier = async (
   depotId: string,
-  tier: "Basic" | "Images" | "ImagesVideos" | "Group",
+  tier: "Basic" | "Pro" | "Advanced" | "Elite",
   billingCycle: "monthly" | "quarterly" = "monthly",
 ): Promise<FirebaseResponse<null>> => {
   try {
@@ -1432,7 +1432,7 @@ export const updateSubscriptionWithTier = async (
 export const markPaymentPending = async (
   depotId: string,
   amount: number,
-  tier: "Basic" | "Images" | "ImagesVideos" | "Group",
+  tier: "Basic" | "Pro" | "Advanced" | "Elite",
   billingCycle: "monthly" | "quarterly" = "monthly",
 ): Promise<FirebaseResponse<null>> => {
   try {

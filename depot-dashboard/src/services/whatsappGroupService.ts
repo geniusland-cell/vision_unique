@@ -170,7 +170,7 @@ export const updateMemberCount = async (
 export const hasWhatsAppGroupAccess = (
   subscriptionTier: SubscriptionTier | undefined,
 ): boolean => {
-  return subscriptionTier === "Group";
+  return subscriptionTier === "Advanced" || subscriptionTier === "Elite";
 };
 
 /**
@@ -202,7 +202,7 @@ export const getAllWhatsAppGroups = async (): Promise<
 };
 
 /**
- * Récupérer tous les dépôts avec abonnement Group
+ * Récupérer tous les dépôts avec abonnement Advanced ou Elite
  */
 export const getAdvancedEliteDepots = async (): Promise<
   FirebaseResponse<any[]>
@@ -216,17 +216,17 @@ export const getAdvancedEliteDepots = async (): Promise<
     }
     
     const depotsData = snapshot.val();
-    const groupDepots = Object.keys(depotsData)
+    const advancedEliteDepots = Object.keys(depotsData)
       .map((key) => ({ id: key, ...depotsData[key] }))
       .filter(
         (depot) =>
-          depot.tier === "Group",
+          depot.tier === "Advanced" || depot.tier === "Elite",
       );
     
-    return { success: true, data: groupDepots };
+    return { success: true, data: advancedEliteDepots };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error("Erreur récupération dépôts Group:", errorMsg);
+    console.error("Erreur récupération dépôts Advanced/Elite:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };

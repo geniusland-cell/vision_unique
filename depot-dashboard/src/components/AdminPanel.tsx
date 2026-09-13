@@ -161,7 +161,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
   const handleValidatePayment = async (
     depotId: string,
     amount: number,
-    tier: "Basic" | "Images" | "ImagesVideos" | "Group",
+    tier: "Basic" | "Pro" | "Advanced" | "Elite",
     billingCycle: "monthly" | "quarterly" = "monthly",
   ) => {
     if (
