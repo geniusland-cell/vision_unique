@@ -92,7 +92,7 @@ export default function WhatsAppGroupsManagement(): ReactNode {
     }
 
     try {
-      const response = await updateWhatsAppGroupLink(editingGroup.depotId, newLien);
+      const response = await updateWhatsAppGroupLink(editingGroup.id, newLien);
       if (response.success) {
         alert("Lien mis à jour avec succès!");
         setEditingGroup(null);
@@ -119,7 +119,7 @@ export default function WhatsAppGroupsManagement(): ReactNode {
         return;
       }
 
-      const response = await updateMemberCount(editingGroup.depotId, count);
+      const response = await updateMemberCount(editingGroup.id, count);
       if (response.success) {
         alert("Nombre de membres mis à jour!");
         setEditingGroup(null);
