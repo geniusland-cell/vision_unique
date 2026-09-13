@@ -133,8 +133,8 @@ function App(): ReactNode {
       : null;
     setDaysRemaining(remaining);
 
-    const isPremiumTier = ["basic", "advanced", "elite"].includes(
-      selectedDepot.tier || "none",
+    const isPremiumTier = ["Basic", "Images", "ImagesVideos", "Group"].includes(
+      selectedDepot.tier || "Basic",
     );
     const isPaymentPending = Boolean(selectedDepot.payment_pending);
 
@@ -267,13 +267,13 @@ function App(): ReactNode {
 
   const handleRenewSubscription = async (
     amount: number,
-    tier: "none" | "basic" | "advanced" | "elite",
+    tier: "Basic" | "Images" | "ImagesVideos" | "Group",
     billingCycle: "monthly" | "quarterly" = "monthly",
   ) => {
     if (!selectedDepot) return;
 
     const confirmed = window.confirm(
-      `Confirmez-vous ce choix : ${tier === "none" ? "renouvellement standard" : "forfait " + tier.toUpperCase()} ${billingCycle === "quarterly" ? "trimestriel" : "mensuel"} à ${amount.toLocaleString()} FCFA ?`,
+      `Confirmez-vous ce choix : forfait ${tier} ${billingCycle === "quarterly" ? "trimestriel" : "mensuel"} à ${amount.toLocaleString()} FCFA ?`,
     );
 
     if (!confirmed) return;
@@ -305,7 +305,7 @@ function App(): ReactNode {
         );
 
         alert(
-          `Notification envoyée à l'admin. Veuillez effectuer le paiement de ${amount.toLocaleString()} FCFA au +242 06 767 81 28 et l'admin validera votre ${tier === "none" ? "renouvellement standard" : "upgrade " + tier.toUpperCase()} (${billingCycle === "quarterly" ? "trimestriel" : "mensuel"}).`,
+          `Notification envoyée à l'admin. Veuillez effectuer le paiement de ${amount.toLocaleString()} FCFA au +242 06 767 81 28 et l'admin validera votre forfait ${tier} (${billingCycle === "quarterly" ? "trimestriel" : "mensuel"}).`,
         );
       } else {
         alert("Erreur notification: " + (res.error || "unknown"));
@@ -688,80 +688,58 @@ function App(): ReactNode {
                 <h4>Choisissez votre forfait:</h4>
                 <button
                   onClick={() =>
-                    handleRenewSubscription(15000, "none", "monthly")
-                  }
-                  disabled={isRenewingSubscription}
-                  className="btn-payment-option btn-standard"
-                >
-                  💳 15,000 FCFA
-                  <br />
-                  <small>Standard Mensuel (+30j)</small>
-                </button>
-                <button
-                  onClick={() =>
-                    handleRenewSubscription(20000, "basic", "monthly")
+                    handleRenewSubscription(15000, "Basic", "monthly")
                   }
                   disabled={isRenewingSubscription}
                   className="btn-payment-option btn-basic"
                 >
-                  💎 20,000 FCFA
+                  � 15,000 FCFA
                   <br />
-                  <small>Premium Basic Mensuel (Top 15)</small>
+                  <small>Basic Mensuel (Visibilité)</small>
                 </button>
                 <button
                   onClick={() =>
-                    handleRenewSubscription(25000, "advanced", "monthly")
+                    handleRenewSubscription(25000, "Images", "monthly")
                   }
                   disabled={isRenewingSubscription}
                   className="btn-payment-option btn-advanced"
                 >
-                  💎💎 25,000 FCFA
+                  💎 25,000 FCFA
                   <br />
-                  <small>Premium Advanced Mensuel (Top 10)</small>
+                  <small>Images Mensuel (Photos)</small>
                 </button>
                 <button
                   onClick={() =>
-                    handleRenewSubscription(30000, "elite", "monthly")
+                    handleRenewSubscription(35000, "ImagesVideos", "monthly")
                   }
                   disabled={isRenewingSubscription}
                   className="btn-payment-option btn-elite"
                 >
-                  💎💎💎 30,000 FCFA
+                  💎💎 35,000 FCFA
                   <br />
-                  <small>Premium Elite Mensuel (Top 3)</small>
+                  <small>Images+Vidéos Mensuel</small>
                 </button>
                 <button
                   onClick={() =>
-                    handleRenewSubscription(56000, "basic", "quarterly")
-                  }
-                  disabled={isRenewingSubscription}
-                  className="btn-payment-option btn-basic"
-                >
-                  💎 56,000 FCFA
-                  <br />
-                  <small>Premium Basic Trimestriel (Top 15)</small>
-                </button>
-                <button
-                  onClick={() =>
-                    handleRenewSubscription(70000, "advanced", "quarterly")
-                  }
-                  disabled={isRenewingSubscription}
-                  className="btn-payment-option btn-advanced"
-                >
-                  💎💎 70,000 FCFA
-                  <br />
-                  <small>Premium Advanced Trimestriel (Top 10)</small>
-                </button>
-                <button
-                  onClick={() =>
-                    handleRenewSubscription(84000, "elite", "quarterly")
+                    handleRenewSubscription(50000, "Group", "monthly")
                   }
                   disabled={isRenewingSubscription}
                   className="btn-payment-option btn-elite"
                 >
-                  💎💎💎 84,000 FCFA
+                  � 50,000 FCFA
                   <br />
-                  <small>Premium Elite Trimestriel (Top 3)</small>
+                  <small>Groupe Privé Mensuel</small>
+                </button>
+                <button
+                  onClick={() =>
+                    handleRenewSubscription(75000, "Group", "monthly")
+                  }
+                  disabled={isRenewingSubscription}
+                  className="btn-payment-option btn-elite"
+                >
+                  📱 75,000 FCFA
+                  <br />
+                  <small>Groupe Privé Mensuel (Complet)</small>
                 </button>
               </div>
             )}

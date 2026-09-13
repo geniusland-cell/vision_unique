@@ -161,12 +161,12 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
   const handleValidatePayment = async (
     depotId: string,
     amount: number,
-    tier: "none" | "basic" | "advanced" | "elite",
+    tier: "Basic" | "Images" | "ImagesVideos" | "Group",
     billingCycle: "monthly" | "quarterly" = "monthly",
   ) => {
     if (
       window.confirm(
-        `Confirmer le paiement de ${amount.toLocaleString()} FCFA pour ${tier === "none" ? "renouvellement standard" : "upgrade " + tier.toUpperCase()} (${billingCycle === "quarterly" ? "trimestriel" : "mensuel"})?`,
+        `Confirmer le paiement de ${amount.toLocaleString()} FCFA pour forfait ${tier} (${billingCycle === "quarterly" ? "trimestriel" : "mensuel"})?`,
       )
     ) {
       try {
@@ -178,7 +178,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
         );
         if (result.success) {
           alert(
-            `Paiement de ${amount.toLocaleString()} FCFA validé! Dépôt ${tier === "none" ? "renouvelé" : "upgradé en " + tier.toUpperCase()} pour ${billingCycle === "quarterly" ? "90 jours" : "30 jours"}.`,
+            `Paiement de ${amount.toLocaleString()} FCFA validé! Dépôt upgradé en ${tier} pour ${billingCycle === "quarterly" ? "90 jours" : "30 jours"}.`,
           );
           loadManagerDetails(selectedManager || "");
         } else {

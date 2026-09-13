@@ -47,13 +47,13 @@ export interface Depot {
   subscription_status?: "active" | "inactive";
   subscription_expiry?: string;
   subscription_plan?: "monthly" | "quarterly";
-  tier?: "basic" | "advanced" | "elite" | "none";
+  tier?: "Basic" | "Images" | "ImagesVideos" | "Group";
   tier_expiry?: string;
   tier_rank?: number;
   payment_pending?: boolean;
   payment_notified_at?: string;
   payment_amount?: number;
-  requested_tier?: "none" | "basic" | "advanced" | "elite";
+  requested_tier?: "Basic" | "Images" | "ImagesVideos" | "Group";
   requested_cycle?: "monthly" | "quarterly";
   promo_image_url?: string;
   promo_video_url?: string;

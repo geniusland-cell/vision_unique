@@ -1,0 +1,637 @@
+﻿<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Maman Power - Flyer A5</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: #0a0e14;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 20px;
+        padding: 20px 10px;
+        font-family: "Rajdhani", sans-serif;
+        min-height: 100vh;
+      }
+
+      .flyer {
+        width: 148mm;
+        height: 210mm;
+        background: #ffffff;
+        border-radius: 8px;
+        border: 1px solid rgba(0, 229, 255, 0.3);
+        box-shadow: 0 0 40px rgba(0, 229, 255, 0.1);
+        position: relative;
+        overflow: hidden;
+        page-break-after: always;
+        display: flex;
+        flex-direction: column;
+        color: #000000;
+        padding: 0;
+      }
+
+      /* Fond tech */
+      .flyer::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          radial-gradient(
+            circle,
+            rgba(0, 229, 255, 0.18) 1px,
+            transparent 1.5px
+          ),
+          linear-gradient(rgba(0, 229, 255, 0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(0, 229, 255, 0.04) 1px, transparent 1px);
+        background-size:
+          18mm 18mm,
+          10mm 10mm,
+          10mm 10mm;
+        pointer-events: none;
+        z-index: 0;
+      }
+      .flyer::after {
+        content: "";
+        position: absolute;
+        top: -10%;
+        right: -10%;
+        width: 70%;
+        height: 70%;
+        background:
+          linear-gradient(
+            135deg,
+            transparent 40%,
+            rgba(0, 229, 255, 0.04) 50%,
+            transparent 60%
+          ),
+          linear-gradient(
+            45deg,
+            transparent 30%,
+            rgba(192, 202, 51, 0.03) 45%,
+            transparent 55%
+          );
+        clip-path: polygon(30% 0, 100% 0, 100% 70%, 70% 100%, 0 100%, 0 30%);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .flyer > * {
+        position: relative;
+        z-index: 2;
+      }
+
+      /* Background image */
+      .flyer-background {
+        width: 100%;
+        height: 52mm;
+        object-fit: cover;
+        border-bottom: 3px solid #00e5ff;
+        flex: 0 0 52mm;
+      }
+
+      /* Overlay (optional) */
+      .flyer-overlay {
+        position: absolute;
+        inset: 0;
+        background-color: rgba(255, 255, 255, 0.78);
+        background-image: linear-gradient(
+            135deg,
+            rgba(0, 229, 255, 0.14),
+            rgba(255, 255, 255, 0.82) 48%,
+            rgba(192, 202, 51, 0.14)
+          ),
+          radial-gradient(circle, rgba(0, 170, 200, 0.2) 1px, transparent 1.5px);
+        background-size: auto, 18mm 18mm;
+        z-index: 1;
+        font-variant-numeric: normal;
+      }
+
+      /* — RECTO — */
+      .flyer-recto .row {
+        display: flex;
+        flex: 1;
+        min-height: 0;
+      }
+      .flyer-recto .col-texte {
+        flex: 1;
+        padding: 10mm 8mm;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background: rgba(255, 255, 255, 0.72);
+        border-radius: 4px;
+        overflow-y: auto;
+      }
+
+      .flyer-recto .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid rgba(0, 229, 255, 0.3);
+        padding-bottom: 3mm;
+        margin-bottom: 4mm;
+      }
+      .flyer-recto .logo {
+        height: 22px;
+        max-width: 80px;
+        filter: drop-shadow(0 0 12px rgba(192, 202, 51, 0.5));
+      }
+      .flyer-recto .badge {
+        font-family: "Orbitron", sans-serif;
+        font-size: 8px;
+        color: #000000;
+        background: rgba(0, 229, 255, 0.1);
+        border: 1px solid #00e5ff;
+        padding: 2px 10px;
+        border-radius: 30px;
+        letter-spacing: 2px;
+      }
+
+      .flyer-recto .titre-principal {
+        font-family: "Orbitron", sans-serif;
+        font-weight: 900;
+        font-size: 18px;
+        text-shadow: 0 0 30px rgba(192, 202, 51, 0.2);
+        line-height: 1.1;
+        text-transform: uppercase;
+        margin-bottom: 2mm;
+      }
+      .flyer-recto .sous-titre {
+        font-size: 11px;
+        font-weight: 600;
+        color: #000000;
+        border-left: 4px solid #00e5ff;
+        padding-left: 5mm;
+        margin-bottom: 4mm;
+        letter-spacing: 1px;
+      }
+
+      .flyer-recto .avantages p {
+        font-size: 10px;
+        font-weight: 500;
+        color: #000000;
+        line-height: 1.4;
+        margin-bottom: 3mm;
+      }
+      .flyer-recto .avantages p strong {
+        display: block;
+        font-size: 11px;
+        color: #000000;
+        font-weight: 700;
+        margin-bottom: 1mm;
+      }
+
+      .flyer-recto .cta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #f0f0f0;
+        border: 1px solid #cccccc;
+        border-radius: 10px;
+        padding: 3mm 5mm;
+        margin-top: auto;
+      }
+      .flyer-recto .cta .qr {
+        height: 80px;
+        width: 80px;
+        background: white;
+        padding: 3px;
+        border-radius: 8px;
+        filter: drop-shadow(0 0 15px rgba(0, 229, 255, 0.3));
+      }
+      .flyer-recto .cta .call {
+        font-family: "Orbitron", sans-serif;
+        text-align: right;
+        font-size: 9px;
+        color: #000000;
+      }
+      .flyer-recto .cta .call .numero {
+        font-size: 15px;
+        color: #000000;
+        text-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
+        letter-spacing: 1px;
+      }
+      .flyer-recto .cta .call .gratuit {
+        color: #c0ca33;
+        font-weight: 700;
+        font-size: 9px;
+      }
+
+      /* — VERSO — */
+      .flyer-verso {
+        padding: 6mm 6mm;
+        background: transparent;
+        overflow: hidden;
+      }
+      .flyer-verso .titre-verso {
+        font-family: "Orbitron", sans-serif;
+        font-weight: 700;
+        font-size: 14px;
+        color: #000000;
+        border-bottom: 2px solid #00e5ff;
+        padding-bottom: 1.5mm;
+        margin-bottom: 3mm;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .flyer-verso .bloc-benefices {
+        display: flex;
+        flex-direction: column;
+        gap: 2mm;
+        flex: 1;
+        justify-content: center;
+      }
+      .flyer-verso .benefice {
+        display: flex;
+        align-items: flex-start;
+        gap: 2mm;
+        background: rgba(255, 255, 255, 0.02);
+        padding: 1.5mm 3mm;
+        border-radius: 4px;
+        border-left: 3px solid #c0ca33;
+      }
+      .flyer-verso .benefice .emoji {
+        font-size: 16px;
+        min-width: 22px;
+        text-align: center;
+      }
+      .flyer-verso .benefice .txt strong {
+        display: block;
+        font-size: 9px;
+        color: #000000;
+        font-weight: 700;
+      }
+      .flyer-verso .benefice .txt span {
+        font-size: 8px;
+        color: #000000;
+        font-weight: 400;
+      }
+      .flyer-verso .benefice .txt .highlight {
+        color: #000000;
+        font-weight: 600;
+      }
+
+      .flyer-verso .footer-verso {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid rgba(0, 229, 255, 0.2);
+        padding-top: 2mm;
+        margin-top: 3mm;
+        font-size: 7px;
+        color: #78909c;
+      }
+      .flyer-verso .footer-verso .tel {
+        font-family: "Orbitron", sans-serif;
+        color: #000000;
+        font-size: 10px;
+        font-weight: 700;
+      }
+      .flyer-verso .footer-verso .zones {
+        color: #b0bec5;
+        font-weight: 600;
+        font-size: 8px;
+      }
+      .flyer-verso .footer-verso .dev {
+        font-style: italic;
+        color: #546e7a;
+        width: 100%;
+        text-align: center;
+        margin-top: 0.5mm;
+        font-size: 6px;
+      }
+
+      /* Pricing */
+      .pricing-section {
+        margin-top: 3mm;
+        padding: 2mm;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 4px;
+        border: 1px solid rgba(0, 229, 255, 0.2);
+      }
+      .pricing-row {
+        display: flex;
+        gap: 1.5mm;
+        justify-content: space-between;
+        margin-bottom: 2mm;
+      }
+      .pricing-col {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 3px;
+        padding: 1.5mm 1mm;
+        text-align: center;
+        border: 1px solid #e0e0e0;
+      }
+      .pricing-col.premium {
+        border-color: rgba(0, 229, 255, 0.4);
+        background: rgba(0, 229, 255, 0.05);
+      }
+      .pricing-col.elite {
+        border-color: rgba(192, 202, 51, 0.6);
+        background: rgba(192, 202, 51, 0.08);
+      }
+
+      .pricing-title {
+        font-family: "Orbitron", sans-serif;
+        font-size: 8px;
+        font-weight: 900;
+        color: #000000;
+        margin-bottom: 0.8mm;
+        text-transform: uppercase;
+      }
+      .pricing-desc {
+        font-size: 6px;
+        color: #666;
+        font-style: italic;
+        margin-bottom: 1mm;
+      }
+      .pricing-benefits {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5mm;
+        font-size: 5px;
+        color: #333;
+        text-align: left;
+      }
+
+      .whatsapp-supremacy {
+        margin-top: 2mm;
+        padding: 1.5mm;
+        background: rgba(37, 211, 102, 0.08);
+        border-radius: 3px;
+        border: 1px solid rgba(37, 211, 102, 0.3);
+      }
+      .whatsapp-supremacy .supremacy-title {
+        font-family: "Orbitron", sans-serif;
+        font-size: 7px;
+        font-weight: 700;
+        color: #000000;
+        margin-bottom: 1mm;
+        text-align: center;
+      }
+      .whatsapp-supremacy .supremacy-content p {
+        font-size: 5px;
+        color: #000000;
+        line-height: 1.2;
+        margin-bottom: 1mm;
+      }
+      .whatsapp-supremacy .supremacy-content p strong {
+        color: #25d366;
+        font-weight: 700;
+      }
+
+      /* Imprimer */
+      @media print {
+        body {
+          background: white;
+          padding: 0;
+          margin: 0;
+          gap: 0;
+          display: block;
+        }
+        .flyer {
+          width: 148mm;
+          height: 210mm;
+          border-radius: 0;
+          border: none;
+          box-shadow: none;
+          margin: 0 auto;
+          page-break-after: always;
+          background: #ffffff !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+        .flyer::before,
+        .flyer::after {
+          display: block !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+        .flyer * {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!--‑ RECTO ―― -->
+    <div class="flyer flyer-recto">
+      <img
+        src="watermarked_img_16832340286995438346.jpg"
+        alt=""
+        class="flyer-background"
+        onerror="this.style.display='none'"
+      />
+      <div class="row">
+        <div class="col-texte">
+          <div>
+            <h1 class="sr-only">Flyer Maman Power – Recto</h1>
+            <div class="header">
+              <img
+                src="maman_power.jpg"
+                alt="Logo Maman Power"
+                class="logo"
+                onerror="this.style.display='none'"
+              />
+              <span class="badge">● CONNECTÉ</span>
+            </div>
+            <h2 class="titre-principal">
+              Rejoignez le réseau des dépôts connectés
+            </h2>
+            <h3 class="sous-titre">
+              Plus de clientèle, moins de stress, zéro erreur.
+            </h3>
+
+            <div class="avantages">
+              <p>
+                <strong> Exclusivité garantie</strong>Seulement 3 dépôts par zone : soyez parmi les premiers partenaires.
+              </p>
+              <p>
+                <strong> Groupe WhatsApp Privé – NOTRE INNOVATION</strong>Vos clients rejoignent votre groupe, voient qui vient régulièrement, vérifient vos prix dans l'app et forment une communauté qui vous reste fidèle. Ils se sentent appartenir à votre dépôt et vous pouvez annoncer vos nouvelles arrivages directement.
+              </p>
+              <p>
+                <strong> Images & Vidéos</strong>Montrez vos produits avec photos et vidéos (offre Premium).
+              </p>
+              <p>
+                <strong> Classement Premium</strong>Top 3, 10 ou 15 selon votre abonnement.
+              </p>
+              <p>
+                <strong> Zéro erreur de caisse</strong>Votre clientèle prépare son budget exact avant d’arriver.
+              </p>
+              <p>
+                <strong> Gain de temps assuré</strong>Fini les files d’attente, tout est visible en direct.
+              </p>
+            </div>
+          </div>
+
+          <div class="cta">
+            <img
+              src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://maman-power-app.vercel.app&format=png&margin=20"
+              alt="QR code vers l’app"
+              class="qr"
+              aria-label="Lisez ce QR pour vous inscrire gratuitement"
+            />
+            <div class="call">
+              <div class="gratuit">🔹 Inscription & Tests 100 % GRATUIT</div>
+              <div>
+                📞 <span class="numero">06 767 81 28</span> / <span class="numero">06 452 51 83</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--‑ VERSO ―― -->
+    <div class="flyer flyer-verso">
+      <h1 class="sr-only">Flyer Maman Power – Verso</h1>
+      <img
+        src="watermarked_img_16832340286995438346.jpg"
+        alt=""
+        class="flyer-background"
+        onerror="this.style.display='none'"
+      />
+      <div class="flyer-overlay" aria-hidden="true"></div>
+
+      <h2 class="titre-verso">Pourquoi choisir Maman Power ?</h2>
+      <div class="bloc-benefices">
+        <div class="benefice">
+          <span class="emoji">1️⃣</span>
+          <div class="txt">
+            <strong>Fini les files d’attente</strong
+            ><span
+              >Les clients voient vos prix avant de venir. Ils arrivent avec
+              <span class="highlight">argent prêt</span>. Vous servez plus vite.</span
+            >
+          </div>
+        </div>
+        <div class="benefice">
+          <span class="emoji">2️⃣</span>
+          <div class="txt">
+            <strong>Zéro erreur de caisse</strong
+            ><span
+              >Les clients savent exactement ce qu’ils vont payer.
+              <span class="highlight">Vous gagnez en sérénité.</span></span
+            >
+          </div>
+        </div>
+        <div class="benefice">
+          <span class="emoji">3️⃣</span>
+          <div class="txt">
+            <strong>Clientèle fidèle</strong
+            ><span
+              >Quand un client sait que votre dépôt est fiable, il revient.
+              <span class="highlight">Votre chiffre d'affaires grimpe.</span></span
+            >
+          </div>
+        </div>
+        <div class="benefice">
+          <span class="emoji">4️⃣</span>
+          <div class="txt">
+            <strong>Exclusivité zone</strong
+            ><span
+              >Nous ne prenons que
+              <span class="highlight">3 dépôts par zone</span>.
+              <span class="highlight">Ne manquez pas votre chance !</span></span
+            >
+          </div>
+        </div>
+      </div>
+
+      <h2 class="titre-verso" style="margin-top: 6mm;">
+        3 Formules pour Votre Succès
+      </h2>
+      <section class="pricing-section">
+        <article class="pricing-row">
+          <section class="pricing-col">
+            <div class="pricing-title">BASIC</div>
+            <div class="pricing-desc">15 000 FCFA/mois</div>
+            <div class="pricing-benefits">
+              <span>✓ Visible sur l'app</span>
+              <span>✓ Gestion produits</span>
+              <span>✓ Clients vous trouvent</span>
+            </div>
+          </section>
+          <section class="pricing-col premium">
+            <div class="pricing-title">IMAGES</div>
+            <div class="pricing-desc">25 000 FCFA/mois</div>
+            <div class="pricing-benefits">
+              <span>✓ Photos produits</span>
+              <span>✓ Classement prioritaire</span>
+              <span>✓ Plus de visibilité</span>
+            </div>
+          </section>
+          <section class="pricing-col elite">
+            <div class="pricing-title">IMAGES + VIDÉOS</div>
+            <div class="pricing-desc">35 000 FCFA/mois</div>
+            <div class="pricing-benefits">
+              <span>✓ Photos + Vidéos</span>
+              <span>✓ Classement top</span>
+              <span>✓ Maximum visibilité</span>
+            </div>
+          </section>
+        </article>
+
+        <article class="pricing-row">
+          <section class="pricing-col elite" style="flex: 1; border-color: #25d366; background: rgba(37,211,102,0.1);">
+            <div class="pricing-title">GROUPE PRIVÉ</div>
+            <div class="pricing-desc">50 000 à 75 000 FCFA/mois</div>
+            <div class="pricing-benefits">
+              <span>✓ Groupe WhatsApp</span>
+              <span>✓ Gérer tous utilisateurs</span>
+              <span>✓ Vision large visiteurs</span>
+              <span>✓ Annonces directes</span>
+            </div>
+          </section>
+        </article>
+
+        <article class="whatsapp-supremacy">
+          <div class="supremacy-title"> Pourquoi le Groupe WhatsApp Change Tout</div>
+          <article class="supremacy-content">
+            <p>
+              <strong>Les autres applications ont un bouton WhatsApp pour commander</strong> –
+              comme un appel téléphonique, sans créer de lien durable avec le dépôt.
+            </p>
+            <p>
+              <strong>Avec Maman Power, ils rejoignent votre groupe WhatsApp privé</strong> –
+              en appuyant sur le bouton, ils entrent dans le groupe associé à votre dépôt et forment une communauté.
+            </p>
+            <p>
+              <strong>Ils voient qui vient régulièrement, vérifient vos prix dans l'app</strong> –
+              et restent fidèles à votre dépôt grâce à ce sentiment d'appartenance.
+            </p>
+            <p>
+              <strong>Vous pouvez annoncer vos nouvelles arrivages directement</strong> –
+              votre communauté vient acheter et vous êtes le seul à offrir cette fonctionnalité à Brazzaville.
+            </p>
+          </article>
+        </article>
+      </section>
+
+      <footer class="footer-verso">
+        <span class="tel">📞 06 767 81 28 / 06 452 51 83</span>
+        <span class="zones">Total, Moungali, Ouenzé</span>
+        <span class="dev"
+          >Conçu par nos développeurs locaux pour moderniser nos marchés.</span
+        >
+      </footer>
+    </div>
+  </body>
+</html>
