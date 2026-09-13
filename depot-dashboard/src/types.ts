@@ -58,6 +58,10 @@ export interface Depot {
   requested_cycle?: "monthly" | "quarterly";
   promo_image_url?: string;
   promo_video_url?: string;
+  // Système de vote
+  is_top_voted?: boolean; // Top 1 du trimestre
+  vote_rank?: number; // Position dans le classement (1, 2, 3...)
+  current_votes?: number; // Votes actuels ce trimestre
   created_at: string;
   updated_at: string;
 }

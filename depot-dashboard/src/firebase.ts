@@ -1633,20 +1633,43 @@ export const launchVoting = async (
 };
 
 /**
- * Fermer les votes pour le trimestre courant
+ * Fermer les votes pour le trimestre courant et assigner les rangs aux top 3
  */
 export const closeVoting = async (): Promise<FirebaseResponse<null>> => {
   try {
     const currentQuarter = getCurrentQuarter();
     const votesSettingsRef = ref(db, `votes_settings/${currentQuarter}`);
 
+    // 1. Récupérer le classement final
+    const rankings = await getVotingRankings();
+    
+    // 2. Assigner les rangs aux top 3 dépôts
+    if (rankings.length > 0) {
+      const updates: Record<string, any> = {};
+      
+      // Top 3: assigner vote_rank (1, 2, 3)
+      rankings.slice(0, 3).forEach((item, index) => {
+        const rank = index + 1; // 1, 2, 3
+        updates[`depots/${item.depotId}/vote_rank`] = rank;
+        updates[`depots/${item.depotId}/current_votes`] = item.vote_count;
+        updates[`depots/${item.depotId}/is_top_voted`] = rank === 1;
+        safeLog(`🏆 Rang ${rank} assigné au dépôt ${item.depotId} (${item.vote_count} votes)`);
+      });
+      
+      // Appliquer les mises à jour
+      if (Object.keys(updates).length > 0) {
+        await update(ref(db), updates);
+      }
+    }
+
+    // 3. Fermer les votes
     await update(votesSettingsRef, {
       status: "VOTING_CLOSED",
       closed_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     });
 
-    safeLog(`✅ Votes fermés pour ${currentQuarter}`);
+    safeLog(`✅ Votes fermés pour ${currentQuarter} - Rangs assignés aux top 3`);
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";

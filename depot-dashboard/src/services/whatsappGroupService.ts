@@ -203,6 +203,7 @@ export const getAllWhatsAppGroups = async (): Promise<
 
 /**
  * Récupérer tous les dépôts avec abonnement Advanced ou Elite
+ * Accepte à la fois la nouvelle casse (PascalCase) et l'ancienne casse (lowercase)
  */
 export const getAdvancedEliteDepots = async (): Promise<
   FirebaseResponse<any[]>
@@ -220,7 +221,10 @@ export const getAdvancedEliteDepots = async (): Promise<
       .map((key) => ({ id: key, ...depotsData[key] }))
       .filter(
         (depot) =>
-          depot.tier === "Advanced" || depot.tier === "Elite",
+          depot.tier === "Advanced" || 
+          depot.tier === "Elite" ||
+          depot.tier === "advanced" || 
+          depot.tier === "elite",
       );
     
     return { success: true, data: advancedEliteDepots };
