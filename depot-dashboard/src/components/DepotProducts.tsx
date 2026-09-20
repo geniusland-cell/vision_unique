@@ -7,6 +7,7 @@ import {
   getCategories,
 } from "../firebase";
 import ImageUpload from "./ImageUpload";
+import { Package, Lock, X } from "lucide-react";
 import type { Depot, Category } from "../types";
 import "./DepotProducts.css";
 
@@ -215,7 +216,7 @@ export default function DepotProducts({
                       style={{ cursor: "pointer" }}
                     />
                   ) : (
-                    <div className="product-thumb-placeholder-small">📦</div>
+                    <div className="product-thumb-placeholder-small"><Package size={24} /></div>
                   )}
                   <span className="product-name">{product.name}</span>
                   <span className="product-category">
@@ -268,7 +269,7 @@ export default function DepotProducts({
                       <option value="">-- Sélectionner --</option>
                       {categories.map((cat) => (
                         <option key={cat.id} value={cat.name}>
-                          {cat.emoji} {cat.name}
+                          {cat.name}
                         </option>
                       ))}
                     </select>
@@ -318,7 +319,7 @@ export default function DepotProducts({
                           className="product-image-thumb"
                         />
                       ) : (
-                        <div className="product-image-placeholder-edit">📦</div>
+                        <div className="product-image-placeholder-edit"><Package size={24} /></div>
                       )}
                       <div className="image-edit-buttons">
                         {depot.tier === "Basic" ||
@@ -335,7 +336,7 @@ export default function DepotProducts({
                         ) : (
                           <div className="premium-lock-notice">
                             <small>
-                              🔒 Les images de produits sont réservées aux
+                              <Lock size={14} /> Les images de produits sont réservées aux
                               offres premium. Passez à 10 000–15 000 FCFA pour
                               débloquer cette option.
                             </small>
@@ -389,7 +390,7 @@ export default function DepotProducts({
                 <option value="">-- Sélectionner une catégorie --</option>
                 {categories.map((cat) => (
                   <option key={cat.id} value={cat.name}>
-                    {cat.emoji} {cat.name}
+                    {cat.name}
                   </option>
                 ))}
               </select>
@@ -441,7 +442,7 @@ export default function DepotProducts({
               ) : (
                 <div className="premium-lock-notice">
                   <small>
-                    🔒 Les images de produits sont réservées aux offres premium.
+                    <Lock size={14} /> Les images de produits sont réservées aux offres premium.
                     Passez à 10 000–15 000 FCFA pour débloquer cette option.
                   </small>
                 </div>
@@ -471,7 +472,7 @@ export default function DepotProducts({
             onClick={closeImageModal}
             title="Fermer"
           >
-            ✕
+            <X size={20} />
           </button>
         </div>
       )}
