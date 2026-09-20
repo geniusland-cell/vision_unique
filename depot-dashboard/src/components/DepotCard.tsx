@@ -3,6 +3,7 @@ import DepotProducts from "./DepotProducts";
 import { updateDepot, getDepotById } from "../firebase";
 import { getWhatsAppGroupByDepotId } from "../services/whatsappGroupService";
 import ImageUpload from "./ImageUpload";
+import { MapPin, Phone, MessageCircle, Store, CheckCircle, XCircle, Image as ImageIcon, Video, Smartphone, Lock, X, Edit, Save, AlertTriangle } from "lucide-react";
 import type { Depot } from "../types";
 import type { WhatsAppGroup } from "../types/whatsapp";
 import "./DepotCard.css";
@@ -60,7 +61,7 @@ export default function DepotCard({
         if (reloadResult.success) {
           // Mettre à jour avec les données fraîches
           setEditedDepot(reloadResult.data);
-          alert("✅ Dépôt mis à jour avec succès!");
+          alert("Dépôt mis à jour avec succès!");
 
           // Appeler le callback du parent pour recharger les données
           if (onDepotUpdated) {
@@ -68,10 +69,10 @@ export default function DepotCard({
           }
         }
       } else {
-        alert("❌ Erreur: " + result.error);
+        alert("Erreur: " + result.error);
       }
     } catch {
-      alert("❌ Erreur lors de la sauvegarde");
+      alert("Erreur lors de la sauvegarde");
     } finally {
       setIsEditing(false);
     }
@@ -92,7 +93,7 @@ export default function DepotCard({
       <div className="depot-header-compact">
         <div className="depot-name-section">
           <h3> {editedDepot.name}</h3>
-          <span className="quartier-badge">📍 {depot.location}</span>
+          <span className="quartier-badge"><MapPin size={16} /> {depot.location}</span>
         </div>
         <div className="header-actions">
           <button
@@ -104,7 +105,7 @@ export default function DepotCard({
           </button>
           {!isEditing && (
             <button className="edit-btn" onClick={() => setIsEditing(true)}>
-              ✏️
+              <Edit size={18} />
             </button>
           )}
         </div>
@@ -114,7 +115,7 @@ export default function DepotCard({
       {showDetails && (
         <div className="depot-details-collapse">
           <div className="detail-row">
-            <label>☎️ Appel Direct</label>
+            <label><Phone size={16} /> Appel Direct</label>
             {isEditing ? (
               <input
                 type="tel"
@@ -130,7 +131,7 @@ export default function DepotCard({
           </div>
 
           <div className="detail-row">
-            <label>💬 WhatsApp</label>
+            <label><MessageCircle size={16} /> WhatsApp</label>
             {isEditing ? (
               <input
                 type="tel"
@@ -151,7 +152,7 @@ export default function DepotCard({
           </div>
 
           <div className="detail-row">
-            <label>🏪 Nom du Dépôt</label>
+            <label><Store size={16} /> Nom du Dépôt</label>
             {isEditing ? (
               <input
                 type="text"
@@ -165,11 +166,11 @@ export default function DepotCard({
           </div>
 
           <div className="detail-row">
-            <label>✓ Statut</label>
+            <label>Statut</label>
             <span
               className={`status ${depot.is_active ? "active" : "inactive"}`}
             >
-              {depot.is_active ? "🟢 Actif" : "🔴 Inactif"}
+              {depot.is_active ? <><CheckCircle size={16} /> Actif</> : <><XCircle size={16} /> Inactif</>}
             </span>
           </div>
 
@@ -178,7 +179,7 @@ export default function DepotCard({
             (depot.tier === "Advanced" || depot.tier === "Elite") && (
               <>
                 <div className="detail-row premium-field">
-                  <label>🖼️ Image Promo</label>
+                  <label><ImageIcon size={16} /> Image Promo</label>
                   <ImageUpload
                     onImageUpload={(url) =>
                       handleChange("promo_image_url", url)
@@ -188,7 +189,7 @@ export default function DepotCard({
                 </div>
                 {depot.tier === "Elite" && (
                   <div className="detail-row premium-field">
-                    <label>🎬 URL Vidéo Promo</label>
+                    <label><Video size={16} /> URL Vidéo Promo</label>
                     <input
                       type="url"
                       value={editedDepot.promo_video_url || ""}
@@ -208,7 +209,7 @@ export default function DepotCard({
               <>
                 {depot.promo_image_url && (
                   <div className="detail-row promo-display">
-                    <label>🖼️ Image Promo</label>
+                    <label><ImageIcon size={16} /> Image Promo</label>
                     <img
                       src={depot.promo_image_url}
                       alt="Promo"
@@ -222,7 +223,7 @@ export default function DepotCard({
                 )}
                 {depot.tier === "Elite" && depot.promo_video_url && (
                   <div className="detail-row promo-display">
-                    <label>🎬 Vidéo Promo</label>
+                    <label><Video size={16} /> Vidéo Promo</label>
                     <div className="promo-video-container">
                       <iframe
                         src={depot.promo_video_url}
@@ -239,10 +240,10 @@ export default function DepotCard({
           {!isEditing &&
             (depot.tier === "Advanced" || depot.tier === "Elite") && (
               <div className="detail-row whatsapp-group-status">
-                <label>📱 Groupe WhatsApp Privé</label>
+                <label><Smartphone size={16} /> Groupe WhatsApp Privé</label>
                 {whatsappGroup ? (
                   <div className="group-status-active">
-                    <span className="status-indicator">✅ Actif</span>
+                    <span className="status-indicator"><CheckCircle size={16} /> Actif</span>
                     <span className="member-count">
                       {whatsappGroup.nombreMembres} membres
                     </span>
@@ -257,7 +258,7 @@ export default function DepotCard({
                   </div>
                 ) : (
                   <span className="status-indicator inactive">
-                    ⏳ Non configuré
+                    <Lock size={16} /> Non configuré
                   </span>
                 )}
               </div>
@@ -266,10 +267,10 @@ export default function DepotCard({
           {isEditing && (
             <div className="edit-actions">
               <button className="save-btn" onClick={handleSave}>
-                💾 Enregistrer
+                <Save size={16} /> Enregistrer
               </button>
               <button className="cancel-btn" onClick={handleCancel}>
-                ✕ Annuler
+                <X size={16} /> Annuler
               </button>
             </div>
           )}
@@ -297,7 +298,7 @@ export default function DepotCard({
 
       {/* Indicateur de modification */}
       {isEditing && (
-        <div className="edit-notice">⚠️ Vous etes en mode modification</div>
+        <div className="edit-notice"><AlertTriangle size={16} /> Vous etes en mode modification</div>
       )}
     </div>
   );

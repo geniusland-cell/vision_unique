@@ -1,4 +1,6 @@
 import { useState, ReactNode } from "react";
+import { Camera, Image as ImageIcon, Clock } from "lucide-react";
+import "./ImageUpload.css";
 import imageCompression from "browser-image-compression";
 import { uploadDepotImage } from "../firebase";
 
@@ -26,7 +28,7 @@ export default function ImageUpload({
 
     // Vérifier que c'est une image
     if (!file.type.startsWith("image/")) {
-      setError("❌ Veuillez sélectionner une image");
+      setError("Veuillez sélectionner une image");
       return;
     }
 
@@ -59,7 +61,7 @@ export default function ImageUpload({
         throw new Error(result.error || "Erreur upload Firebase");
       }
     } catch {
-      setError("❌ Erreur lors du téléchargement. Vérifiez votre connexion.");
+      setError("Erreur lors du téléchargement. Vérifiez votre connexion.");
       setIsUploading(false);
     }
   };
@@ -93,7 +95,7 @@ export default function ImageUpload({
             className="image-upload-btn"
             title="Prendre une photo directe"
           >
-            {isUploading ? "⏳" : "📸"}
+            {isUploading ? <Clock size={16} /> : <Camera size={16} />}
           </button>
           <button
             type="button"
@@ -102,7 +104,7 @@ export default function ImageUpload({
             className="image-upload-btn"
             title="Choisir une image de la galerie"
           >
-            {isUploading ? "⏳" : "🖼️"}
+            {isUploading ? <Clock size={16} /> : <ImageIcon size={16} />}
           </button>
         </div>
 

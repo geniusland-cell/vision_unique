@@ -14,6 +14,7 @@ import {
 } from "../firebase";
 import VotingManagement from "./VotingManagement";
 import WhatsAppGroupsManagement from "./WhatsAppGroupsManagement";
+import { Users, Moon, Sun, Smartphone, Ban, Check, Clock, CreditCard, Gem, GemIcon, AlertTriangle } from "lucide-react";
 import type { User } from "../types";
 import "../styles/AdminPanel.css";
 
@@ -235,7 +236,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
     <div className={`admin-container ${isDarkMode ? "dark-mode" : ""}`}>
       <div className="admin-header">
         <div className="admin-logo">
-          <span className="admin-logo-icon">👨‍💼</span>
+          <span className="admin-logo-icon"><Users size={24} /></span>
           <span>Admin Panel</span>
         </div>
         <div className="admin-user-info">
@@ -245,7 +246,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
             onClick={toggleDarkMode}
             title="Toggle Mode Sombre"
           >
-            🌙
+            {isDarkMode ? <Moon size={18} /> : <Sun size={18} />}
           </button>
           <button className="logout-btn" onClick={logout}>
             Déconnexion
@@ -260,13 +261,13 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
             className={`tab-button ${activeTab === "managers" ? "active" : ""}`}
             onClick={() => setActiveTab("managers")}
           >
-            👥 Managers
+            <Users size={16} /> Managers
           </button>
           <button
             className={`tab-button ${activeTab === "whatsapp" ? "active" : ""}`}
             onClick={() => setActiveTab("whatsapp")}
           >
-            📱 Groupes WhatsApp
+            <Smartphone size={16} /> Groupes WhatsApp
           </button>
           <button
             className={`tab-button ${activeTab === "votes" ? "active" : ""}`}
@@ -320,7 +321,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                             }}
                             title="Bannir le manager et son dépôt principal"
                           >
-                            🚫 Bannir manager
+                            <Ban size={16} /> Bannir manager
                           </button>
                         </div>
                       </div>
@@ -367,7 +368,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                             }}
                             title="Débannir le manager et réactiver son dépôt principal"
                           >
-                            ✅ Débannir manager
+                            <Check size={16} /> Débannir manager
                           </button>
                         </div>
                       </div>
@@ -461,12 +462,12 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                                       className={`subscription-badge ${isBanned ? "inactive" : subStatus}`}
                                     >
                                       {isBanned
-                                        ? "🚫 BANNI"
+                                        ? <><Ban size={16} /> BANNI</>
                                         : isExpired
-                                          ? "⚠️ EXPIRÉ"
+                                          ? <><AlertTriangle size={16} /> EXPIRÉ</>
                                           : isWarning
-                                            ? `⏰ ${daysRemaining}j restants`
-                                            : `✓ ${daysRemaining}j`}
+                                            ? <><Clock size={16} /> {daysRemaining}j restants</>
+                                            : <><Check size={16} /> {daysRemaining}j</>}
                                     </span>
                                     <span className="payment-pending">
                                       Statut dépôt: {statusLabel}
@@ -474,7 +475,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                                   </div>
                                   {depot.payment_pending && (
                                     <span className="payment-pending">
-                                      📩 Paiement signalé (
+                                      <Clock size={16} /> Paiement signalé (
                                       {depot.payment_amount?.toLocaleString() ||
                                         "—"}{" "}
                                       FCFA -{" "}
@@ -497,8 +498,8 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                                         disabled={banLoading === depot.id}
                                       >
                                         {banLoading === depot.id
-                                          ? "⏳..."
-                                          : "🚫 Bannir dépôt"}
+                                          ? <><Clock size={16} />...</>
+                                          : <><Ban size={16} /> Bannir dépôt</>}
                                       </button>
                                     ) : (
                                       <button
@@ -509,8 +510,8 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                                         disabled={banLoading === depot.id}
                                       >
                                         {banLoading === depot.id
-                                          ? "⏳..."
-                                          : "✅ Débannir dépôt"}
+                                          ? <><Clock size={16} />...</>
+                                          : <><Check size={16} /> Débannir dépôt</>}
                                       </button>
                                     )}
                                   </div>
@@ -552,7 +553,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                                       disabled={paymentLoading === depot.id}
                                     >
                                       {paymentLoading === depot.id
-                                        ? "⏳ Traitement..."
+                                        ? <><Clock size={16} /> Traitement...</>
                                         : ` Valider ${depot.payment_amount?.toLocaleString()} FCFA (${depot.requested_tier?.toUpperCase() || "Standard"})`}
                                     </button>
                                     <small className="payment-info">
@@ -572,8 +573,8 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                                         disabled={paymentLoading === depot.id}
                                       >
                                         {paymentLoading === depot.id
-                                          ? "⏳ Traitement..."
-                                          : `💳 Payer 15000 FCFA (+30j)`}
+                                          ? <><Clock size={16} /> Traitement...</>
+                                          : <><CreditCard size={20} /> Payer 15000 FCFA (+30j)</>}
                                       </button>
                                       <small className="payment-info">
                                         Numéro: +242 067 67 81 28 (Maman Power)
@@ -586,7 +587,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                                 {!depot.payment_pending && (
                                   <div className="premium-upgrade-section">
                                     <div className="premium-title">
-                                      💎 Système Premium (Fonctionnalités)
+                                      <Gem size={16} /> Système Premium (Fonctionnalités)
                                     </div>
                                     <div className="premium-buttons">
                                       <button
@@ -604,8 +605,8 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                                         title="Basic Mensuel (Sans images)"
                                       >
                                         {premiumLoading === depot.id
-                                          ? "⏳..."
-                                          : "� 15k / mois (Basic)"}
+                                          ? <><Clock size={16} />...</>
+                                          : <><CreditCard size={20} /> 15k / mois (Basic)</>}
                                       </button>
                                       <button
                                         className="btn btn-premium btn-advanced"
@@ -622,8 +623,8 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                                         title="Pro Mensuel (Avec photos)"
                                       >
                                         {premiumLoading === depot.id
-                                          ? "⏳..."
-                                          : "💎 25k / mois (Pro)"}
+                                          ? <><Clock size={16} />...</>
+                                          : <><Gem size={20} /> 25k / mois (Pro)</>}
                                       </button>
                                       <button
                                         className="btn btn-premium btn-elite"
@@ -640,8 +641,8 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                                         title="Advanced Mensuel (Images + Vidéos)"
                                       >
                                         {premiumLoading === depot.id
-                                          ? "⏳..."
-                                          : "💎💎 35k / mois (Advanced)"}
+                                          ? <><Clock size={16} />...</>
+                                          : <><GemIcon size={20} /> 35k / mois (Advanced)</>}
                                       </button>
                                       <button
                                         className="btn btn-premium btn-elite"
@@ -658,8 +659,8 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                                         title="Elite Mensuel (Groupe WhatsApp)"
                                       >
                                         {premiumLoading === depot.id
-                                          ? "⏳..."
-                                          : "� 50k / mois (Elite)"}
+                                          ? <><Clock size={16} />...</>
+                                          : <><Smartphone size={20} /> 50k / mois (Elite)</>}
                                       </button>
                                       <button
                                         className="btn btn-premium btn-elite"
@@ -676,8 +677,8 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                                         title="Elite Mensuel Complet (Groupe WhatsApp)"
                                       >
                                         {premiumLoading === depot.id
-                                          ? "⏳..."
-                                          : "� 75k / mois (Elite Complet)"}
+                                          ? <><Clock size={16} />...</>
+                                          : <><Smartphone size={20} /> 75k / mois (Elite Complet)</>}
                                       </button>
                                     </div>
                                     <small className="premium-info">

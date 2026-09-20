@@ -4,6 +4,7 @@ import AdminPanel from "./components/AdminPanel";
 import DepotCard from "./components/DepotCard";
 import UpdateNotification from "./components/UpdateNotification";
 import VotingChart from "./components/VotingChart";
+import { User, MessageCircle, MapPin, Store, Sparkles, AlertTriangle, CreditCard, Gem, GemIcon, Smartphone, HelpCircle, X } from "lucide-react";
 import "./App.css";
 import "./auth.css";
 import { useAuth } from "./auth";
@@ -350,7 +351,7 @@ function App(): ReactNode {
             >
               {isSignUp && (
                 <div className="form-group">
-                  <label>👤 Nom Complet</label>
+                  <label><User size={16} /> Nom Complet</label>
                   <input
                     type="text"
                     placeholder="Votre nom complet"
@@ -386,7 +387,7 @@ function App(): ReactNode {
               {isSignUp && (
                 <>
                   <div className="form-group">
-                    <label>💬 Numéro WhatsApp du Dépôt</label>
+                    <label><MessageCircle size={16} /> Numéro WhatsApp du Dépôt</label>
                     <input
                       type="tel"
                       placeholder="+242 061234567"
@@ -402,7 +403,7 @@ function App(): ReactNode {
                   </div>
 
                   <div className="form-group">
-                    <label>📍 Quartier</label>
+                    <label><MapPin size={16} /> Quartier</label>
                     <select
                       value={signUpData.quartier}
                       onChange={(e) =>
@@ -423,7 +424,7 @@ function App(): ReactNode {
                   </div>
 
                   <div className="form-group">
-                    <label>📍 Adresse du Dépôt</label>
+                    <label><MapPin size={16} /> Adresse du Dépôt</label>
                     <input
                       type="text"
                       placeholder="Ex: Rue Bakongo, à côté pharmacie Jean Marie"
@@ -442,7 +443,7 @@ function App(): ReactNode {
                   </div>
 
                   <div className="form-group">
-                    <label>🏪 Nom du Dépôt/Boutique (Optionnel)</label>
+                    <label><Store size={16} /> Nom du Dépôt/Boutique (Optionnel)</label>
                     <input
                       type="text"
                       placeholder="Ex: Frigo Bacongo, Dépôt Charbon Jean, Magasin Epiceries/Vivre secs"
@@ -621,11 +622,11 @@ function App(): ReactNode {
 
         {!isLoadingDepots && showUpgradeNotice && selectedDepot && (
           <div className="subscription-upgrade-banner">
-            <strong>✨ Nouveau :</strong> débloquez les images et vidéos de vos
-            produits en passant à l’offre premium de{" "}
+            <strong><Sparkles size={16} /> Nouveau :</strong> débloquez les images et vidéos de vos
+            produits en passant à l'offre premium de{" "}
             <strong>25 000 à 35 000 FCFA</strong>.
             <span>
-              Profitez d’un meilleur visuel pour attirer plus de clients.
+              Profitez d'un meilleur visuel pour attirer plus de clients.
             </span>
             <button
               type="button"
@@ -646,17 +647,17 @@ function App(): ReactNode {
               onClick={() => setSubscriptionAlert(false)}
               aria-label="Fermer la notice de renouvellement"
             >
-              ✕
+              <X size={18} />
             </button>
             {daysRemaining !== null && daysRemaining < 0 ? (
               <>
-                <h3>⚠️ Votre abonnement a expiré!</h3>
+                <h3><AlertTriangle size={20} /> Votre abonnement a expiré!</h3>
                 <p>Veuillez renouveler votre abonnement pour continuer.</p>
                 <p className="status-inactive">Status: Inactif</p>
               </>
             ) : (
               <>
-                <h3>⚠️ Abonnement expire bientôt!</h3>
+                <h3><AlertTriangle size={20} /> Abonnement expire bientôt!</h3>
                 <p>
                   Il vous reste <strong>{daysRemaining} jour(s)</strong> avant
                   l'expiration.
@@ -691,7 +692,7 @@ function App(): ReactNode {
                   disabled={isRenewingSubscription}
                   className="btn-payment-option btn-basic"
                 >
-                  💳 15,000 FCFA
+                  <CreditCard size={20} /> 15,000 FCFA
                   <br />
                   <small>Basic Mensuel (Sans images)</small>
                 </button>
@@ -702,7 +703,7 @@ function App(): ReactNode {
                   disabled={isRenewingSubscription}
                   className="btn-payment-option btn-advanced"
                 >
-                  💎 25,000 FCFA
+                  <Gem size={20} /> 25,000 FCFA
                   <br />
                   <small>Pro Mensuel (Avec photos)</small>
                 </button>
@@ -713,7 +714,7 @@ function App(): ReactNode {
                   disabled={isRenewingSubscription}
                   className="btn-payment-option btn-elite"
                 >
-                  💎💎 35,000 FCFA
+                  <GemIcon size={20} /> 35,000 FCFA
                   <br />
                   <small>Advanced Mensuel (Images + Vidéos)</small>
                 </button>
@@ -724,7 +725,7 @@ function App(): ReactNode {
                   disabled={isRenewingSubscription}
                   className="btn-payment-option btn-elite"
                 >
-                  📱 50,000 FCFA
+                  <Smartphone size={20} /> 50,000 FCFA
                   <br />
                   <small>Elite Mensuel (Groupe WhatsApp)</small>
                 </button>
@@ -735,7 +736,7 @@ function App(): ReactNode {
                   disabled={isRenewingSubscription}
                   className="btn-payment-option btn-elite"
                 >
-                  📱 75,000 FCFA
+                  <Smartphone size={20} /> 75,000 FCFA
                   <br />
                   <small>Elite Mensuel (Groupe WhatsApp Complet)</small>
                 </button>
@@ -761,7 +762,7 @@ function App(): ReactNode {
           target="_blank"
           rel="noopener noreferrer"
         >
-          💬 Donnez votre avis sur WhatsApp
+          <MessageCircle size={16} /> Donnez votre avis sur WhatsApp
         </a>
       </footer>
 
@@ -785,7 +786,7 @@ function App(): ReactNode {
                 className="help-modal-close"
                 onClick={() => setShowHelpModal(false)}
               >
-                ✕
+                <X size={18} />
               </button>
             </div>
             <div className="help-modal-body">
@@ -821,7 +822,7 @@ function App(): ReactNode {
                 </ul>
               </div>
               <div className="help-section">
-                <h3>💎 Système Premium</h3>
+                <h3><Gem size={16} /> Système Premium</h3>
                 <ul>
                   <li>
                     <strong>Basic (15 000 FCFA):</strong> Sans images :
@@ -847,12 +848,12 @@ function App(): ReactNode {
                   Les mamans votent pour leurs dépôts préférés. Les meilleurs
                   dépôts gagnent en visibilité dans le classement trimestriel
                   par illustration un depot avec un abonnment basic, avec une
-                  bonne note lors des votes aura la meme visubilité et jouiera
+                  bonne note lors des votes aura la meme visubilité et jouira
                   des memes privilege que celui qui à un abonnment élite.
                 </p>
               </div>
               <div className="help-section">
-                <h3>💬 Besoin d'aide?</h3>
+                <h3><HelpCircle size={16} /> Besoin d'aide?</h3>
                 <p>
                   Utilisez le bouton WhatsApp au bas du l'Application pour nous
                   contacter et donner votre avis sur les améliorations

@@ -11,7 +11,7 @@ export const uploadToCloudinary = async (
 ): Promise<{ success: boolean; data?: string; error?: string }> => {
   try {
     console.log(
-      "📸 Début upload Cloudinary - file:",
+      "Début upload Cloudinary - file:",
       file.name,
       "size:",
       file.size,
@@ -21,14 +21,14 @@ export const uploadToCloudinary = async (
 
     // Validation du fichier
     if (!file.type.startsWith("image/")) {
-      console.error("❌ Erreur: Le fichier n'est pas une image");
+      console.error("Erreur: Le fichier n'est pas une image");
       return { success: false, error: "Le fichier doit être une image" };
     }
 
     // Limiter la taille à 5MB
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
-      console.error("❌ Erreur: L'image est trop grande");
+      console.error("Erreur: L'image est trop grande");
       return { success: false, error: "L'image doit faire moins de 5MB" };
     }
 
@@ -36,7 +36,7 @@ export const uploadToCloudinary = async (
     const uploadPreset =
       import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "unsigned_preset";
 
-    console.log("⬆️ Upload vers Cloudinary en cours...");
+    console.log("Upload vers Cloudinary en cours...");
 
     // Créer FormData pour l'upload
     const formData = new FormData();
@@ -61,7 +61,7 @@ export const uploadToCloudinary = async (
 
     if (!response.ok) {
       console.error(
-        "❌ Erreur upload Cloudinary:",
+        "Erreur upload Cloudinary:",
         result.error?.message || result,
       );
       return {
@@ -70,10 +70,10 @@ export const uploadToCloudinary = async (
       };
     }
 
-    console.log("✅ Image uploadée avec succès:", result.secure_url);
+    console.log("Image uploadée avec succès:", result.secure_url);
     return { success: true, data: result.secure_url };
   } catch (error) {
-    console.error("❌ Erreur upload Cloudinary:", error);
+    console.error("Erreur upload Cloudinary:", error);
     const errorMsg = error instanceof Error ? error.message : "Erreur inconnue";
     return { success: false, error: errorMsg };
   }

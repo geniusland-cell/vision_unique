@@ -1,13 +1,9 @@
 import { useState, useEffect, ReactNode } from "react";
-import {
-  getAllWhatsAppGroups,
-  getAdvancedEliteDepots,
-  createWhatsAppGroup,
-  updateWhatsAppGroupLink,
-  updateMemberCount,
-} from "../services/whatsappGroupService";
+import { Users, User, Smartphone } from "lucide-react";
+import { getWhatsAppGroups, deleteWhatsAppGroup } from "../services/whatsappGroupService";
+import { getDepotById } from "../firebase";
 import type { WhatsAppGroup } from "../types/whatsapp";
-import "./WhatsAppGroupsManagement.css";
+import "../styles/WhatsAppGroupsManagement.css";
 
 export default function WhatsAppGroupsManagement(): ReactNode {
   const [whatsappGroups, setWhatsappGroups] = useState<WhatsAppGroup[]>([]);
@@ -232,10 +228,10 @@ export default function WhatsAppGroupsManagement(): ReactNode {
                 <div className="group-info">
                   <h4>{group.depotName || `Dépôt ${group.depotId}`}</h4>
                   <p className="group-details">
-                    <span>👥 {group.nombreMembres} membres</span>
-                    <span>👤 {group.adminSecondaire}</span>
+                    <span><Users size={16} /> {group.nombreMembres} membres</span>
+                    <span><User size={16} /> {group.adminSecondaire}</span>
                     {depot && (
-                      <span>📱 WA: {depot.phone_whatsapp || depot.phone || "N/A"}</span>
+                      <span><Smartphone size={16} /> WA: {depot.phone_whatsapp || depot.phone || "N/A"}</span>
                     )}
                   </p>
                   <a

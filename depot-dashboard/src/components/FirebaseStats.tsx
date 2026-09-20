@@ -1,5 +1,8 @@
 import { useState, useEffect, ReactNode } from "react";
-import "../styles/FirebaseStats.css";
+import { MapPin } from "lucide-react";
+import { db } from "../firebase";
+import { ref, get } from "firebase/database";
+import "./FirebaseStats.css";
 
 interface FirebaseStatsData {
   totalReads: number;
@@ -47,7 +50,7 @@ const FirebaseStats = (): ReactNode => {
         lastUpdated: new Date(),
       });
       setError(
-        "📍 Les statistiques détaillées sont disponibles dans la Console Firebase → Realtime Database → Usage",
+        "Les statistiques détaillées sont disponibles dans la Console Firebase → Realtime Database → Usage"
       );
     } catch {
       setError("Impossible de charger les statistiques détaillées");
@@ -90,10 +93,10 @@ const FirebaseStats = (): ReactNode => {
   return (
     <div className="firebase-stats-container">
       <div className="stats-header">
-        <h2>📊 Statistiques Firebase Realtime Database</h2>
+        <h2>Statistiques Firebase Realtime Database</h2>
         <div className="stats-refresh">
           <button onClick={loadFirebaseStats} disabled={loading}>
-            {loading ? "⏳ Chargement..." : "🔄 Actualiser"}
+            {loading ? "Chargement..." : "Actualiser"}
           </button>
           <span className="last-updated">
             Mis à jour : {stats.lastUpdated.toLocaleTimeString("fr-FR")}
@@ -101,12 +104,12 @@ const FirebaseStats = (): ReactNode => {
         </div>
       </div>
 
-      {error && <div className="stats-error">⚠️ {error}</div>}
+      {error && <div className="stats-error">{error}</div>}
 
       <div className="stats-grid">
         {/* Lectures */}
         <div className="stat-card">
-          <div className="stat-title">📖 Lectures (Reads/mois)</div>
+          <div className="stat-title">Lectures (Reads/mois)</div>
           <div className={`stat-gauge ${getAlertLevel(readsPercentage)}`}>
             <div className="gauge-bar">
               <div
@@ -124,18 +127,18 @@ const FirebaseStats = (): ReactNode => {
             </span>
           </div>
           {getAlertLevel(readsPercentage) === "warning" && (
-            <div className="stat-alert">⚠️ Approche de la limite</div>
+            <div className="stat-alert">Approche de la limite</div>
           )}
           {getAlertLevel(readsPercentage) === "critical" && (
             <div className="stat-alert critical">
-              🔴 Limite critique atteinte
+              Limite critique atteinte
             </div>
           )}
         </div>
 
         {/* Écritures */}
         <div className="stat-card">
-          <div className="stat-title">✏️ Écritures (Writes/mois)</div>
+          <div className="stat-title">Écritures (Writes/mois)</div>
           <div className={`stat-gauge ${getAlertLevel(writesPercentage)}`}>
             <div className="gauge-bar">
               <div
@@ -153,18 +156,18 @@ const FirebaseStats = (): ReactNode => {
             </span>
           </div>
           {getAlertLevel(writesPercentage) === "warning" && (
-            <div className="stat-alert">⚠️ Approche de la limite</div>
+            <div className="stat-alert">Approche de la limite</div>
           )}
           {getAlertLevel(writesPercentage) === "critical" && (
             <div className="stat-alert critical">
-              🔴 Limite critique atteinte
+              Limite critique atteinte
             </div>
           )}
         </div>
 
         {/* Stockage */}
         <div className="stat-card">
-          <div className="stat-title">💾 Stockage (Plan Spark)</div>
+          <div className="stat-title">Stockage (Plan Spark)</div>
           <div className={`stat-gauge ${getAlertLevel(storagePercentage)}`}>
             <div className="gauge-bar">
               <div
@@ -182,18 +185,18 @@ const FirebaseStats = (): ReactNode => {
             </span>
           </div>
           {getAlertLevel(storagePercentage) === "warning" && (
-            <div className="stat-alert">⚠️ Approche de la limite</div>
+            <div className="stat-alert">Approche de la limite</div>
           )}
           {getAlertLevel(storagePercentage) === "critical" && (
             <div className="stat-alert critical">
-              🔴 Limite critique atteinte
+              Limite critique atteinte
             </div>
           )}
         </div>
 
         {/* Activité Réseau */}
         <div className="stat-card">
-          <div className="stat-title">📡 Activité Réseau (24h)</div>
+          <div className="stat-title">Activité Réseau (24h)</div>
           <div className="stat-network">
             <div className="network-value">
               {formatNumber(stats.networkRequests)}
@@ -208,11 +211,11 @@ const FirebaseStats = (): ReactNode => {
 
       <div className="stats-footer">
         <p className="stats-legend">
-          ℹ️ <strong>Plan Spark Firebase :</strong> 50k lectures/mois • 20k
+          <strong>Plan Spark Firebase :</strong> 50k lectures/mois • 20k
           écritures/mois • 1 GO stockage gratuit
         </p>
         <p className="stats-note">
-          💡 <strong>Conseil :</strong> Si vous dépassez 50k lectures/mois,
+          <strong>Conseil :</strong> Si vous dépassez 50k lectures/mois,
           passez au plan Blaze (pay-as-you-go) pour environ $1-10/mois selon
           votre utilisation.
         </p>

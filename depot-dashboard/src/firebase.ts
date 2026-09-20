@@ -6,6 +6,7 @@ import {
   signOut,
 } from "firebase/auth";
 import { getDatabase, ref, set, get, push, update } from "firebase/database";
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import type { User, Depot, Category, FirebaseResponse } from "./types";
 import { getCoordinatesForQuartier } from "./utils/quartierCoordinates";
 import {
@@ -45,6 +46,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getDatabase(app);
+export const storage = getStorage(app);
 
 function generateEmailFromPhone(phone: string): string {
   // Remove all non-numeric characters
@@ -102,7 +104,7 @@ export const registerUser = async (
       password,
     );
 
-    safeLog("✅ Compte Manager créé.");
+    safeLog("Compte Manager créé.");
 
     // 2. Create user profile in Realtime Database
     const userRef = ref(db, `users/${authUser.uid}`);
@@ -120,7 +122,7 @@ export const registerUser = async (
       updated_at: new Date().toISOString(),
     });
 
-    safeLog("✅ Profil Manager créé dans Realtime DB");
+    safeLog("Profil Manager créé dans Realtime DB");
 
     // 3. Auto-create unique depot for this manager
     const newDepotRef = push(ref(db, "depots"));
@@ -150,7 +152,7 @@ export const registerUser = async (
       updated_at: new Date().toISOString(),
     });
 
-    safeLog("✅ Dépôt auto-créé.");
+    safeLog("Dépôt auto-créé.");
 
     // 4. Initialize depot with default products
     await initializeDepotProducts(newDepotRef.key);
@@ -171,7 +173,7 @@ export const registerUser = async (
     };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    safeError("❌ Erreur d'inscription Manager:", errorMsg);
+    safeError("Erreur d'inscription Manager:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -184,7 +186,7 @@ export const loginByEmail = async (
   password: string,
 ): Promise<FirebaseResponse<User>> => {
   try {
-    safeLog("📧 Tentative connexion ADMIN");
+    safeLog("Tentative connexion ADMIN");
 
     // 1. Authenticate with Firebase
     const { user: authUser } = await signInWithEmailAndPassword(
@@ -193,14 +195,14 @@ export const loginByEmail = async (
       password,
     );
 
-    safeLog("✅ Authentification ADMIN réussie");
+    safeLog("Authentification ADMIN réussie");
 
     // 2. Get user profile from Realtime Database
     const userRef = ref(db, `users/${authUser.uid}`);
     const userSnap = await get(userRef);
 
     if (!userSnap.exists()) {
-      safeError("❌ Profil ADMIN non trouvé dans Realtime Database");
+      safeError("Profil ADMIN non trouvé dans Realtime Database");
       return {
         success: false,
         error: "Profil utilisateur non trouvé dans la base de données",
@@ -211,11 +213,11 @@ export const loginByEmail = async (
 
     // Verify admin role
     if (userData.role !== "admin") {
-      safeError("❌ L'utilisateur n'est pas un administrateur");
+      safeError("L'utilisateur n'est pas un administrateur");
       return { success: false, error: "Accès réservé aux administrateurs" };
     }
 
-    safeLog("✅ Profil ADMIN chargé");
+    safeLog("Profil ADMIN chargé");
 
     return {
       success: true,
@@ -223,7 +225,7 @@ export const loginByEmail = async (
     };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    safeError("❌ Erreur connexion ADMIN:", errorMsg);
+    safeError("Erreur connexion ADMIN:", errorMsg);
     return { success: false, error: "Email ou mot de passe incorrect" };
   }
 };
@@ -237,10 +239,10 @@ export const detectAndLogin = async (
 ): Promise<FirebaseResponse<User>> => {
   // Check if it's an email (contains @)
   if (identifier.includes("@")) {
-    safeLog("📧 Détecté: EMAIL → Tentative connexion ADMIN");
+    safeLog("Détecté: EMAIL → Tentative connexion ADMIN");
     return loginByEmail(identifier, password);
   } else {
-    safeLog("📱 Détecté: TÉLÉPHONE → Tentative connexion MANAGER");
+    safeLog("Détecté: TÉLÉPHONE → Tentative connexion MANAGER");
     return loginByPhone(identifier, password);
   }
 };
@@ -250,7 +252,7 @@ export const loginByPhone = async (
   password: string,
 ): Promise<FirebaseResponse<User>> => {
   try {
-    safeLog("📱 Tentative connexion Manager");
+    safeLog("Tentative connexion Manager");
 
     // 1. Generate email from phone
     const userEmail = generateEmailFromPhone(phone);
@@ -262,19 +264,19 @@ export const loginByPhone = async (
       password,
     );
 
-    safeLog("✅ Authentification Manager réussie");
+    safeLog("Authentification Manager réussie");
 
     // 3. Get user profile from Realtime Database
     const userRef = ref(db, `users/${authUser.uid}`);
     const userSnap = await get(userRef);
 
     if (!userSnap.exists()) {
-      safeError("❌ Profil Manager non trouvé");
+      safeError("Profil Manager non trouvé");
       return { success: false, error: "Profil utilisateur non trouvé" };
     }
 
     const userData = userSnap.val();
-    safeLog("✅ Profil Manager chargé");
+    safeLog("Profil Manager chargé");
 
     return {
       success: true,
@@ -282,7 +284,7 @@ export const loginByPhone = async (
     };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    safeError("❌ Erreur connexion Manager:", errorMsg);
+    safeError("Erreur connexion Manager:", errorMsg);
     return { success: false, error: "Numéro ou mot de passe incorrect" };
   }
 };
@@ -293,11 +295,11 @@ export const loginByPhone = async (
 export const logoutUser = async (): Promise<FirebaseResponse<null>> => {
   try {
     await signOut(auth);
-    safeLog("✅ Déconnexion Manager réussie");
+    safeLog("Déconnexion Manager réussie");
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    safeError("❌ Erreur déconnexion:", errorMsg);
+    safeError("Erreur déconnexion:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -318,7 +320,7 @@ export const getCurrentUser = async (
     return { success: false, error: "Utilisateur non trouvé" };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    safeError("❌ Erreur récupération Manager:", errorMsg);
+    safeError("Erreur récupération Manager:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -355,7 +357,7 @@ export const getManagerDepots = async (
     return { success: true, data: depots };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    safeError("❌ Erreur récupération dépôts:", errorMsg);
+    safeError("Erreur récupération dépôts:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -445,7 +447,7 @@ export const getCategories = async (): Promise<
     return { success: true, data: categories };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    safeError("❌ Erreur récupération catégories:", errorMsg);
+    safeError("Erreur récupération catégories:", errorMsg);
     return { success: false, error: errorMsg };
   }
 };
@@ -592,7 +594,7 @@ export const initializeQuartiers = async (): Promise<
   FirebaseResponse<null>
 > => {
   try {
-    safeLog("📍 Création des quartiers...");
+    safeLog("Création des quartiers...");
 
     const quartiers = [
       {
@@ -1138,7 +1140,7 @@ export const uploadProductImage = async (
       return { success: false, error: "L'image doit faire moins de 5MB" };
     }
 
-    safeLog("📸 Upload image");
+    safeLog("Upload image");
 
     // Créer un nom unique pour l'image
     const timestamp = Date.now();
@@ -1487,7 +1489,7 @@ export const upgradeTier = async (
       updated_at: new Date().toISOString(),
     });
 
-    safeLog(`✅ Tier ${newTier} appliqué au dépôt`);
+    safeLog(`Tier ${newTier} appliqué au dépôt`);
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
@@ -1510,7 +1512,7 @@ export const removeTier = async (
       updated_at: new Date().toISOString(),
     });
 
-    safeLog("✅ Tier annulé pour dépôt");
+    safeLog("Tier annulé pour dépôt");
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
@@ -1623,7 +1625,7 @@ export const launchVoting = async (
       updated_at: new Date().toISOString(),
     });
 
-    safeLog(`✅ Votes lancés pour ${currentQuarter}`);
+    safeLog(`Votes lancés pour ${currentQuarter}`);
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
@@ -1669,7 +1671,7 @@ export const closeVoting = async (): Promise<FirebaseResponse<null>> => {
       updated_at: new Date().toISOString(),
     });
 
-    safeLog(`✅ Votes fermés pour ${currentQuarter} - Rangs assignés aux top 3`);
+    safeLog(`Votes fermés pour ${currentQuarter} - Rangs assignés aux top 3`);
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
@@ -1700,7 +1702,7 @@ export const resetVoting = async (): Promise<FirebaseResponse<null>> => {
     await set(votesRef, null);
 
     safeLog(
-      `✅ Cycle de vote réinitialisé pour ${currentQuarter} (votes supprimés)`,
+      `Cycle de vote réinitialisé pour ${currentQuarter} (votes supprimés)`,
     );
     return { success: true };
   } catch (err: unknown) {
@@ -1743,7 +1745,7 @@ export const updateVotingDuration = async (
 
     await update(votesSettingsRef, updatePayload);
 
-    safeLog(`✅ Durée de vote mise à jour pour ${currentQuarter}`);
+    safeLog(`Durée de vote mise à jour pour ${currentQuarter}`);
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
@@ -1875,7 +1877,7 @@ export const checkAndDeactivateExpiredDepots = async (): Promise<any> => {
     // Appliquer les mises à jour
     if (deactivatedCount > 0) {
       await update(ref(db), updates);
-      safeLog(` ✅ ${deactivatedCount} dépôt(s) désactivé(s)`);
+      safeLog(`${deactivatedCount} dépôt(s) désactivé(s)`);
     }
 
     return { success: true, deactivatedCount };
@@ -1939,7 +1941,7 @@ export const uploadDepotImage = async (
 ): Promise<FirebaseResponse<string>> => {
   try {
     safeLog(
-      "📸 Début upload Cloudinary - depotId:",
+      "Début upload Cloudinary - depotId:",
       depotId,
       "file:",
       file.name,
@@ -1953,10 +1955,10 @@ export const uploadDepotImage = async (
     const result = await uploadToCloudinary(file, `depot_images/${depotId}`);
 
     if (result.success && result.data) {
-      safeLog("✅ Image uploadée avec succès:", result.data);
+      safeLog("Image uploadée avec succès:", result.data);
       return { success: true, data: result.data };
     } else {
-      safeError("❌ Erreur upload:", result.error);
+      safeError("Erreur upload:", result.error);
       return {
         success: false,
         error: result.error || "Erreur upload Cloudinary",
@@ -1964,8 +1966,8 @@ export const uploadDepotImage = async (
     }
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    safeError("❌ Erreur upload image:", errorMsg);
-    safeError("❌ Détails erreur:", err);
+    safeError("Erreur upload image:", errorMsg);
+    safeError("Détails erreur:", err);
     return { success: false, error: errorMsg };
   }
 };
