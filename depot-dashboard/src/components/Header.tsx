@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { BarChart3, Moon, Sun, HelpCircle } from "lucide-react";
 import type { User } from "../types";
 import "./Header.css";
 
@@ -48,7 +49,7 @@ const Header = ({
               onClick={onShowVotingChart}
               title="Voir le classement des votes"
             >
-              📊 Classement
+              <BarChart3 size={16} /> Classement
             </button>
           )}
           <button
@@ -56,11 +57,11 @@ const Header = ({
             onClick={onToggleDarkMode}
             title="Toggle Mode Sombre"
           >
-            {isDarkMode ? "S" : "N"}
+            {isDarkMode ? <Moon size={18} /> : <Sun size={18} />}
           </button>
           {onShowHelp && (
             <button className="help-btn" onClick={onShowHelp} title="Aide">
-              ?
+              <HelpCircle size={18} />
             </button>
           )}
           <button className="logout-btn" onClick={onLogout}>

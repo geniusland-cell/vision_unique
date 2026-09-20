@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Package, X, Check } from "lucide-react";
 import "./CategoriesManagement.css";
 import {
   updateMultipleProducts,
@@ -177,7 +178,7 @@ export default function CategoriesManagement({
   return (
     <div className="categories-section">
       <div className="section-title">
-        <span>📦</span>
+        <Package size={24} />
         <span>GESTION DES CATÉGORIES - {depot.name}</span>
       </div>
 
@@ -249,7 +250,7 @@ export default function CategoriesManagement({
                   Annuler
                 </button>
                 <button className="btn-save-small" onClick={handleSaveChanges}>
-                  ✓ Enregistrer
+                  <Check size={16} /> Enregistrer
                 </button>
               </div>
             )}
@@ -342,7 +343,7 @@ export default function CategoriesManagement({
             <div className="modal-header">
               <h2>Ajouter une catégorie</h2>
               <button className="close-btn" onClick={() => setShowModal(false)}>
-                ✕
+                <X size={20} />
               </button>
             </div>
             <div className="modal-body">

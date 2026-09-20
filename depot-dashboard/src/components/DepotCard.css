@@ -141,7 +141,7 @@
 }
 
 .status.active {
-  color: #4caf50;
+  color: #667eea;
 }
 
 .status.inactive {
@@ -178,8 +178,8 @@
 .save-btn {
   flex: 1;
   padding: 8px 12px;
-  background: #4caf50;
-  color: white;
+  background: linear-gradient(45deg, #667eea, #ffffff);
+  color: #667eea;
   border: none;
   border-radius: 6px;
   font-size: 13px;
@@ -189,7 +189,7 @@
 }
 
 .save-btn:hover {
-  background: #45a049;
+  background: linear-gradient(45deg, #ffffff, #667eea);
 }
 
 .cancel-btn {
@@ -226,11 +226,11 @@
 }
 
 .phone-link.whatsapp-link {
-  color: #25d366;
+  color: #667eea;
 }
 
 .phone-link.whatsapp-link:hover {
-  color: #20ba5a;
+  color: #764ba2;
 }
 
 /* Dark mode support */
@@ -443,7 +443,7 @@
 
 .image-url-input:focus {
   outline: none;
-  border-color: #009739;
+  border-color: #667eea;
 }
 
 /* Dark Mode */
@@ -477,14 +477,14 @@
 
 /* WhatsApp Group Status */
 .whatsapp-group-status {
-  background: rgba(37, 211, 102, 0.05);
-  border-left: 3px solid #25d366;
+  background: rgba(102, 126, 234, 0.05);
+  border-left: 3px solid #667eea;
   padding: 10px;
   margin-top: 10px;
 }
 
 .whatsapp-group-status label {
-  color: #128c7e;
+  color: #667eea;
   font-weight: bold;
   display: block;
   margin-bottom: 8px;
@@ -502,7 +502,7 @@
 }
 
 .status-indicator:not(.inactive) {
-  color: #25d366;
+  color: #667eea;
 }
 
 .status-indicator.inactive {
@@ -517,8 +517,8 @@
 .group-link-btn {
   display: inline-block;
   padding: 6px 12px;
-  background: #25d366;
-  color: white;
+  background: linear-gradient(45deg, #667eea, #ffffff);
+  color: #667eea;
   text-decoration: none;
   border-radius: 6px;
   font-size: 12px;
@@ -528,17 +528,17 @@
 }
 
 .group-link-btn:hover {
-  background: #128c7e;
+  background: linear-gradient(45deg, #ffffff, #667eea);
   transform: translateY(-1px);
 }
 
 /* Dark mode for WhatsApp group status */
 .dark-mode .whatsapp-group-status {
-  background: rgba(37, 211, 102, 0.1);
+  background: rgba(102, 126, 234, 0.1);
 }
 
 .dark-mode .whatsapp-group-status label {
-  color: #25d366;
+  color: #667eea;
 }
 
 .dark-mode .member-count {

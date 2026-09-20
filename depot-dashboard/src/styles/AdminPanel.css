@@ -182,21 +182,21 @@
 }
 
 .btn-unban {
-  background-color: #27ae60;
-  color: white;
+  background: linear-gradient(45deg, #667eea, #ffffff);
+  color: #667eea;
 }
 
 .btn-unban:hover {
-  background-color: #229954;
+  background: linear-gradient(45deg, #ffffff, #667eea);
 }
 
 .btn-details {
-  background-color: #3498db;
-  color: white;
+  background: linear-gradient(45deg, #ffffff, #667eea);
+  color: #667eea;
 }
 
 .btn-details:hover {
-  background-color: #2980b9;
+  background: linear-gradient(45deg, #667eea, #ffffff);
 }
 
 .no-data {
@@ -274,8 +274,8 @@
 }
 
 .status.active {
-  background-color: #d4edda;
-  color: #155724;
+  background-color: #e8f4ff;
+  color: #1e3a8a;
 }
 
 .status.banned {
@@ -348,7 +348,7 @@
 }
 
 .product-price {
-  color: #27ae60;
+  color: #667eea;
   font-weight: 600;
 }
 
@@ -405,8 +405,8 @@
 }
 
 .tab-button.active {
-  color: #3498db;
-  border-bottom-color: #3498db;
+  color: #667eea;
+  border-bottom-color: #667eea;
 }
 
 /* Vues */
@@ -449,7 +449,7 @@
 }
 
 .btn-payment {
-  background: linear-gradient(135deg, #3498db, #2980b9);
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
   border: none;
   padding: 10px 16px;
@@ -460,9 +460,9 @@
 }
 
 .btn-payment:hover:not(:disabled) {
-  background: linear-gradient(135deg, #2980b9, #1f618d);
+  background: linear-gradient(135deg, #764ba2, #667eea);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
 .btn-payment:disabled {

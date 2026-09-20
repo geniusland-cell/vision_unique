@@ -36,14 +36,14 @@
 }
 
 .category-card:hover {
-  border-color: #4caf50;
+  border-color: #667eea;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
 }
 
 .category-card.active {
-  border-color: #4caf50;
-  background: #f0f8f0;
+  border-color: #667eea;
+  background: #f0f4ff;
 }
 
 .dark-mode .category-card {
@@ -53,13 +53,13 @@
 }
 
 .dark-mode .category-card:hover {
-  border-color: #66bb6a;
+  border-color: #667eea;
   background: #333;
 }
 
 .dark-mode .category-card.active {
-  border-color: #66bb6a;
-  background: #1a2a1a;
+  border-color: #667eea;
+  background: #1a1a2a;
 }
 
 .category-header {
@@ -116,24 +116,24 @@
 
 .stat .value {
   font-weight: bold;
-  color: #4caf50;
+  color: #667eea;
 }
 
 .add-card {
   border-style: dashed;
-  border-color: #4caf50;
+  border-color: #667eea;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 150px;
   background: #f9f9f9;
-  color: #4caf50;
+  color: #667eea;
   font-weight: bold;
 }
 
 .dark-mode .add-card {
   background: #1e1e1e;
-  color: #66bb6a;
+  color: #667eea;
 }
 
 .add-content {
@@ -397,20 +397,22 @@
 }
 
 .btn-save {
-  background: #4caf50;
-  color: white;
+  background: linear-gradient(45deg, #667eea, #ffffff);
+  color: #667eea;
 }
 
 .btn-save:hover {
-  background: #45a049;
+  background: linear-gradient(45deg, #ffffff, #667eea);
 }
 
 .dark-mode .btn-save {
-  background: #66bb6a;
+  background: white;
+  color: #667eea;
+  border-color: #667eea;
 }
 
 .dark-mode .btn-save:hover {
-  background: #5cad60;
+  background: #f0f0f0;
 }
 
 /* Input Fields - Price and Stock */
@@ -427,8 +429,8 @@
 .price-input:focus,
 .stock-input:focus {
   outline: none;
-  border-color: #4caf50;
-  background: #f0f8f0;
+  border-color: #667eea;
+  background: #f0f4ff;
 }
 
 .dark-mode .price-input,
@@ -440,8 +442,8 @@
 
 .dark-mode .price-input:focus,
 .dark-mode .stock-input:focus {
-  border-color: #66bb6a;
-  background: #1a2a1a;
+  border-color: #667eea;
+  background: #1a1a2a;
 }
 
 /* Edited Row Highlight */
@@ -504,30 +506,32 @@
 }
 
 .btn-save-small {
-  background: #4caf50;
-  color: white;
+  background: linear-gradient(45deg, #667eea, #ffffff);
+  color: #667eea;
 }
 
 .btn-save-small:hover {
-  background: #45a049;
+  background: linear-gradient(45deg, #ffffff, #667eea);
 }
 
 .dark-mode .btn-save-small {
-  background: #66bb6a;
+  background: white;
+  color: #667eea;
+  border-color: #667eea;
 }
 
 .dark-mode .btn-save-small:hover {
-  background: #5cad60;
+  background: #f0f0f0;
 }
 
 /* Total Value Column */
 .total-value {
   font-weight: bold;
-  color: #4caf50;
+  color: #667eea;
 }
 
 .dark-mode .total-value {
-  color: #66bb6a;
+  color: #667eea;
 }
 
 /* Responsive */
