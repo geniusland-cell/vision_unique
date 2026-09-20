@@ -1,0 +1,95 @@
+.whatsapp-groups-management {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.whatsapp-groups-management h2 {
+  color: #1e293b;
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+.whatsapp-groups-container {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.whatsapp-groups-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.whatsapp-groups-table th,
+.whatsapp-groups-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.whatsapp-groups-table th {
+  background: #f8fafc;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.whatsapp-groups-table tr:hover {
+  background: #f8fafc;
+}
+
+.btn-delete {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.btn-delete:hover {
+  background: #dc2626;
+}
+
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: #64748b;
+}
+
+.no-groups {
+  text-align: center;
+  padding: 20px;
+  color: #64748b;
+}
+
+/* Dark mode styles */
+body.dark-mode .whatsapp-groups-management h2 {
+  color: #eef2ff;
+}
+
+body.dark-mode .whatsapp-groups-container {
+  background: rgba(10, 25, 41, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+body.dark-mode .whatsapp-groups-table th {
+  background: rgba(10, 25, 41, 0.6);
+  color: #cbd5e0;
+}
+
+body.dark-mode .whatsapp-groups-table td {
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #eef2ff;
+}
+
+body.dark-mode .whatsapp-groups-table tr:hover {
+  background: rgba(10, 25, 41, 0.4);
+}
+
+body.dark-mode .loading,
+body.dark-mode .no-groups {
+  color: #cbd5e0;
+}

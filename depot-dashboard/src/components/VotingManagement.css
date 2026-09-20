@@ -1,0 +1,380 @@
+.voting-management {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.voting-management h2 {
+  color: #1e293b;
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+.voting-status {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.voting-status h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  color: #1e293b;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.status-badge.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-badge.voting_active {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-badge.voting_closed {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.voting-controls {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.voting-controls h3 {
+  color: #1e293b;
+  margin-bottom: 15px;
+}
+
+.control-input {
+  margin-bottom: 15px;
+}
+
+.control-input label {
+  display: block;
+  margin-bottom: 5px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.control-input input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.voting-controls button {
+  margin-right: 10px;
+  margin-bottom: 10px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.btn-start {
+  background: #10b981;
+  color: white;
+}
+
+.btn-start:hover:not(:disabled) {
+  background: #059669;
+}
+
+.btn-close {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-close:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.btn-reset {
+  background: #6366f1;
+  color: white;
+}
+
+.btn-reset:hover:not(:disabled) {
+  background: #4f46e5;
+}
+
+.btn-update {
+  background: #f59e0b;
+  color: white;
+}
+
+.btn-update:hover:not(:disabled) {
+  background: #d97706;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tier-management {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tier-management h3 {
+  color: #1e293b;
+  margin-bottom: 15px;
+}
+
+.tier-input-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.tier-input-group select {
+  flex: 1;
+  min-width: 200px;
+  padding: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.btn-upgrade {
+  background: #8b5cf6;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-upgrade:hover:not(:disabled) {
+  background: #7c3aed;
+}
+
+.voting-results {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.voting-results h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #1e293b;
+  margin-bottom: 15px;
+}
+
+.rankings-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.rankings-table th,
+.rankings-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.rankings-table th {
+  background: #f8fafc;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.vote-count {
+  font-weight: 700;
+  color: #6366f1;
+}
+
+.tier-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tier-badge.none {
+  background: #e2e8f0;
+  color: #64748b;
+}
+
+.tier-badge.basic {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.tier-badge.pro {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.tier-badge.advanced {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.tier-badge.elite {
+  background: #fce7f3;
+  color: #9d174d;
+}
+
+.btn-remove-tier {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.btn-remove-tier:hover {
+  background: #dc2626;
+}
+
+.no-data {
+  text-align: center;
+  color: #64748b;
+  padding: 20px;
+}
+
+.pricing-info {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pricing-info h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #1e293b;
+  margin-bottom: 15px;
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.pricing-card {
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  border: 2px solid #e2e8f0;
+}
+
+.pricing-card h4 {
+  margin: 0 0 10px 0;
+  font-size: 18px;
+}
+
+.pricing-card .price {
+  font-size: 24px;
+  font-weight: 700;
+  color: #6366f1;
+  margin: 10px 0;
+}
+
+.pricing-card p {
+  color: #64748b;
+  margin: 5px 0;
+}
+
+.pricing-card.basic {
+  background: #f8fafc;
+}
+
+.pricing-card.advanced {
+  background: #fef3c7;
+}
+
+.pricing-card.elite {
+  background: #fce7f3;
+}
+
+/* Dark mode styles */
+body.dark-mode .voting-management h2,
+body.dark-mode .voting-status h3,
+body.dark-mode .voting-controls h3,
+body.dark-mode .tier-management h3,
+body.dark-mode .voting-results h3,
+body.dark-mode .pricing-info h3 {
+  color: #eef2ff;
+}
+
+body.dark-mode .voting-status,
+body.dark-mode .voting-controls,
+body.dark-mode .tier-management,
+body.dark-mode .voting-results,
+body.dark-mode .pricing-info {
+  background: rgba(10, 25, 41, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+body.dark-mode .control-input label {
+  color: #cbd5e0;
+}
+
+body.dark-mode .control-input input,
+body.dark-mode .tier-input-group select {
+  background: rgba(10, 25, 41, 0.92);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+body.dark-mode .rankings-table th {
+  background: rgba(10, 25, 41, 0.6);
+  color: #cbd5e0;
+}
+
+body.dark-mode .rankings-table td {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .no-data {
+  color: #cbd5e0;
+}
+
+body.dark-mode .pricing-card p {
+  color: #cbd5e0;
+}
