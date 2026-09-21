@@ -19,15 +19,6 @@
 - **Application**: maman-power-app (http://localhost:5174/maman-power-app/)
 - **Rôle**: Vendor - Voir les dépôts et les produits disponibles
 
-### 2️⃣ MANAGER - Jean Backup
-
-- **Type**: Manager
-- **Nom**: Jean Backup
-- **Téléphone**: +242 06 555 44 33
-- **Mot de passe**: manager123
-- **Application**: depot-dashboard (http://localhost:5173/)
-- **Dépôt**: "Dépôt Jean - Poto-Poto" (Créé automatiquement)
-- **Statut**: ✅ ACTIF
 
 ### 3️⃣ ADMIN - Genius Mampouya (NOUVELLE APP: admin-panel)
 

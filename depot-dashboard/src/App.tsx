@@ -4,6 +4,7 @@ import AdminPanel from "./components/AdminPanel";
 import DepotCard from "./components/DepotCard";
 import UpdateNotification from "./components/UpdateNotification";
 import VotingChart from "./components/VotingChart";
+import PWAInstallPrompt from "./components/PWAInstallPrompt";
 import { User, MessageCircle, MapPin, Store, Sparkles, AlertTriangle, CreditCard, Gem, GemIcon, Smartphone, HelpCircle, X } from "lucide-react";
 import "./App.css";
 import "./auth.css";
@@ -63,6 +64,7 @@ function App(): ReactNode {
     useState<boolean>(false);
   const [showVotingChart, setShowVotingChart] = useState<boolean>(false);
   const [showHelpModal, setShowHelpModal] = useState<boolean>(false);
+  const [showPWAInstall, setShowPWAInstall] = useState<boolean>(false);
 
   useEffect(() => {
     if (isDarkMode) {
@@ -243,6 +245,8 @@ function App(): ReactNode {
         alert(
           " Compte manager créé avec succès et dépôt créé automatiquement!",
         );
+        // Afficher le prompt d'installation PWA après inscription réussie
+        setTimeout(() => setShowPWAInstall(true), 2000);
         setIsSignUp(false);
         setLoginData({ identifier: "", password: "" });
         setSignUpData({
@@ -574,6 +578,9 @@ function App(): ReactNode {
   return (
     <div className={isDarkMode ? "dark-mode" : ""}>
       <UpdateNotification />
+      {showPWAInstall && (
+        <PWAInstallPrompt onClose={() => setShowPWAInstall(false)} />
+      )}
       {isDarkMode && (
         <>
           <div className="particle-1"></div>
