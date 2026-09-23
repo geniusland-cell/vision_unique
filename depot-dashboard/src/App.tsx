@@ -762,7 +762,6 @@ function App(): ReactNode {
       </div>
 
       <footer className="app-footer">
-        <p>© 2026 | Depot Dashboard Genesis v1.0 | Powered by Vision Unique</p>
         <a
           href="https://wa.me/242067678128?text=Bonjour,%20je%20voudrais%20donner%20mon%20avis%20sur%20les%20am%C3%A9liorations%20logistiques%20du%20Depot%20Dashboard"
           className="whatsapp-feedback-btn"
@@ -771,6 +770,7 @@ function App(): ReactNode {
         >
           <MessageCircle size={16} /> Donnez votre avis sur WhatsApp
         </a>
+        <p>© 2026 | Depot Dashboard Genesis v1.0 | Powered by Vision Unique</p>
       </footer>
 
       <VotingChart

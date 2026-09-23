@@ -786,7 +786,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
 
         {/* Contenu Tous les Dépôts */}
         {activeTab === "depots" && (
-          <div className="admin-depots-view">
+          <>
             {loadingDepots ? (
               <div className="loading">Chargement des dépôts...</div>
             ) : selectedDepot ? (
@@ -829,7 +829,7 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
                 )}
               </div>
             )}
-          </div>
+          </>
         )}
       </div>
     </div>
