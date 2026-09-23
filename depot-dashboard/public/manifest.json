@@ -1,43 +1,29 @@
 {
-  "name": "Dépôt Dashboard - Marché-Connect",
-  "short_name": "Dépôt Dashboard",
-  "description": "Dashboard de gestion des stocks et commandes pour les dépôts",
+  "name": "Dépôt Dashboard",
+  "short_name": "Dépôt",
+  "description": "Dashboard de gestion des dépôts",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#009739",
   "orientation": "portrait-primary",
-  "version": "1789900004233",
   "icons": [
     {
-      "src": "/favicon.svg",
+      "src": "/pwa-192x192.png",
       "sizes": "192x192",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/favicon.svg",
+      "src": "/pwa-512x512.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any"
-    },
-    {
-      "src": "/favicon.svg",
-      "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "maskable"
     }
   ],
   "categories": [
     "business",
     "productivity",
     "shopping"
-  ],
-  "screenshots": [
-    {
-      "src": "/favicon.svg",
-      "sizes": "540x720",
-      "type": "image/svg+xml"
-    }
   ]
 }

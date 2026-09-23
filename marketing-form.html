@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulaire Marketing - Vision Unique</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 20mm;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            margin: 0;
+            padding: 20mm;
+            background: white;
+            font-size: 16px;
+        }
+
+        .header {
+            text-align: left;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 20px;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #3498db;
+            margin-bottom: 15px;
+            float: left;
+            margin-right: 20px;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #3498db;
+            font-weight: 600;
+        }
+
+        .offer-box {
+            background: #f0f0f0;
+            color: #2c3e50;
+            padding: 20px;
+            border: 2px solid #3498db;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .offer-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .offer-description {
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .offer-highlight {
+            font-size: 32px;
+            font-weight: bold;
+            background: white;
+            padding: 10px 20px;
+            border: 2px solid #3498db;
+            display: inline-block;
+        }
+
+        .benefits {
+            margin-bottom: 30px;
+        }
+
+        .benefits h3 {
+            color: #2c3e50;
+            font-size: 20px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .benefits ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .benefits li {
+            padding: 10px 0;
+            padding-left: 20px;
+            position: relative;
+            font-size: 15px;
+        }
+
+        .benefits li:before {
+            content: "-";
+            position: absolute;
+            left: 0;
+            color: #2c3e50;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section h3 {
+            color: #2c3e50;
+            font-size: 20px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #34495e;
+            font-size: 16px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 15px;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 15px;
+            font-family: inherit;
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .signature-section {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .signature-box {
+            flex: 1;
+            border-top: 2px solid #2c3e50;
+            padding-top: 10px;
+            text-align: center;
+        }
+
+        .signature-box .label {
+            font-weight: 600;
+            margin-bottom: 30px;
+            display: block;
+        }
+
+        .date-section {
+            margin-top: 30px;
+            text-align: right;
+        }
+
+        .date-section .date-box {
+            display: inline-block;
+            border-bottom: 2px solid #2c3e50;
+            padding: 5px 20px;
+            font-weight: 600;
+        }
+
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 12px;
+            color: #7f8c8d;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 20px;
+        }
+
+        .contact-info {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #34495e;
+        }
+
+        .contact-info strong {
+            color: #3498db;
+        }
+
+        .products-section {
+            margin-bottom: 30px;
+        }
+
+        .products-section h3 {
+            color: #2c3e50;
+            font-size: 20px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        .products-table th {
+            background: #3498db;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .products-table td {
+            border: 1px solid #e0e0e0;
+            padding: 10px;
+            vertical-align: top;
+        }
+
+        .products-table .product-name {
+            width: 40%;
+        }
+
+        .products-table .product-brand {
+            width: 25%;
+        }
+
+        .products-table .product-price {
+            width: 20%;
+        }
+
+        .products-table .product-stock {
+            width: 15%;
+        }
+
+        .products-table .product-number {
+            width: 10%;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .product-row {
+            min-height: 60px;
+        }
+
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            
+            .form-group input,
+            .form-group textarea {
+                border: 1px solid #ccc;
+            }
+
+            .products-table td {
+                border: 1px solid #000;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="depot-dashboard/public/photo-pro.jpg" alt="Vision Unique Logo" class="logo" onerror="this.src='https://via.placeholder.com/120?text=GLF'">
+        <h1 class="title">Vision Unique</h1>
+        <p class="subtitle">Solutions Numériques pour Dépôts Alimentaires</p>
+    </div>
+
+    <div class="offer-box">
+        <div class="offer-title">OFFRE SPECIALE</div>
+        <div class="offer-description">Profitez de notre plateforme de gestion pendant</div>
+        <div class="offer-highlight">1 MOIS GRATUIT</div>
+        <div class="offer-description">Sans engagement, sans frais caches</div>
+    </div>
+
+    <div class="benefits">
+        <h3>Avantages pour votre Depot</h3>
+        <ul>
+            <li>Visibilite accrue aupres de milliers de clientes</li>
+            <li>Gestion facile de vos produits et stocks</li>
+            <li>Suivi en temps reel de vos ventes</li>
+            <li>Acces aux fonctionnalites Premium (photos, videos)</li>
+            <li>Groupe WhatsApp prive pour vos clients fideles</li>
+            <li>Support technique dedie</li>
+        </ul>
+    </div>
+
+    <div class="form-section">
+        <h3>Informations du Depot</h3>
+        <div class="form-group">
+            <label>Nom du Dépôt / Boutique:</label>
+            <input type="text" placeholder="Ex: Chez Mama Jeanne">
+        </div>
+        <div class="form-group">
+            <label>Propriétaire / Gérant:</label>
+            <input type="text" placeholder="Nom complet">
+        </div>
+        <div class="form-group">
+            <label>Adresse:</label>
+            <input type="text" placeholder="Ex: 123 Rue Principale, Poto-Poto">
+        </div>
+        <div class="form-group">
+            <label>Arrondissement:</label>
+            <input type="text" placeholder="Ex: Poto-Poto, Brazzaville">
+        </div>
+        <div class="form-group">
+            <label>Téléphone:</label>
+            <input type="tel" placeholder="Ex: +242 06 123 45 67">
+        </div>
+        <div class="form-group">
+            <label>WhatsApp:</label>
+            <input type="tel" placeholder="Ex: +242 06 123 45 67">
+        </div>
+        <div class="form-group">
+            <label>Remarques / Références:</label>
+            <textarea placeholder="Dites-nous vos besoins spécifiques, ajoutez vos références..."></textarea>
+        </div>
+    </div>
+
+    <div class="products-section">
+        <h3>Liste des Produits</h3>
+        <table class="products-table">
+            <thead>
+                <tr>
+                    <th class="product-number">#</th>
+                    <th class="product-name">Produit (ex: Poulet, Chinchard, Dindon)</th>
+                    <th class="product-brand">Marque / Calibre (ex: 1200g, 16+)</th>
+                    <th class="product-price">Prix du Carton (FCFA)</th>
+                    <th class="product-stock">Stock estimé (Optionnel)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="product-row">
+                    <td class="product-number">1.</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr class="product-row">
+                    <td class="product-number">2.</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr class="product-row">
+                    <td class="product-number">3.</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr class="product-row">
+                    <td class="product-number">4.</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr class="product-row">
+                    <td class="product-number">5.</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr class="product-row">
+                    <td class="product-number">6.</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr class="product-row">
+                    <td class="product-number">7.</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr class="product-row">
+                    <td class="product-number">8.</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr class="product-row">
+                    <td class="product-number">9.</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr class="product-row">
+                    <td class="product-number">10.</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="signature-section">
+        <div class="signature-box">
+            <span class="label">Signature du Dépôt</span>
+            <div>_________________________</div>
+        </div>
+        <div class="signature-box">
+            <span class="label">Signature Agent Vision Unique</span>
+            <div>_________________________</div>
+        </div>
+    </div>
+
+    <div class="date-section">
+        <span>Date: </span>
+        <span class="date-box">___ / ___ / 20___</span>
+    </div>
+
+    <div class="contact-info">
+        <p>Pour plus d'informations, contactez-nous:</p>
+        <p><strong>WhatsApp:</strong> +242 06 767 81 28</p>
+        <p><strong>Site Web:</strong> <a href="https://geniusland.netlify.app">geniusland.netlify.app</a></p>
+    </div>
+
+    <div class="footer">
+        <p>© 2026 Vision Unique - Tous droits réservés</p>
+        <p>Ce formulaire est valable pour une inscription gratuite de 1 mois</p>
+    </div>
+</body>
+</html>
