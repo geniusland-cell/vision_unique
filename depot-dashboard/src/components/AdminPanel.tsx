@@ -11,11 +11,14 @@ import {
   updateSubscription,
   upgradeToPremium,
   updateSubscriptionWithTier,
+  getAllDepots,
 } from "../firebase";
 import VotingManagement from "./VotingManagement";
 import WhatsAppGroupsManagement from "./WhatsAppGroupsManagement";
-import { Users, Moon, Sun, Smartphone, Ban, Check, Clock, CreditCard, Gem, GemIcon, AlertTriangle } from "lucide-react";
+import DepotCard from "./DepotCard";
+import { Users, Moon, Sun, Smartphone, Ban, Check, Clock, CreditCard, Gem, GemIcon, AlertTriangle, Store, MapPin } from "lucide-react";
 import type { User } from "../types";
+import type { Depot } from "../types";
 import "../styles/AdminPanel.css";
 
 interface AdminPanelProps {
@@ -30,12 +33,15 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
   const [managerDetails, setManagerDetails] = useState<any>(null);
   const [loadingDetails, setLoadingDetails] = useState<boolean>(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [activeTab, setActiveTab] = useState<"managers" | "stats" | "votes" | "whatsapp">(
+  const [activeTab, setActiveTab] = useState<"managers" | "depots" | "stats" | "votes" | "whatsapp">(
     "managers",
   );
   const [paymentLoading, setPaymentLoading] = useState<string | null>(null);
   const [premiumLoading, setPremiumLoading] = useState<string | null>(null);
   const [banLoading, setBanLoading] = useState<string | null>(null);
+  const [depots, setDepots] = useState<Depot[]>([]);
+  const [selectedDepot, setSelectedDepot] = useState<Depot | null>(null);
+  const [loadingDepots, setLoadingDepots] = useState<boolean>(false);
 
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
@@ -45,6 +51,12 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
     loadManagers();
   }, []);
 
+  useEffect(() => {
+    if (activeTab === "depots") {
+      loadDepots();
+    }
+  }, [activeTab]);
+
   const loadManagers = async () => {
     try {
       setLoading(true);
@@ -53,6 +65,17 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
     } catch {
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadDepots = async () => {
+    try {
+      setLoadingDepots(true);
+      const result = await getAllDepots();
+      setDepots(result?.data || []);
+    } catch {
+    } finally {
+      setLoadingDepots(false);
     }
   };
 
@@ -229,6 +252,13 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
     }
   };
 
+  const handleDepotUpdated = (updatedDepot: Depot) => {
+    setSelectedDepot(updatedDepot);
+    setDepots((prevDepots) =>
+      prevDepots.map((d) => (d.id === updatedDepot.id ? updatedDepot : d)),
+    );
+  };
+
   const activeManagers = managers.filter((m) => m.is_active !== false);
   const bannedManagers = managers.filter((m) => m.is_active === false);
 
@@ -262,6 +292,12 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
             onClick={() => setActiveTab("managers")}
           >
             <Users size={16} /> Managers
+          </button>
+          <button
+            className={`tab-button ${activeTab === "depots" ? "active" : ""}`}
+            onClick={() => setActiveTab("depots")}
+          >
+            <Store size={16} /> Tous les Dépôts
           </button>
           <button
             className={`tab-button ${activeTab === "whatsapp" ? "active" : ""}`}
@@ -745,6 +781,54 @@ function AdminPanel({ user, logout }: AdminPanelProps): ReactNode {
         {activeTab === "whatsapp" && (
           <div className="admin-whatsapp-view">
             <WhatsAppGroupsManagement />
+          </div>
+        )}
+
+        {/* Contenu Tous les Dépôts */}
+        {activeTab === "depots" && (
+          <div className="admin-depots-view">
+            {loadingDepots ? (
+              <div className="loading">Chargement des dépôts...</div>
+            ) : selectedDepot ? (
+              <div className="depot-detail-view">
+                <button
+                  className="back-btn"
+                  onClick={() => setSelectedDepot(null)}
+                >
+                  ← Retour à la liste
+                </button>
+                <DepotCard
+                  depot={selectedDepot}
+                  onDepotUpdated={handleDepotUpdated}
+                />
+              </div>
+            ) : (
+              <div className="depots-list">
+                <h2>Tous les Dépôts ({depots.length})</h2>
+                {depots.length === 0 ? (
+                  <div className="no-data">Aucun dépôt trouvé</div>
+                ) : (
+                  <div className="depots-grid">
+                    {depots.map((depot) => (
+                      <div
+                        key={depot.id}
+                        className="depot-item"
+                        onClick={() => setSelectedDepot(depot)}
+                      >
+                        <div className="depot-item-info">
+                          <h3>{depot.name}</h3>
+                          <p><MapPin size={14} /> {depot.location}</p>
+                          <p><Store size={14} /> {depot.tier}</p>
+                        </div>
+                        <button className="btn-manage">
+                          Gérer
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>

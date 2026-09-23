@@ -1,7 +1,6 @@
 import { useState, useEffect, ReactNode } from "react";
 import { Users, User, Smartphone } from "lucide-react";
-import { getWhatsAppGroups, deleteWhatsAppGroup } from "../services/whatsappGroupService";
-import { getDepotById } from "../firebase";
+import { getAllWhatsAppGroups, getAdvancedEliteDepots, createWhatsAppGroup, updateWhatsAppGroupLink, updateMemberCount } from "../services/whatsappGroupService";
 import type { WhatsAppGroup } from "../types/whatsapp";
 import "../styles/WhatsAppGroupsManagement.css";
 

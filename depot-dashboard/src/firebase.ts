@@ -987,6 +987,31 @@ export const getDepotById = async (
 };
 
 // =====================================
+// GET ALL DEPOTS (for admin)
+// =====================================
+export const getAllDepots = async (): Promise<FirebaseResponse<Depot[]>> => {
+  try {
+   const depotsRef = ref(db, "depots");
+    const snapshot = await get(depotsRef);
+
+    if (!snapshot.exists()) {
+      return { success: true, data: [] };
+    }
+
+    const depots = Object.keys(snapshot.val()).map((key) => ({
+      id: key,
+      ...snapshot.val()[key],
+    }));
+
+    return { success: true, data: depots };
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
+    safeError(" Erreur récupération tous les dépôts:", errorMsg);
+    return { success: false, error: errorMsg };
+  }
+};
+
+// =====================================
 // GET ALL PRODUCTS (base products list)
 // =====================================
 export const getAllProducts = async () => {

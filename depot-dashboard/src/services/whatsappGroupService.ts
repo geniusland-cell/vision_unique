@@ -97,16 +97,26 @@ export const updateWhatsAppGroupLink = async (
   nouveauLien: string,
 ): Promise<FirebaseResponse<null>> => {
   try {
+    console.log("Tentative mise à jour lien:", { groupId, nouveauLien });
     const groupRef = ref(db, `whatsappGroups/${groupId}`);
+    const snapshot = await get(groupRef);
+    
+    if (!snapshot.exists()) {
+      console.error("Groupe non trouvé:", groupId);
+      return { success: false, error: "Groupe non trouvé" };
+    }
+    
+    console.log("Groupe trouvé, mise à jour en cours...");
     await update(groupRef, {
       lienInvitation: nouveauLien,
       updatedAt: new Date(),
     });
     
+    console.log("Mise à jour réussie");
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error("Erreur mise à jour lien WhatsApp:", errorMsg);
+    console.error("Erreur mise à jour lien WhatsApp:", errorMsg, err);
     return { success: false, error: errorMsg };
   }
 };
@@ -150,16 +160,26 @@ export const updateMemberCount = async (
   count: number,
 ): Promise<FirebaseResponse<null>> => {
   try {
+    console.log("Tentative mise à jour membres:", { groupId, count });
     const groupRef = ref(db, `whatsappGroups/${groupId}`);
+    const snapshot = await get(groupRef);
+    
+    if (!snapshot.exists()) {
+      console.error("Groupe non trouvé:", groupId);
+      return { success: false, error: "Groupe non trouvé" };
+    }
+    
+    console.log("Groupe trouvé, mise à jour en cours...");
     await update(groupRef, {
       nombreMembres: count,
       updatedAt: new Date(),
     });
     
+    console.log("Mise à jour réussie");
     return { success: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-    console.error("Erreur mise à jour membres:", errorMsg);
+    console.error("Erreur mise à jour membres:", errorMsg, err);
     return { success: false, error: errorMsg };
   }
 };
