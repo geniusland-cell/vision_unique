@@ -6,6 +6,7 @@ import UpdateNotification from "./components/UpdateNotification";
 import VotingChart from "./components/VotingChart";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
 import { User, MessageCircle, MapPin, Store, Sparkles, AlertTriangle, CreditCard, Gem, GemIcon, Smartphone, HelpCircle, X } from "lucide-react";
+import { Analytics } from "@vercel/analytics/react";
 import "./App.css";
 import "./auth.css";
 import { useAuth } from "./auth";
@@ -882,6 +883,9 @@ function App(): ReactNode {
       >
         <img src="/photo-pro.jpg" alt="Vision Unique Logo" />
       </a>
+
+      {/* Vercel Analytics */}
+      <Analytics />
     </div>
   );
 }
