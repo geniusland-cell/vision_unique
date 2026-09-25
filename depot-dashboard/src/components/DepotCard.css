@@ -131,7 +131,6 @@
 }
 
 .detail-row input:focus {
-  outline: none;
   border-color: #667eea;
   box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
 }
@@ -442,7 +441,6 @@
 }
 
 .image-url-input:focus {
-  outline: none;
   border-color: #667eea;
 }
 
